@@ -16,6 +16,14 @@ class UserService implements IUserService {
 
     await this.userRepository.createUser(user);
   }
+
+  public async getUserById(userId: string): Promise<IUser | null> {
+    return await this.userRepository.getUserById(userId);
+  }
+
+  public async getUserByEmail(email: string): Promise<IUser | null> {
+    return await this.userRepository.getUserByEmail(email);
+  }
 }
 
 export default UserService;
