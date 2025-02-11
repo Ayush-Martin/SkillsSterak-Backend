@@ -19,6 +19,7 @@
     "predev": "concurrently \"npm run clean\" \"npm run build\""
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -29,6 +30,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.96",
     "@types/morgan": "^1.9.9",

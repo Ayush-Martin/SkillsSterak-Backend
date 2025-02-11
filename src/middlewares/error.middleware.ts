@@ -20,7 +20,7 @@ const errorHandler = (
     status = Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR;
     error = err.message || "An unexpected error occurred";
   }
-
+  console.log(err);
   res.status(status).json(errorResponse(error));
 };
 

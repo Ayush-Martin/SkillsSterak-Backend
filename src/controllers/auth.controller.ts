@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { IUserService } from "../interfaces/IUser.service";
-import { IUser } from "../models/User.model";
-import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { registerUserSchema } from "../validators/auth.validator";
+import { hashPassword } from "../utils/password";
 
 class AuthController {
   constructor(public userService: IUserService) {}
@@ -17,10 +16,12 @@ class AuthController {
     try {
       const { username, email, password } = registerUserSchema.parse(req.body);
 
+      const hashedPassword = hashPassword(password);
+
       const user = await this.userService.registerUser({
         username,
         email,
-        password,
+        password: hashedPassword,
       });
 
       res
