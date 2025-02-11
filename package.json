@@ -1,0 +1,37 @@
+{
+  "name": "skills-streak-backend",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "SkillsStreak-Backend"
+  },
+  "license": "ISC",
+  "author": "Ayush Martin",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prestart": "concurrently \"npm run clean\" \"npm run build\"",
+    "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\"",
+    "predev": "concurrently \"npm run clean\" \"npm run build\""
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.10.0",
+    "morgan": "^1.10.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.13.1",
+    "nodemon": "^3.1.9"
+  }
+}
