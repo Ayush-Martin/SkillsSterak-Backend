@@ -27,5 +27,13 @@ router.post(
   "/completeRegister",
   authController.completeRegister.bind(authController)
 );
+router.post(
+  "/forgetPassword",
+  authController.forgetPassword.bind(authController)
+);
+router.post(
+  "/resetPassword",
+  authController.resetPassword.bind(authController)
+);
 
 export default router;

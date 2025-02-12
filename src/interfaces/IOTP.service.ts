@@ -1,18 +1,38 @@
-export interface IOTPSchema {
+import { ObjectId } from "mongoose";
+
+export interface IOTPRegisterSchema {
   OTP: string;
   email: string;
   username: string;
   password: string;
 }
 
+export interface IOTPResetPasswordSchema {
+  OTP: string;
+  email: string;
+  id: string;
+}
+
 export interface IOTPService {
-  storeOTPAndUserData(
+  storeOTPAndRegisterData(
     email: string,
     expiry: number,
-    userData: IOTPSchema
+    userData: IOTPRegisterSchema
   ): Promise<void>;
 
-  getOTPAndUserData(email: string): Promise<IOTPSchema | null>;
+  getOTPAndRegisterData(email: string): Promise<IOTPRegisterSchema | null>;
 
-  deleteOTPAndUserData(email: string): Promise<void>;
+  deleteOTPAndRegisterData(email: string): Promise<void>;
+
+  storeOTPAndResetPasswordData(
+    email: string,
+    expiry: number,
+    data: IOTPResetPasswordSchema
+  ): Promise<void>;
+
+  getOTPAndResetPasswordData(
+    email: string
+  ): Promise<IOTPResetPasswordSchema | null>;
+
+  deleteOTPAndResetPasswordData(email: string): Promise<void>;
 }

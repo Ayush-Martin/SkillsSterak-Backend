@@ -24,6 +24,10 @@ class UserRepository implements IUserRepository {
     return await this.User.findByIdAndUpdate(userId, user);
   }
 
+  public async updatePassword(userId: string, password: string): Promise<IUser | null> {
+    return await this.User.findByIdAndUpdate(userId, { password });
+  }
+
   public async changeBlockStatus(
     userId: string,
     status: boolean

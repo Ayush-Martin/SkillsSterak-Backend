@@ -37,3 +37,41 @@ export const loginUserValidator = (user: Partial<IUser>) => {
 
   return { email, password };
 };
+
+export const forgetPasswordValidator = (data: { email: string | null }) => {
+  const { email } = data;
+
+  if (!email) {
+    return errorCreator("Email is required", StatusCodes.BAD_REQUEST);
+  }
+
+  const schema = z.object({
+    email: z.string().email("Invalid email"),
+  });
+
+  return schema.parse({ email });
+};
+
+export const resetPasswordValidator = (data: {
+  password: string | null;
+  email: string | null;
+  OTP: string | null;
+}) => {
+  const { password, email, OTP } = data;
+  if (!password || !email || !OTP) {
+    return errorCreator(
+      "Please provide all the required fields",
+      StatusCodes.BAD_REQUEST
+    );
+  }
+
+  const schema = z.object({
+    email: z.string().email("invalid email"),
+    OTP: z.string(),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters long." }),
+  });
+
+  return schema.parse({ password, email, OTP });
+};
