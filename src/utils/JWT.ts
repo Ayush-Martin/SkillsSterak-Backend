@@ -7,7 +7,7 @@ const ACCESS_TOKEN_EXPIRY_MIN = Number(process.env.ACCESS_TOKEN_EXPIRY_MIN)!;
 const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY!;
 
 export const generateAccessToken = (user: Partial<IUser>) => {
-  return sign(user, ACCESS_TOKEN_SECRET, {
+  return sign({ ...user, password: undefined }, ACCESS_TOKEN_SECRET, {
     expiresIn: `${ACCESS_TOKEN_EXPIRY_MIN}m`,
   });
 };

@@ -9,9 +9,16 @@ import {
 import { comparePassword, hashPassword } from "../utils/password";
 import errorCreator from "../utils/customError";
 import { generateAccessToken } from "../utils/JWT";
+import { IOTPService } from "../interfaces/IOTP.service";
+import { generateOTP } from "../utils/OTP";
+import { OTPValidator } from "../validators/OTP.validator";
+import { sendMail } from "../utils/mailer";
 
 class AuthController {
-  constructor(public userService: IUserService) {}
+  constructor(
+    public userService: IUserService,
+    public OTPService: IOTPService
+  ) {}
 
   public async register(
     req: Request,
@@ -23,7 +30,12 @@ class AuthController {
 
       const hashedPassword = hashPassword(password);
 
-      const user = await this.userService.registerUser({
+      const OTP = generateOTP();
+
+      await sendMail(email, "OTP verification", `your OTP is ${OTP}`);
+      console.log("OTP", OTP);
+      await this.OTPService.storeOTPAndUserData(email, 300, {
+        OTP,
         username,
         email,
         password: hashedPassword,
@@ -31,13 +43,53 @@ class AuthController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse("User created successfully", user));
+        .json(
+          successResponse(
+            "OTP sent to your email , verify to complete registration"
+          )
+        );
     } catch (err) {
       next(err);
     }
   }
 
-  public async login(req: Request, res: Response, next: NextFunction) {
+  public async completeRegister(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { OTP, email } = OTPValidator(req.body);
+
+      const storedData = await this.OTPService.getOTPAndUserData(email);
+
+      if (!storedData) {
+        return errorCreator("OTP is expired", StatusCodes.GONE);
+      }
+
+      if (OTP !== storedData.OTP) {
+        return errorCreator("Invalid OTP", StatusCodes.UNAUTHORIZED);
+      }
+
+      await this.userService.registerUser({
+        username: storedData.username,
+        email,
+        password: storedData.password,
+      });
+
+      await this.OTPService.deleteOTPAndUserData(email);
+
+      res.status(StatusCodes.CREATED).json(successResponse("new user created"));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async login(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { email, password } = loginUserValidator(req.body);
 
@@ -55,7 +107,7 @@ class AuthController {
         return;
       }
 
-      const token = generateAccessToken({ ...user, password: undefined });
+      const token = generateAccessToken(user.toObject());
 
       res
         .status(StatusCodes.OK)
