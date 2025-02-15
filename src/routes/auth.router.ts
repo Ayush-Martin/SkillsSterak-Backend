@@ -14,6 +14,7 @@ import OTPService from "../services/OTP.service";
 
 //controllers
 import AuthController from "../controllers/auth.controller";
+import passport from "passport";
 
 const userRepository = new UserRepository(User);
 const otpRepository = new OTPRepository();
@@ -31,9 +32,17 @@ router.post(
   "/forgetPassword",
   authController.forgetPassword.bind(authController)
 );
+router.post("/verifyOTP", authController.verifyOTP.bind(authController));
 router.post(
   "/resetPassword",
   authController.resetPassword.bind(authController)
 );
+
+// router.get(
+//   "/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
+
+router.post("/google", authController.googleCallback.bind(authController));
 
 export default router;

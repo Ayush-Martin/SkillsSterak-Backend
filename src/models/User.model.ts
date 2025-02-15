@@ -3,19 +3,25 @@ import { Document, Schema, model } from "mongoose";
 export interface IUser extends Document {
   username: string;
   email: string;
-  password: string;
+  password?: string;
   profileImage?: string;
   about?: string;
   areaOfInterest?: string[];
-  isTrainer?: boolean;
+  role?: "user" | "trainer" | "admin" | "premium";
+  googleId?: string;
   isBlocked?: boolean;
-  isPremium?: boolean;
 }
 
 const UserSchema: Schema<IUser> = new Schema({
   username: {
     type: String,
     required: true,
+  },
+  googleId: {
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
   },
   email: {
     type: String,
@@ -24,7 +30,7 @@ const UserSchema: Schema<IUser> = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false,
   },
   profileImage: {
     type: String,
@@ -40,17 +46,13 @@ const UserSchema: Schema<IUser> = new Schema({
     required: false,
     default: "",
   },
-  isTrainer: {
-    type: Boolean,
+  role: {
+    type: "string",
+    enum: ["user", "admin", "trainer", "premium"],
     required: false,
-    default: false,
+    default: "user",
   },
   isBlocked: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  isPremium: {
     type: Boolean,
     required: false,
     default: false,

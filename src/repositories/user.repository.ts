@@ -17,6 +17,10 @@ class UserRepository implements IUserRepository {
     return await this.User.findOne({ email });
   }
 
+  public async getUserByGoogleId(googleId: string): Promise<IUser | null> {
+    return await this.User.findOne({ googleId });
+  }
+
   public async updateUser(
     userId: string,
     user: Partial<IUser>
@@ -24,7 +28,10 @@ class UserRepository implements IUserRepository {
     return await this.User.findByIdAndUpdate(userId, user);
   }
 
-  public async updatePassword(userId: string, password: string): Promise<IUser | null> {
+  public async updatePassword(
+    userId: string,
+    password: string
+  ): Promise<IUser | null> {
     return await this.User.findByIdAndUpdate(userId, { password });
   }
 

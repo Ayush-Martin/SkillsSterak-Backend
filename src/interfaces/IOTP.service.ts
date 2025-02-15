@@ -11,6 +11,7 @@ export interface IOTPResetPasswordSchema {
   OTP: string;
   email: string;
   id: string;
+  isVerified: boolean;
 }
 
 export interface IOTPService {

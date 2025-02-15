@@ -3,7 +3,6 @@ import morgan from "morgan";
 import errorHandler from "./middlewares/error.middleware";
 import cors from "./config/CORS";
 import cookieParser from "cookie-parser";
-
 //routes
 import authRouter from "./routes/auth.router";
 

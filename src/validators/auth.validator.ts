@@ -55,10 +55,9 @@ export const forgetPasswordValidator = (data: { email: string | null }) => {
 export const resetPasswordValidator = (data: {
   password: string | null;
   email: string | null;
-  OTP: string | null;
 }) => {
-  const { password, email, OTP } = data;
-  if (!password || !email || !OTP) {
+  const { password, email} = data;
+  if (!password || !email) {
     return errorCreator(
       "Please provide all the required fields",
       StatusCodes.BAD_REQUEST
@@ -67,11 +66,10 @@ export const resetPasswordValidator = (data: {
 
   const schema = z.object({
     email: z.string().email("invalid email"),
-    OTP: z.string(),
     password: z
       .string()
       .min(6, { message: "Password must be at least 6 characters long." }),
   });
 
-  return schema.parse({ password, email, OTP });
+  return schema.parse({ password, email });
 };

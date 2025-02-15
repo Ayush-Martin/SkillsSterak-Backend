@@ -15,9 +15,15 @@ import { IOTPService } from "../interfaces/IOTP.service";
 import { generateOTP } from "../utils/OTP";
 import { OTPValidator } from "../validators/OTP.validator";
 import { sendMail } from "../utils/mailer";
+import { IUser } from "../models/User.model";
+import { OAuth2Client } from "google-auth-library";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 class AuthController {
   constructor(
@@ -111,7 +117,7 @@ class AuthController {
         return;
       }
 
-      const isPasswordValid = comparePassword(password, user.password);
+      const isPasswordValid = comparePassword(password, user.password!);
 
       if (!isPasswordValid) {
         errorCreator("Invalid credentials", StatusCodes.UNAUTHORIZED);
@@ -121,6 +127,44 @@ class AuthController {
       const accessToken = generateAccessToken(user.toObject());
       const refreshToken = generateRefreshToken(user.id, user.email);
 
+      res
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+          maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
+        })
+        .status(StatusCodes.OK)
+        .json(successResponse("Login successful", accessToken));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async googleCallback(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.body;
+
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload()!;
+
+      const { sub, email, name } = payload;
+      let user = await this.userService.getUserByGoogleId(payload?.sub);
+
+      if (!user) {
+        user = await this.userService.registerUser({
+          googleId: sub,
+          email,
+          username: name,
+        });
+      }
+
+      const accessToken = generateAccessToken(user.toObject());
+      const refreshToken = generateRefreshToken(user.id, user.email);
       res
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
@@ -159,6 +203,7 @@ class AuthController {
         email,
         id: user.id,
         OTP,
+        isVerified: false,
       });
 
       await this.OTPService.deleteOTPAndResetPasswordData(email);
@@ -173,9 +218,9 @@ class AuthController {
     }
   }
 
-  public async resetPassword(req: Request, res: Response, next: NextFunction) {
+  public async verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
-      const { password, email, OTP } = resetPasswordValidator(req.body);
+      const { OTP, email } = OTPValidator(req.body);
 
       const storedData = await this.OTPService.getOTPAndResetPasswordData(
         email
@@ -187,6 +232,35 @@ class AuthController {
 
       if (OTP !== storedData.OTP) {
         return errorCreator("Invalid OTP", StatusCodes.UNAUTHORIZED);
+      }
+
+      await this.OTPService.storeOTPAndResetPasswordData(email, 300, {
+        email,
+        OTP,
+        isVerified: true,
+        id: storedData.id,
+      });
+
+      res.status(StatusCodes.ACCEPTED).json(successResponse("OTP is verified"));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { password, email } = resetPasswordValidator(req.body);
+
+      const storedData = await this.OTPService.getOTPAndResetPasswordData(
+        email
+      );
+
+      if (!storedData) {
+        return errorCreator("OTP is expired", StatusCodes.GONE);
+      }
+
+      if (!storedData.isVerified) {
+        return errorCreator("OTP is not verified", StatusCodes.UNAUTHORIZED);
       }
 
       const hashedPassword = hashPassword(password);
