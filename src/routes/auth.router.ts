@@ -3,46 +3,68 @@ const router = Router();
 
 //models
 import User from "../models/User.model";
+import RefreshToken from "../models/RefreshToken.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
 import OTPRepository from "../repositories/OTP.repository";
+import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 
 //services
 import UserService from "../services/user.service";
 import OTPService from "../services/OTP.service";
+import RefreshTokenService from "../services/RefreshToken.service";
 
 //controllers
 import AuthController from "../controllers/auth.controller";
-import passport from "passport";
+
+//middleware
+import {
+  accessTokenValidator,
+  refreshTokenValidator,
+} from "../middlewares/userAuthMiddleware";
 
 const userRepository = new UserRepository(User);
 const otpRepository = new OTPRepository();
+const refreshTokenRepository = new RefreshTokenRepository(RefreshToken);
+
 const userService = new UserService(userRepository);
 const otpService = new OTPService(otpRepository);
-const authController = new AuthController(userService, otpService);
+const refreshTokenService = new RefreshTokenService(refreshTokenRepository);
+
+const authController = new AuthController(
+  userService,
+  otpService,
+  refreshTokenService
+);
 
 router.post("/register", authController.register.bind(authController));
+
 router.post("/login", authController.login.bind(authController));
+
 router.post(
   "/completeRegister",
   authController.completeRegister.bind(authController)
 );
+
 router.post(
   "/forgetPassword",
   authController.forgetPassword.bind(authController)
 );
+
 router.post("/verifyOTP", authController.verifyOTP.bind(authController));
+
 router.post(
   "/resetPassword",
   authController.resetPassword.bind(authController)
 );
 
-// router.get(
-//   "/google",
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
+router.post("/google", authController.googleAuth.bind(authController));
 
-router.post("/google", authController.googleCallback.bind(authController));
+router.get(
+  "/refresh",
+  refreshTokenValidator,
+  authController.refresh.bind(authController)
+);
 
 export default router;

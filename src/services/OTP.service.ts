@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 import { IOTPRepository } from "../interfaces/IOTP.repository";
 import {
   IOTPRegisterSchema,

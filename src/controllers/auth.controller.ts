@@ -1,4 +1,5 @@
-import e, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { OAuth2Client } from "google-auth-library";
 import { IUserService } from "../interfaces/IUser.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
@@ -15,8 +16,7 @@ import { IOTPService } from "../interfaces/IOTP.service";
 import { generateOTP } from "../utils/OTP";
 import { OTPValidator } from "../validators/OTP.validator";
 import { sendMail } from "../utils/mailer";
-import { IUser } from "../models/User.model";
-import { OAuth2Client } from "google-auth-library";
+import { IRefreshTokenService } from "../interfaces/IRefreshToken.service";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
@@ -28,7 +28,8 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 class AuthController {
   constructor(
     public userService: IUserService,
-    public OTPService: IOTPService
+    public OTPService: IOTPService,
+    public RefreshTokenService: IRefreshTokenService
   ) {}
 
   public async register(
@@ -125,7 +126,9 @@ class AuthController {
       }
 
       const accessToken = generateAccessToken(user.toObject());
-      const refreshToken = generateRefreshToken(user.id, user.email);
+      const refreshToken = generateRefreshToken(user.toObject());
+
+      await this.RefreshTokenService.addToken(refreshToken);
 
       res
         .cookie("refreshToken", refreshToken, {
@@ -141,10 +144,9 @@ class AuthController {
     }
   }
 
-  public async googleCallback(req: Request, res: Response, next: NextFunction) {
+  public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
-
       const ticket = await client.verifyIdToken({
         idToken: token,
         audience: GOOGLE_CLIENT_ID,
@@ -164,7 +166,9 @@ class AuthController {
       }
 
       const accessToken = generateAccessToken(user.toObject());
-      const refreshToken = generateRefreshToken(user.id, user.email);
+      const refreshToken = generateRefreshToken(user);
+      await this.RefreshTokenService.addToken(refreshToken);
+
       res
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
@@ -270,6 +274,35 @@ class AuthController {
       res
         .status(StatusCodes.ACCEPTED)
         .json(successResponse("password is updated"));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.userId!;
+      console.log("id", id);
+      const user = await this.userService.getUserById(id);
+
+      if (!user) {
+        return errorCreator("user not found");
+      }
+
+      const accessToken = generateAccessToken(user.toObject());
+      const refreshToken = generateRefreshToken(user.toObject());
+
+      await this.RefreshTokenService.addToken(refreshToken);
+
+      res
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+          maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
+        })
+        .status(StatusCodes.OK)
+        .json(successResponse("Token refreshed", accessToken));
     } catch (err) {
       next(err);
     }

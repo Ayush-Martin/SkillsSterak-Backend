@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+
 import { IUserRepository } from "../interfaces/IUser.repository";
 import { IUserService } from "../interfaces/IUser.service";
 import { IUser } from "../models/User.model";
