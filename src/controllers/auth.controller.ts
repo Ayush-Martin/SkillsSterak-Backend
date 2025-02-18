@@ -144,6 +144,17 @@ class AuthController {
     }
   }
 
+  public async logout(req: Request, res: Response, next: NextFunction) {
+    res
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      })
+      .status(StatusCodes.OK)
+      .json(successResponse("user is logged out"));
+  }
+
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
