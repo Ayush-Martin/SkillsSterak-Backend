@@ -12,28 +12,28 @@ import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 
 //services
 import AuthService from "../services/auth.service";
-import RefreshTokenService from "../services/RefreshToken.service";
+import JWTService from "../services/jwt.service";
 
 //controllers
 import AuthController from "../controllers/auth.controller";
 
 //middleware
-import {
-  accessTokenValidator,
-  refreshTokenValidator,
-} from "../middlewares/userAuthMiddleware";
+// import {
+//   accessTokenValidator,
+//   refreshTokenValidator,
+// } from "../middlewares/userAuthMiddleware";
+import UserAuthMiddleware from "../middlewares/userAuthMiddleware";
 
 const userRepository = new UserRepository(User);
 const otpRepository = new OTPRepository();
 const refreshTokenRepository = new RefreshTokenRepository(RefreshToken);
 
 const authService = new AuthService(userRepository, otpRepository);
-const refreshTokenService = new RefreshTokenService(refreshTokenRepository);
+const jwtService = new JWTService(refreshTokenRepository);
 
-const authController = new AuthController(
-  authService,
-  refreshTokenService
-);
+const authController = new AuthController(authService, jwtService);
+
+const userAuthMiddleware = new UserAuthMiddleware(authService, jwtService);
 
 router.post("/register", authController.register.bind(authController));
 
@@ -60,10 +60,8 @@ router.post(
 
 router.post("/google", authController.googleAuth.bind(authController));
 
-router.get(
-  "/refresh",
-  refreshTokenValidator,
-  authController.refresh.bind(authController)
-);
+router
+  .use(userAuthMiddleware.refreshTokenValidator.bind(userAuthMiddleware))
+  .get("/refresh", authController.refresh.bind(authController));
 
 export default router;

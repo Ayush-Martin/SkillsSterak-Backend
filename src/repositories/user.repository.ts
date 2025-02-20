@@ -1,9 +1,9 @@
 import { IUser } from "../models/User.model";
-import { IUserRepository } from "../interfaces/IUser.repository";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { Model } from "mongoose";
 
 class UserRepository implements IUserRepository {
-  constructor(public User: Model<IUser>) {}
+  constructor(private User: Model<IUser>) {}
 
   public async createUser(user: Partial<IUser>): Promise<IUser> {
     return await this.User.create(user);
@@ -21,18 +21,33 @@ class UserRepository implements IUserRepository {
     return await this.User.findOne({ googleId });
   }
 
-  public async updateUser(
-    userId: string,
-    user: Partial<IUser>
-  ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, user);
-  }
-
   public async updatePassword(
     userId: string,
     password: string
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { password });
+    return await this.User.findByIdAndUpdate(
+      userId,
+      { password: password },
+      { new: true }
+    );
+  }
+
+  public async updateUser(
+    userId: string,
+    user: Partial<IUser>
+  ): Promise<IUser | null> {
+    return await this.User.findByIdAndUpdate(userId, user, { new: true });
+  }
+
+  public async updateProfileImage(
+    userId: string,
+    profileImage: string
+  ): Promise<IUser | null> {
+    return await this.User.findByIdAndUpdate(
+      userId,
+      { profileImage },
+      { new: true }
+    );
   }
 
   public async changeBlockStatus(

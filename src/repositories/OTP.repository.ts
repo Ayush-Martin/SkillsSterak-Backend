@@ -1,4 +1,4 @@
-import { IOTPRepository } from "../interfaces/IOTP.repository";
+import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
 import { redisClient } from "../config/DB/redis";
 
 class OTPRepository implements IOTPRepository {

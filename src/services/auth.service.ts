@@ -1,13 +1,13 @@
-import { IUserRepository } from "../interfaces/IUser.repository";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import {
   IAuthService,
   IOTPRegisterSchema,
   IOTPResetPasswordSchema,
-} from "../interfaces/IAuth.service";
+} from "../interfaces/services/IAuth.service";
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
-import { IOTPRepository } from "../interfaces/IOTP.repository";
+import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
 import { generateOTP } from "../utils/OTP";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";

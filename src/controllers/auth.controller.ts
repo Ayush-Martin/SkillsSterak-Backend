@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
-import { IAuthService } from "../interfaces/IAuth.service";
+import { IAuthService } from "../interfaces/services/IAuth.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
@@ -10,9 +10,8 @@ import {
   resetPasswordValidator,
 } from "../validators/auth.validator";
 import errorCreator from "../utils/customError";
-import { generateAccessToken, generateRefreshToken } from "../utils/JWT";
 import { OTPValidator } from "../validators/OTP.validator";
-import { IRefreshTokenService } from "../interfaces/IRefreshToken.service";
+import { IJWTService } from "../interfaces/services/IJWT.service";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
@@ -24,7 +23,7 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 class AuthController {
   constructor(
     public authService: IAuthService,
-    public RefreshTokenService: IRefreshTokenService
+    public jwtService: IJWTService
   ) {}
 
   public async register(
@@ -75,10 +74,9 @@ class AuthController {
 
       const user = await this.authService.login(email, password)!;
       if (!user) return errorCreator("No user found");
-      const accessToken = generateAccessToken(user.toObject());
-      const refreshToken = generateRefreshToken(user.toObject());
-
-      await this.RefreshTokenService.addToken(refreshToken);
+      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+        user
+      );
 
       res
         .cookie("refreshToken", refreshToken, {
@@ -118,10 +116,9 @@ class AuthController {
       const { sub, email, name } = payload;
       const user = await this.authService.googleAuth(sub, email!, name!);
       if (!user) return errorCreator("No user found");
-      const accessToken = generateAccessToken(user.toObject());
-      const refreshToken = generateRefreshToken(user);
-      await this.RefreshTokenService.addToken(refreshToken);
-
+      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+        user
+      );
       res
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
@@ -191,10 +188,9 @@ class AuthController {
         return errorCreator("user not found");
       }
 
-      const accessToken = generateAccessToken(user.toObject());
-      const refreshToken = generateRefreshToken(user.toObject());
-
-      await this.RefreshTokenService.addToken(refreshToken);
+      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+        user
+      );
 
       res
         .cookie("refreshToken", refreshToken, {
