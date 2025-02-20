@@ -6,16 +6,17 @@ import UserModel from "../models/User.model";
 import RefreshTokenModel from "../models/RefreshToken.model";
 import UserRepository from "../repositories/user.repository";
 import RefreshTokenRepository from "../repositories/RefreshToken.repository";
-import UserService from "../services/user.service";
+import AuthService from "../services/auth.service";
 import RefreshTokenService from "../services/RefreshToken.service";
-import { token } from "morgan";
+import OTPRepository from "../repositories/OTP.repository";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
 const userRepository = new UserRepository(UserModel);
+const otpRepository = new OTPRepository();
 const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
-const userService = new UserService(userRepository);
+const authService = new AuthService(userRepository, otpRepository);
 const refreshTokenService = new RefreshTokenService(refreshTokenRepository);
 
 const accessTokenValidator = async (
@@ -40,7 +41,7 @@ const accessTokenValidator = async (
 
         const JwtPayload = payload as { _id: string };
 
-        let userData = await userService.getUserById(JwtPayload._id);
+        let userData = await authService.getUserById(JwtPayload._id);
 
         if (!userData) {
           return;

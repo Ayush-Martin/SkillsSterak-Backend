@@ -11,8 +11,7 @@ import OTPRepository from "../repositories/OTP.repository";
 import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 
 //services
-import UserService from "../services/user.service";
-import OTPService from "../services/OTP.service";
+import AuthService from "../services/auth.service";
 import RefreshTokenService from "../services/RefreshToken.service";
 
 //controllers
@@ -28,13 +27,11 @@ const userRepository = new UserRepository(User);
 const otpRepository = new OTPRepository();
 const refreshTokenRepository = new RefreshTokenRepository(RefreshToken);
 
-const userService = new UserService(userRepository);
-const otpService = new OTPService(otpRepository);
+const authService = new AuthService(userRepository, otpRepository);
 const refreshTokenService = new RefreshTokenService(refreshTokenRepository);
 
 const authController = new AuthController(
-  userService,
-  otpService,
+  authService,
   refreshTokenService
 );
 
