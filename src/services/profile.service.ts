@@ -9,21 +9,23 @@ class ProfileService implements IProfileService {
 
   public async updateProfile(
     userId: string,
-    user: Partial<IUser>
+    { username, about }: { username: string; about: string }
   ): Promise<void | IUser | null> {
     const oldUserData = await this.userRepository.getUserById(userId);
     if (!oldUserData) {
       return errorCreator("User Not found", StatusCodes.NOT_FOUND);
     }
-    const updatedProfile = { ...oldUserData, ...user } as IUser;
-    return await this.userRepository.updateUser(userId, updatedProfile);
+    return await this.userRepository.updateUser(userId, {
+      username,
+      about,
+    });
   }
 
   public async updateProfileImage(
     userId: string,
     profileImage: string
-  ): Promise<void | IUser | null> {
-    return await this.updateProfileImage(userId, profileImage);
+  ): Promise<void> {
+    await this.userRepository.updateProfileImage(userId, profileImage);
   }
 }
 

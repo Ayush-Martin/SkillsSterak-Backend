@@ -5,7 +5,7 @@ export interface IUserRepository {
   getUserById(userId: string): Promise<IUser | null>;
   getUserByEmail(email: string): Promise<IUser | null>;
   getUserByGoogleId(googleId: string): Promise<IUser | null>;
-  updateUser(userId: string, user: IUser): Promise<IUser | null>;
+  updateUser(userId: string, user: Partial<IUser>): Promise<IUser | null>;
   updatePassword(userId: string, password: string): Promise<IUser | null>;
   updateProfileImage(
     userId: string,
