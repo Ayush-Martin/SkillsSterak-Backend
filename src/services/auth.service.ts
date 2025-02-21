@@ -78,6 +78,13 @@ class AuthService implements IAuthService {
       return;
     }
 
+    if (user.isBlocked) {
+      return errorCreator(
+        "You have been blocked by admin",
+        StatusCodes.FORBIDDEN
+      );
+    }
+
     return user;
   }
 

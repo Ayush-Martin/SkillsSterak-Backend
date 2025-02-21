@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { IProfileService } from "../interfaces/services/IProfile.service";
-import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
-import { successResponse } from "../utils/responseCreators";
-import { updateProfileValidator } from "../validators/profile.validator";
+import { updateProfileValidator } from "../../validators/profile.validator";
+import { IUserService } from "../../interfaces/services/IUser.service";
+import errorCreator from "../../utils/customError";
+import { StatusCodes } from "../../utils/statusCodes";
+import { successResponse } from "../../utils/responseCreators";
 
 class ProfileController {
-  constructor(private profileService: IProfileService) {}
+  constructor(private userService: IUserService) {}
 
   public async changeProfileImage(
     req: Request,
@@ -24,7 +24,7 @@ class ProfileController {
         );
       }
 
-      await this.profileService.updateProfileImage(userID, profileImage.path);
+      await this.userService.updateProfileImage(userID, profileImage.path);
 
       res.status(StatusCodes.OK).json(
         successResponse("profile image is updated", {
@@ -41,7 +41,7 @@ class ProfileController {
       const { username, about } = updateProfileValidator(req.body);
       const userId = req.userId!;
 
-      await this.profileService.updateProfile(userId, {
+      await this.userService.updateProfile(userId, {
         username,
         about,
       });
@@ -53,6 +53,8 @@ class ProfileController {
       next(err);
     }
   }
+
+  
 }
 
 export default ProfileController;

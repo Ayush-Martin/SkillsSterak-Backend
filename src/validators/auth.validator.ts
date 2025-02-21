@@ -56,7 +56,7 @@ export const resetPasswordValidator = (data: {
   password: string | null;
   email: string | null;
 }) => {
-  const { password, email} = data;
+  const { password, email } = data;
   if (!password || !email) {
     return errorCreator(
       "Please provide all the required fields",

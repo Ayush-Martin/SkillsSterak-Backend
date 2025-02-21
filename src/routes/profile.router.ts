@@ -9,18 +9,18 @@ import UserModel from "../models/User.model";
 import UserRepository from "../repositories/user.repository";
 
 //services
-import ProfileService from "../services/profile.service";
+import UserService from "../services/user.service";
 
 //controllers
-import ProfileController from "../controllers/profile.controller";
+import ProfileController from "../controllers/user/profile.controller";
 
 //middlewares
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuthMiddleware";
 
 const userRepository = new UserRepository(UserModel);
-const profileService = new ProfileService(userRepository);
-const profileController = new ProfileController(profileService);
+const userService = new UserService(userRepository);
+const profileController = new ProfileController(userService);
 
 router.use(accessTokenValidator);
 

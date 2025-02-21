@@ -15,7 +15,7 @@ import AuthService from "../services/auth.service";
 import JWTService from "../services/jwt.service";
 
 //controllers
-import AuthController from "../controllers/auth.controller";
+import AuthController from "../controllers/auth/auth.controller";
 
 //middleware
 // import {

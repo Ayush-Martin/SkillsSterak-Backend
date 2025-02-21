@@ -5,28 +5,23 @@ import jwt from "jsonwebtoken";
 
 //models
 import UserModel from "../models/User.model";
-import RefreshTokenModel from "../models/RefreshToken.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
 import OTPRepository from "../repositories/OTP.repository";
-import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 
 //services
 import AuthService from "../services/auth.service";
-import JWTService from "../services/jwt.service";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
-const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
 
 const authService = new AuthService(userRepository, otpRepository);
-const jwtService = new JWTService(refreshTokenRepository);
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
-export const accessTokenValidator = async (
+export const adminAuthMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -58,40 +53,11 @@ export const accessTokenValidator = async (
           errorCreator("you are blocked by admin", StatusCodes.FORBIDDEN);
         }
 
-        req.userId = String(userData?._id);
-        next();
-      } catch (err) {
-        next(err);
-      }
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const refreshTokenValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const refreshToken = req.cookies.refreshToken as string | undefined;
-
-    if (!refreshToken) {
-      errorCreator("No refresh token provided", StatusCodes.UNAUTHORIZED);
-      return;
-    }
-
-    const validRefreshToken = await jwtService.getRefreshToken(refreshToken);
-
-    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, payload) => {
-      try {
-        if (err) {
-          req.cookies.remove();
-          errorCreator("invalid refresh token", StatusCodes.UNAUTHORIZED);
+        if (userData.role != "admin") {
+          errorCreator("you are not admin", StatusCodes.FORBIDDEN);
         }
-        req.userId = payload?.sub as string;
-        await jwtService.deleteRefreshToken(refreshToken);
+
+        req.userId = String(userData?._id);
         next();
       } catch (err) {
         next(err);

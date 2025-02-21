@@ -9,6 +9,19 @@ class UserRepository implements IUserRepository {
     return await this.User.create(user);
   }
 
+  public async getUsers(
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<IUser>> {
+    return await this.User.find(
+      { email: search, role: { $ne: "admin" } },
+      { username: 1, email: 1, isBlocked: 1 }
+    )
+      .skip(skip)
+      .limit(limit);
+  }
+
   public async getUserById(userId: string): Promise<IUser | null> {
     return await this.User.findById(userId);
   }
@@ -19,6 +32,19 @@ class UserRepository implements IUserRepository {
 
   public async getUserByGoogleId(googleId: string): Promise<IUser | null> {
     return await this.User.findOne({ googleId });
+  }
+
+  public async getUserBlockStatus(
+    userId: string
+  ): Promise<{ isBlocked: boolean } | null> {
+    return await this.User.findById(userId, { _id: 0, isBlocked: 1 });
+  }
+
+  public async getUsersCount(search: RegExp): Promise<number> {
+    return await this.User.countDocuments({
+      email: search,
+      role: { $ne: "admin" },
+    });
   }
 
   public async updatePassword(
