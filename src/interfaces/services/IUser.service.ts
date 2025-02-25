@@ -11,4 +11,5 @@ export interface IUserService {
     page: number
   ): Promise<{ users: Array<IUser>; currentPage: number; totalPages: number }>;
   blockUnblockUser(userId: string): Promise<boolean>;
+  sendTrainerRequest(userId: string): Promise<void>;
 }

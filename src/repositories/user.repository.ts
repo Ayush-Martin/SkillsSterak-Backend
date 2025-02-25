@@ -83,13 +83,6 @@ class UserRepository implements IUserRepository {
     return await this.User.findByIdAndUpdate(userId, { isBlocked: status });
   }
 
-  public async changeTrainerStatus(
-    userId: string,
-    status: boolean
-  ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { isTrainer: status });
-  }
-
   public async changePremiumStatus(
     userId: string,
     status: boolean

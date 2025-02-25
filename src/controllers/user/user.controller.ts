@@ -54,7 +54,23 @@ class ProfileController {
     }
   }
 
-  
+  public async sendTrainerRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId;
+
+      if (!userId) return;
+
+      await this.userService.sendTrainerRequest(userId);
+
+      res.status(200).json(successResponse("Trainer request has been send"));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default ProfileController;

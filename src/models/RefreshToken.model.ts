@@ -4,11 +4,14 @@ export interface IRefreshToken extends Document {
   token: string;
 }
 
-const RefreshTokenSchema = new Schema({
-  token: {
-    type: String,
-    required: true,
+const RefreshTokenSchema = new Schema(
+  {
+    token: {
+      type: String,
+      required: true,
+    },
   },
-});
+  { timestamps: true }
+);
 
 export default model<IRefreshToken>("refreshToken", RefreshTokenSchema);

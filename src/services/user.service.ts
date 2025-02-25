@@ -3,9 +3,13 @@ import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
+import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 
 class UserService implements IUserService {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private trainerRequestRepository: ITrainerRequestRepository
+  ) {}
 
   public async updateProfile(
     userId: string,
@@ -55,6 +59,11 @@ class UserService implements IUserService {
     }
     await this.userRepository.changeBlockStatus(userId, !blockStatus.isBlocked);
     return !blockStatus.isBlocked;
+  }
+
+  public async sendTrainerRequest(userId: string): Promise<void> {
+
+    await this.trainerRequestRepository.addTrainerRequest(userId);
   }
 }
 
