@@ -7,7 +7,7 @@ import nocache from "nocache";
 
 //routes
 import authRouter from "./routes/auth.router";
-import profileRouter from "./routes/user.router";
+import userRouter from "./routes/user.router";
 import adminRouter from "./routes/admin.router";
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 app.use(nocache());
 
 app.use("/auth", authRouter);
-app.use("/user", profileRouter);
+app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 
 app.use(errorHandler);

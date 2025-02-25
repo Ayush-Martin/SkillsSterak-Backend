@@ -17,11 +17,7 @@ import JWTService from "../services/jwt.service";
 //controllers
 import AuthController from "../controllers/auth/auth.controller";
 
-//middleware
-// import {
-//   accessTokenValidator,
-//   refreshTokenValidator,
-// } from "../middlewares/userAuthMiddleware";
+//middlewares
 import { refreshTokenValidator } from "../middlewares/userAuthMiddleware";
 
 const userRepository = new UserRepository(User);
@@ -61,7 +57,5 @@ router.post("/google", authController.googleAuth.bind(authController));
 router
   .use(refreshTokenValidator)
   .get("/refresh", authController.refresh.bind(authController));
-
-
 
 export default router;

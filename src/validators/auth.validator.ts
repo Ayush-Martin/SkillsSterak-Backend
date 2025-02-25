@@ -4,14 +4,6 @@ import { StatusCodes } from "../utils/statusCodes";
 import { IUser } from "../models/User.model";
 
 export const registerUserValidator = (user: Partial<IUser>) => {
-  const { username, email, password } = user;
-  if (!username || !email || !password) {
-    return errorCreator(
-      "Please provide all the required fields",
-      StatusCodes.BAD_REQUEST
-    );
-  }
-
   const schema = z.object({
     username: z
       .string()
@@ -22,7 +14,7 @@ export const registerUserValidator = (user: Partial<IUser>) => {
       .min(6, { message: "Password must be at least 6 characters long." }),
   });
 
-  return schema.parse({ username, email, password });
+  return schema.parse(user);
 };
 
 export const loginUserValidator = (user: Partial<IUser>) => {
@@ -39,31 +31,17 @@ export const loginUserValidator = (user: Partial<IUser>) => {
 };
 
 export const forgetPasswordValidator = (data: { email: string | null }) => {
-  const { email } = data;
-
-  if (!email) {
-    return errorCreator("Email is required", StatusCodes.BAD_REQUEST);
-  }
-
   const schema = z.object({
     email: z.string().email("Invalid email"),
   });
 
-  return schema.parse({ email });
+  return schema.parse(data);
 };
 
 export const resetPasswordValidator = (data: {
   password: string | null;
   email: string | null;
 }) => {
-  const { password, email } = data;
-  if (!password || !email) {
-    return errorCreator(
-      "Please provide all the required fields",
-      StatusCodes.BAD_REQUEST
-    );
-  }
-
   const schema = z.object({
     email: z.string().email("invalid email"),
     password: z
@@ -71,5 +49,5 @@ export const resetPasswordValidator = (data: {
       .min(6, { message: "Password must be at least 6 characters long." }),
   });
 
-  return schema.parse({ password, email });
+  return schema.parse(data);
 };

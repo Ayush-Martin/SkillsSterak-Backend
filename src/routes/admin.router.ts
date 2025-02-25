@@ -39,6 +39,7 @@ const adminTrainerRequestController = new AdminTrainerRequestController(
   trainerService
 );
 
+//setting middleware
 router.use(adminAuthMiddleware);
 
 router

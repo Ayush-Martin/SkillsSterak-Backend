@@ -10,7 +10,6 @@ import TrainerRequestModel from "../models/TrainerRequest.model";
 import UserRepository from "../repositories/user.repository";
 import TrainerRequestRepository from "../repositories/trainerRequest.repository";
 
-
 //services
 import UserService from "../services/user.service";
 
@@ -25,9 +24,12 @@ const userRepository = new UserRepository(UserModel);
 const trainerRequestRepository = new TrainerRequestRepository(
   TrainerRequestModel
 );
+
 const userService = new UserService(userRepository, trainerRequestRepository);
+
 const userController = new UserController(userService);
 
+//setting middleware
 router.use(accessTokenValidator);
 
 router.put(

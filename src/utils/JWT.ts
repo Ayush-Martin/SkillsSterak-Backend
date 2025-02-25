@@ -8,7 +8,7 @@ const REFRESH_TOKEN_EXPIRY_DAY = Number(process.env.REFRESH_TOKEN_EXPIRY_DAY)!;
 
 export const generateAccessToken = (user: Partial<IUser>) => {
   return sign(
-    { sub: user._id, ...user, password: undefined },
+    { sub: user._id, ...user, password: undefined }, //removing password from token
     ACCESS_TOKEN_SECRET,
     {
       expiresIn: `${ACCESS_TOKEN_EXPIRY_MIN}m`,

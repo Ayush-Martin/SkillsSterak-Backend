@@ -10,18 +10,18 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  let status: number;
-  let error: string;
-
-  if (err instanceof z.ZodError) {
-    status = StatusCodes.BAD_REQUEST;
-    error = `Validation failed ${JSON.stringify(err.errors)}`;
-  } else {
-    status = Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR;
-    error = err.message || "An unexpected error occurred";
+  if (!(err instanceof z.ZodError)) {
+    res
+      .status(Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(errorResponse(err.message));
+    return;
   }
-  console.log(err);
-  res.status(status).json(errorResponse(error));
+
+  //If validation layer error or zod error
+  const zodErrors = err.errors.map((e) => e.message).join(", ");
+  res
+    .status(StatusCodes.BAD_REQUEST)
+    .json(errorResponse(`Validation failed: ${zodErrors}`));
 };
 
 export default errorHandler;

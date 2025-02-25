@@ -26,7 +26,10 @@ class AuthService implements IAuthService {
     const userExist = await this.userRepository.getUserByEmail(email);
 
     if (userExist) {
-      return errorCreator("User with email already exists ");
+      return errorCreator(
+        "User with email already exists ",
+        StatusCodes.CONFLICT
+      );
     }
 
     const OTP = generateOTP();
@@ -34,7 +37,7 @@ class AuthService implements IAuthService {
 
     await this.OTPRepository.set(
       email,
-      300,
+      300, //expiry in seconds
       JSON.stringify({ OTP, username, email, password: hashedPassword })
     );
 

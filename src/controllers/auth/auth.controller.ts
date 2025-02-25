@@ -115,6 +115,8 @@ class AuthController {
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
         user
       );
+
+      
       res
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
