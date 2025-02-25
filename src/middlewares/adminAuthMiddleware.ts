@@ -31,7 +31,7 @@ export const adminAuthMiddleware = async (
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-      errorCreator("Access token not found", StatusCodes.UNAUTHORIZED);
+      errorCreator("Invalid token", StatusCodes.UNAUTHORIZED);
       return;
     }
 

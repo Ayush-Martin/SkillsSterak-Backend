@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+
 import { IUser } from "../../models/User.model";
 
 export interface ITrainerService {

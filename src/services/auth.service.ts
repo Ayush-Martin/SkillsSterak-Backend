@@ -74,6 +74,10 @@ class AuthService implements IAuthService {
       return errorCreator("User not found", StatusCodes.NOT_FOUND);
     }
 
+    if (!user.password) {
+      return errorCreator("Invalid credentials", StatusCodes.UNAUTHORIZED);
+    }
+    
     const isPasswordValid = comparePassword(password, user.password!);
 
     if (!isPasswordValid) {

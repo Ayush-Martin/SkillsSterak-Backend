@@ -10,6 +10,7 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  // console.log(err);
   if (!(err instanceof z.ZodError)) {
     res
       .status(Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR)
