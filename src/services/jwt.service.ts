@@ -4,7 +4,7 @@ import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { generateAccessToken, generateRefreshToken } from "../utils/JWT";
 import { StatusCodes } from "../utils/statusCodes";
-import { INVALID_REFRESH_TOKEN_ERROR_MESSAGE } from "../constants/messages";
+import { INVALID_REFRESH_TOKEN_ERROR_MESSAGE } from "../constants/responseMessages";
 
 class JWTService implements IJWTService {
   constructor(private refreshTokenRepository: IRefreshTokenRepository) {}

@@ -15,7 +15,7 @@ import {
   BLOCKED_ERROR_MESSAGE,
   INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
   NO_ACCESS_ERROR_MESSAGE,
-} from "../constants/messages";
+} from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 
 const userRepository = new UserRepository(UserModel);

@@ -19,7 +19,7 @@ import {
   OTP_EXPIRED_ERROR_MESSAGE,
   OTP_NOT_VERIFIED_ERROR_MESSAGE,
   USER_NOT_FOUND_ERROR_MESSAGE,
-} from "../constants/messages";
+} from "../constants/responseMessages";
 
 class AuthService implements IAuthService {
   constructor(

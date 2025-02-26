@@ -5,7 +5,7 @@ import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
-import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/messages";
+import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
 
 class UserService implements IUserService {
   constructor(

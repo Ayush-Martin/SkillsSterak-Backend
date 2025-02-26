@@ -12,6 +12,17 @@ import {
   resetPasswordValidator,
 } from "../validators/auth.validator";
 import { OTPValidator } from "../validators/OTP.validator";
+import {
+  COMPLETE_REGISTER_SUCCESS_MESSAGE,
+  FORGET_PASSWORD_SUCCESS_MESSAGE,
+  LOGIN_SUCCESS_MESSAGE,
+  LOGOUT_SUCCESS_MESSAGE,
+  REGISTER_SUCCESS_MESSAGE,
+  RESET_PASSWORD_SUCCESS_MESSAGE,
+  TOKEN_REFRESH_SUCCESS_MESSAGE,
+  USER_NOT_FOUND_ERROR_MESSAGE,
+  VERIFY_OTP_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
@@ -38,11 +49,7 @@ class AuthController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(
-          successResponse(
-            "OTP sent to your email , verify to complete registration"
-          )
-        );
+        .json(successResponse(REGISTER_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -58,7 +65,9 @@ class AuthController {
 
       this.authService.completeRegister(OTP, email);
 
-      res.status(StatusCodes.CREATED).json(successResponse("new user created"));
+      res
+        .status(StatusCodes.CREATED)
+        .json(successResponse(COMPLETE_REGISTER_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -73,7 +82,7 @@ class AuthController {
       const { email, password } = loginUserValidator(req.body);
 
       const user = await this.authService.login(email, password)!;
-      if (!user) return errorCreator("No user found");
+      if (!user) return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
         user
       );
@@ -86,7 +95,7 @@ class AuthController {
           maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
-        .json(successResponse("Login successful", accessToken));
+        .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
     } catch (err) {
       next(err);
     }
@@ -100,7 +109,7 @@ class AuthController {
         sameSite: "strict",
       })
       .status(StatusCodes.OK)
-      .json(successResponse("user is logged out"));
+      .json(successResponse(LOGOUT_SUCCESS_MESSAGE));
   }
 
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
@@ -115,7 +124,7 @@ class AuthController {
 
       const { sub, email, name } = payload;
       const user = await this.authService.googleAuth(sub, email!, name!);
-      if (!user) return errorCreator("No user found");
+      if (!user) return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
         user
       );
@@ -128,7 +137,7 @@ class AuthController {
           maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
-        .json(successResponse("Login successful", accessToken));
+        .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
     } catch (err) {
       next(err);
     }
@@ -146,9 +155,7 @@ class AuthController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(
-          successResponse("OTP sent to your email , verify to reset password")
-        );
+        .json(successResponse(FORGET_PASSWORD_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -160,7 +167,9 @@ class AuthController {
 
       await this.authService.verifyOTP(OTP, email);
 
-      res.status(StatusCodes.ACCEPTED).json(successResponse("OTP is verified"));
+      res
+        .status(StatusCodes.ACCEPTED)
+        .json(successResponse(VERIFY_OTP_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -174,7 +183,7 @@ class AuthController {
 
       res
         .status(StatusCodes.ACCEPTED)
-        .json(successResponse("password is updated"));
+        .json(successResponse(RESET_PASSWORD_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -186,7 +195,7 @@ class AuthController {
       const user = await this.authService.getUserById(id);
 
       if (!user) {
-        return errorCreator("user not found");
+        return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
       }
 
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
@@ -201,7 +210,7 @@ class AuthController {
           maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
-        .json(successResponse("Token refreshed", accessToken));
+        .json(successResponse(TOKEN_REFRESH_SUCCESS_MESSAGE, accessToken));
     } catch (err) {
       next(err);
     }

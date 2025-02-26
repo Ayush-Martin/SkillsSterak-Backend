@@ -4,6 +4,13 @@ import { IUserService } from "../interfaces/services/IUser.service";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
+import {
+  CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE,
+  GET_USERS_SUCCESS_MESSAGE,
+  NO_PROFILE_IMAGE_ERROR_MESSAGE,
+  SEND_TRAINER_REQUEST_SUCCESS_MESSAGE,
+  UPDATE_PROFILE_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 
 class UserController {
   constructor(private userService: IUserService) {}
@@ -19,7 +26,7 @@ class UserController {
 
       if (!profileImage) {
         return errorCreator(
-          "profile image is not given",
+          NO_PROFILE_IMAGE_ERROR_MESSAGE,
           StatusCodes.BAD_REQUEST
         );
       }
@@ -27,7 +34,7 @@ class UserController {
       await this.userService.updateProfileImage(userID, profileImage.path);
 
       res.status(StatusCodes.OK).json(
-        successResponse("profile image is updated", {
+        successResponse(CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE, {
           profileImage: profileImage.path,
         })
       );
@@ -48,7 +55,9 @@ class UserController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse("profile updated", { username, about }));
+        .json(
+          successResponse(UPDATE_PROFILE_SUCCESS_MESSAGE, { username, about })
+        );
     } catch (err) {
       next(err);
     }
@@ -66,7 +75,9 @@ class UserController {
 
       await this.userService.sendTrainerRequest(userId);
 
-      res.status(200).json(successResponse("Trainer request has been send"));
+      res
+        .status(200)
+        .json(successResponse(SEND_TRAINER_REQUEST_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -79,11 +90,13 @@ class UserController {
       const { users, currentPage, totalPages } =
         await this.userService.getUsers(search || "", Number(page) || 1);
 
-      res
-        .status(StatusCodes.OK)
-        .json(
-          successResponse("Users found", { users, currentPage, totalPages })
-        );
+      res.status(StatusCodes.OK).json(
+        successResponse(GET_USERS_SUCCESS_MESSAGE, {
+          users,
+          currentPage,
+          totalPages,
+        })
+      );
     } catch (err) {
       next(err);
     }
