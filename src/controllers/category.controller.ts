@@ -41,9 +41,11 @@ class CategoryController {
         categoryName
       );
 
+      console.log("category", category);
+
       res
         .status(StatusCodes.OK)
-        .json(successResponse(EDIT_CATEGORY_SUCCESS_MESSAGE, { category }));
+        .json(successResponse(EDIT_CATEGORY_SUCCESS_MESSAGE, category));
     } catch (err) {
       next(err);
     }
@@ -57,14 +59,16 @@ class CategoryController {
     try {
       const { categoryId } = req.params;
 
-      const listed = await this.categoryService.listUnListCategory(categoryId);
-      
+      const isListed = await this.categoryService.listUnListCategory(
+        categoryId
+      );
+
       res
         .status(StatusCodes.OK)
         .json(
           successResponse(
-            `category has been ${listed ? "listed" : "unlisted"}`,
-            { categoryId }
+            `category has been ${isListed ? "listed" : "unlisted"}`,
+            { categoryId, isListed }
           )
         );
     } catch (err) {
@@ -92,11 +96,11 @@ class CategoryController {
     try {
       const { page, search } = getCategoriesValidator(req.query);
 
-      const categories = await this.categoryService.getCategories(search, page);
+      const data = await this.categoryService.getCategories(search, page);
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, { categories }));
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
     } catch (err) {
       next(err);
     }

@@ -36,9 +36,11 @@ class CategoryService implements ICategoryService {
       errorCreator(CATEGORY_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
     }
 
-    return await this.categoryRepository.updateById(categoryId, {
+    const category = await this.categoryRepository.updateById(categoryId, {
       categoryName,
     });
+
+    return category;
   }
 
   public async listUnListCategory(categoryId: string): Promise<boolean> {
@@ -74,6 +76,7 @@ class CategoryService implements ICategoryService {
       skip,
       RECORDS_PER_PAGE
     );
+
     const totalCategories = await this.categoryRepository.getCategoriesCount(
       searchRegex
     );

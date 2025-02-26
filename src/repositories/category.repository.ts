@@ -36,6 +36,7 @@ class CategoryRepository
     limit: number
   ): Promise<Array<ICategory>> {
     return await this.Category.find({ categoryName: search })
+      .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit);
   }

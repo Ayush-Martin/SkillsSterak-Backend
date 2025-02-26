@@ -25,7 +25,7 @@ export const editCategoryValidator = (data: any) => {
 export const getCategoriesValidator = (data: any) => {
   const schema = z.object({
     search: z.string().default(""),
-    page: z.number().default(1),
+    page: z.preprocess((val) => Number(val), z.number().default(1)),
   });
 
   return schema.parse(data);
