@@ -1,7 +1,7 @@
 import { IUser } from "../models/User.model";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { Model } from "mongoose";
-import BaseRepository from "./IBase.repository";
+import BaseRepository from "./Base.repository";
 
 class UserRepository extends BaseRepository<IUser> implements IUserRepository {
   constructor(private User: Model<IUser>) {

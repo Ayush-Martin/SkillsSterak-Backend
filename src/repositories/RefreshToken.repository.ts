@@ -1,7 +1,7 @@
 import { IRefreshToken } from "../models/RefreshToken.model";
 import { IRefreshTokenRepository } from "../interfaces/IRefreshToken.repository";
 import { Model } from "mongoose";
-import BaseRepository from "./IBase.repository";
+import BaseRepository from "./Base.repository";
 
 class RefreshTokenRepository
   extends BaseRepository<IRefreshToken>

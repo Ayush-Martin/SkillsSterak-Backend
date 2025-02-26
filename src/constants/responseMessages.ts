@@ -11,6 +11,9 @@ export const INVALID_ACCESS_TOKEN_ERROR_MESSAGE = "Invalid token";
 export const NO_ACCESS_ERROR_MESSAGE = "You have no access";
 export const NO_PROFILE_IMAGE_ERROR_MESSAGE = "profile image is not given";
 
+export const CATEGORY_EXIST_ERROR_MESSAGE = "Category already exist";
+export const CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Category not found";
+
 //Success Message
 export const REGISTER_SUCCESS_MESSAGE =
   "OTP sent to your email , verify to complete registration";
@@ -26,4 +29,8 @@ export const CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE = "profile image is updated";
 export const UPDATE_PROFILE_SUCCESS_MESSAGE = "profile updated";
 export const SEND_TRAINER_REQUEST_SUCCESS_MESSAGE =
   "Trainer request has been send";
-export const GET_USERS_SUCCESS_MESSAGE="Users found"
+export const GET_USERS_SUCCESS_MESSAGE = "Users found";
+
+export const ADD_CATEGORY_SUCCESS_MESSAGE = "New category created";
+export const EDIT_CATEGORY_SUCCESS_MESSAGE = "Category updated";
+export const GET_DATA_SUCCESS_MESSAGE = "Data returned";

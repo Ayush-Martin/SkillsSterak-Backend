@@ -4,7 +4,7 @@ export interface IRefreshToken extends Document {
   token: string;
 }
 
-const RefreshTokenSchema = new Schema(
+const RefreshTokenSchema = new Schema<IRefreshToken>(
   {
     token: {
       type: String,

@@ -21,24 +21,31 @@ import TrainerRequestController from "../controllers/trainerRequest.controller";
 
 //middlewares
 import { adminAuthMiddleware } from "../middlewares/adminAuthMiddleware";
+import CategoryController from "../controllers/category.controller";
+import CategoryService from "../services/category.service";
+import CategoryRepository from "../repositories/category.repository";
+import CategoryModel from "../models/Category.model";
 
 const userRepository = new UserRepository(UserModel);
 const trainerRepository = new TrainerRepository(UserModel);
 const trainerRequestRepository = new TrainerRequestRepository(
   TrainerRequestModel
 );
+const categoryRepository = new CategoryRepository(CategoryModel);
 
 const userService = new UserService(userRepository, trainerRequestRepository);
 const trainerService = new TrainerService(
   trainerRepository,
   trainerRequestRepository
 );
+const categoryService = new CategoryService(categoryRepository);
 
 const userController = new UserController(userService);
 const trainerRequestController = new TrainerRequestController(trainerService);
+const categoryController = new CategoryController(categoryService);
 
 //setting middleware
-router.use(adminAuthMiddleware);
+// router.use(adminAuthMiddleware);
 
 router.route("/users").get(userController.getUsers.bind(userController));
 
@@ -59,5 +66,19 @@ router
       trainerRequestController
     )
   );
+
+router
+  .route("/categories")
+  .get(categoryController.getCategories.bind(categoryController))
+  .post(categoryController.addCategory.bind(categoryController));
+
+router
+  .route("/categories/all")
+  .get(categoryController.getAllCategories.bind(categoryController));
+
+router
+  .route("/categories/:categoryId")
+  .patch(categoryController.listUnListCategory.bind(categoryController))
+  .put(categoryController.editCategory.bind(categoryController));
 
 export default router;

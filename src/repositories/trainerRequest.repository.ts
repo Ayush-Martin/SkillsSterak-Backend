@@ -1,7 +1,7 @@
 import mongoose, { Model, Mongoose, ObjectId } from "mongoose";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { ITrainerRequest } from "../models/TrainerRequest.model";
-import BaseRepository from "./IBase.repository";
+import BaseRepository from "./Base.repository";
 
 class TrainerRequestRepository
   extends BaseRepository<ITrainerRequest>
