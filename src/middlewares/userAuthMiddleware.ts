@@ -20,6 +20,7 @@ import {
   INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
   INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
 } from "../constants/messages";
+import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -28,7 +29,6 @@ const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
 const authService = new AuthService(userRepository, otpRepository);
 const jwtService = new JWTService(refreshTokenRepository);
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
 export const accessTokenValidator = async (
@@ -37,44 +37,31 @@ export const accessTokenValidator = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    const token = extractTokenFromHeader(req.get("authorization"));
 
     if (!token) {
-      errorCreator(
+      return errorCreator(
         INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
         StatusCodes.UNAUTHORIZED
       );
+    }
+
+    const payload = await verifyToken(token);
+
+    const jwtPayload = payload as { _id: string };
+
+    let userData = await authService.getUserById(jwtPayload._id);
+
+    if (!userData) {
       return;
     }
 
-    jwt.verify(token, ACCESS_TOKEN_SECRET, async (err, payload) => {
-      try {
-        if (err) {
-          errorCreator(
-            INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
-            StatusCodes.UNAUTHORIZED
-          );
-        }
+    if (userData?.isBlocked) {
+      errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
+    }
 
-        const JwtPayload = payload as { _id: string };
-
-        let userData = await authService.getUserById(JwtPayload._id);
-
-        if (!userData) {
-          return;
-        }
-
-        if (userData?.isBlocked) {
-          errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
-        }
-
-        req.userId = String(userData?._id);
-        next();
-      } catch (err) {
-        next(err);
-      }
-    });
+    req.userId = String(userData?._id);
+    next();
   } catch (err) {
     next(err);
   }

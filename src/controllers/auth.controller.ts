@@ -1,13 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
-import { IAuthService } from "../../interfaces/services/IAuth.service";
-import { IJWTService } from "../../interfaces/services/IJWT.service";
-import { successResponse } from "../../utils/responseCreators";
-import { StatusCodes } from "../../utils/statusCodes";
-import errorCreator from "../../utils/customError";
-import { forgetPasswordValidator, loginUserValidator, registerUserValidator, resetPasswordValidator } from "../../validators/auth.validator";
-import { OTPValidator } from "../../validators/OTP.validator";
-
+import { IAuthService } from "../interfaces/services/IAuth.service";
+import { IJWTService } from "../interfaces/services/IJWT.service";
+import { successResponse } from "../utils/responseCreators";
+import { StatusCodes } from "../utils/statusCodes";
+import errorCreator from "../utils/customError";
+import {
+  forgetPasswordValidator,
+  loginUserValidator,
+  registerUserValidator,
+  resetPasswordValidator,
+} from "../validators/auth.validator";
+import { OTPValidator } from "../validators/OTP.validator";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
@@ -116,7 +120,6 @@ class AuthController {
         user
       );
 
-      
       res
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,

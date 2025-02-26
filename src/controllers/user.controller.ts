@@ -5,7 +5,7 @@ import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 
-class ProfileController {
+class UserController {
   constructor(private userService: IUserService) {}
 
   public async changeProfileImage(
@@ -109,4 +109,4 @@ class ProfileController {
   }
 }
 
-export default ProfileController;
+export default UserController;

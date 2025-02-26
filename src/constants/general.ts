@@ -1,1 +1,1 @@
-export const RECORDS_PER_PAGE = 1;
+export const RECORDS_PER_PAGE = 5;

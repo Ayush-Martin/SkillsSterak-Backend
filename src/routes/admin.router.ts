@@ -16,8 +16,8 @@ import UserService from "../services/user.service";
 import TrainerService from "../services/trainer.service";
 
 //controllers
-import AdminUserController from "../controllers/admin/adminUser.controller";
-import AdminTrainerRequestController from "../controllers/admin/adminTrainerRequest.controller";
+import UserController from "../controllers/user.controller";
+import TrainerRequestController from "../controllers/trainerRequest.controller";
 
 //middlewares
 import { adminAuthMiddleware } from "../middlewares/adminAuthMiddleware";
@@ -34,35 +34,29 @@ const trainerService = new TrainerService(
   trainerRequestRepository
 );
 
-const adminUserController = new AdminUserController(userService);
-const adminTrainerRequestController = new AdminTrainerRequestController(
-  trainerService
-);
+const userController = new UserController(userService);
+const trainerRequestController = new TrainerRequestController(trainerService);
 
 //setting middleware
 router.use(adminAuthMiddleware);
 
-router
-  .route("/users")
-  .get(adminUserController.getUsers.bind(adminUserController));
+router.route("/users").get(userController.getUsers.bind(userController));
 
 router
   .route("/users/:userId")
-  .patch(adminUserController.blockUnblockUser.bind(adminUserController));
+  .patch(userController.blockUnblockUser.bind(userController));
 
 router
   .route("/trainerRequests")
   .get(
-    adminTrainerRequestController.getTrainerRequests.bind(
-      adminTrainerRequestController
-    )
+    trainerRequestController.getTrainerRequests.bind(trainerRequestController)
   );
 
 router
   .route("/trainerRequests/:userId")
   .patch(
-    adminTrainerRequestController.approveRejectRequests.bind(
-      adminTrainerRequestController
+    trainerRequestController.approveRejectRequests.bind(
+      trainerRequestController
     )
   );
 

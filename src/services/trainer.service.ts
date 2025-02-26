@@ -39,7 +39,6 @@ class TrainerService implements ITrainerService {
       userId,
       status
     );
-    console.log(res);
 
     if (status == "approved") {
       await this.trainerRepository.changeRole(userId, "trainer");

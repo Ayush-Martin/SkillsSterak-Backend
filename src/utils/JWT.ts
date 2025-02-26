@@ -16,8 +16,25 @@ export const generateAccessToken = (user: Partial<IUser>) => {
   );
 };
 
+export const verifyToken = (token: string): Promise<any> =>
+  new Promise((resolve, reject) => {
+    verify(token, ACCESS_TOKEN_SECRET, (err, payload) => {
+      if (err) return reject(err);
+      resolve(payload);
+    });
+  });
+
 export const generateRefreshToken = (user: Partial<IUser>) => {
   return sign({ sub: user._id, email: user.email }, REFRESH_TOKEN_SECRET, {
     expiresIn: `${REFRESH_TOKEN_EXPIRY_DAY}d`,
   });
+};
+
+export const extractTokenFromHeader = (
+  authHeader: string | undefined
+): string | null => {
+  if (!authHeader) return null;
+  const parts = authHeader.split(" ");
+  if (parts.length !== 2 || parts[0] !== "Bearer") return null;
+  return parts[1];
 };

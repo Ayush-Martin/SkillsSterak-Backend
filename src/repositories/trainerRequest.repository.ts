@@ -22,7 +22,6 @@ class TrainerRequestRepository
     userId: string,
     status: "approved" | "rejected"
   ): Promise<ITrainerRequest | null> {
-    console.log(userId);
     return await this.TrainerRequest.findOneAndUpdate(
       { userId },
       { status },
