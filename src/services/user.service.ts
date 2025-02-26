@@ -4,6 +4,8 @@ import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
+import { RECORDS_PER_PAGE } from "../constants/general";
+import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/messages";
 
 class UserService implements IUserService {
   constructor(
@@ -17,7 +19,7 @@ class UserService implements IUserService {
   ): Promise<void | IUser | null> {
     const oldUserData = await this.userRepository.getUserById(userId);
     if (!oldUserData) {
-      return errorCreator("User Not found", StatusCodes.NOT_FOUND);
+      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
     return await this.userRepository.updateUser(userId, {
       username,
@@ -37,11 +39,14 @@ class UserService implements IUserService {
     page: number
   ): Promise<{ users: Array<IUser>; currentPage: number; totalPages: number }> {
     const searchRegex = new RegExp(search, "i");
-    const limit = 1;
-    const skip = (page - 1) * limit;
-    const users = await this.userRepository.getUsers(searchRegex, skip, limit);
+    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const users = await this.userRepository.getUsers(
+      searchRegex,
+      skip,
+      RECORDS_PER_PAGE
+    );
     const totalUsers = await this.userRepository.getUsersCount(searchRegex);
-    const totalPages = Math.ceil(totalUsers / limit);
+    const totalPages = Math.ceil(totalUsers / RECORDS_PER_PAGE);
     return {
       users,
       currentPage: page,
@@ -53,7 +58,7 @@ class UserService implements IUserService {
     const blockStatus = await this.userRepository.getUserBlockStatus(userId);
     if (!blockStatus) {
       return errorCreator(
-        "userId provided is not valid",
+        USER_NOT_FOUND_ERROR_MESSAGE,
         StatusCodes.BAD_REQUEST
       );
     }
@@ -62,7 +67,6 @@ class UserService implements IUserService {
   }
 
   public async sendTrainerRequest(userId: string): Promise<void> {
-
     await this.trainerRequestRepository.addTrainerRequest(userId);
   }
 }

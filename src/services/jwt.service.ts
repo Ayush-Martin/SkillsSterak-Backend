@@ -4,6 +4,7 @@ import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { generateAccessToken, generateRefreshToken } from "../utils/JWT";
 import { StatusCodes } from "../utils/statusCodes";
+import { INVALID_REFRESH_TOKEN_ERROR_MESSAGE } from "../constants/messages";
 
 class JWTService implements IJWTService {
   constructor(private refreshTokenRepository: IRefreshTokenRepository) {}
@@ -22,7 +23,10 @@ class JWTService implements IJWTService {
   public async getRefreshToken(token: string): Promise<string> {
     const tokenObj = await this.refreshTokenRepository.findToken(token);
     if (!tokenObj) {
-      return errorCreator("Invalid refresh token", StatusCodes.UNAUTHORIZED);
+      return errorCreator(
+        INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
     }
     return tokenObj?.token;
   }

@@ -1,16 +1,21 @@
-import { Model } from "mongoose";
+import mongoose, { Model, Mongoose, ObjectId } from "mongoose";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { ITrainerRequest } from "../models/TrainerRequest.model";
+import BaseRepository from "./IBase.repository";
 
-class TrainerRequestRepository implements ITrainerRequestRepository {
-  constructor(private TrainerRequest: Model<ITrainerRequest>) {}
+class TrainerRequestRepository
+  extends BaseRepository<ITrainerRequest>
+  implements ITrainerRequestRepository
+{
+  constructor(private TrainerRequest: Model<ITrainerRequest>) {
+    super(TrainerRequest);
+  }
 
   public async addTrainerRequest(
     userId: string
   ): Promise<ITrainerRequest | null> {
-    const trainerRequest = new this.TrainerRequest({ userId });
-    await trainerRequest.save();
-    return trainerRequest;
+    const objectId = new mongoose.Schema.Types.ObjectId(userId);
+    return await this.create({ userId: objectId });
   }
 
   public async changeRequestStatus(

@@ -12,6 +12,11 @@ import OTPRepository from "../repositories/OTP.repository";
 
 //services
 import AuthService from "../services/auth.service";
+import {
+  BLOCKED_ERROR_MESSAGE,
+  INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+  NO_ACCESS_ERROR_MESSAGE,
+} from "../constants/messages";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -31,14 +36,20 @@ export const adminAuthMiddleware = async (
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-      errorCreator("Invalid token", StatusCodes.UNAUTHORIZED);
+      errorCreator(
+        INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
       return;
     }
 
     jwt.verify(token, ACCESS_TOKEN_SECRET, async (err, payload) => {
       try {
         if (err) {
-          errorCreator("Invalid token", StatusCodes.UNAUTHORIZED);
+          errorCreator(
+            INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+            StatusCodes.UNAUTHORIZED
+          );
         }
 
         const JwtPayload = payload as { _id: string };
@@ -50,11 +61,11 @@ export const adminAuthMiddleware = async (
         }
 
         if (userData?.isBlocked) {
-          errorCreator("you are blocked by admin", StatusCodes.FORBIDDEN);
+          errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
         }
 
         if (userData.role != "admin") {
-          errorCreator("you are not admin", StatusCodes.FORBIDDEN);
+          errorCreator(NO_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
         }
 
         req.userId = String(userData?._id);

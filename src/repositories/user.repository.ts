@@ -1,12 +1,15 @@
 import { IUser } from "../models/User.model";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { Model } from "mongoose";
+import BaseRepository from "./IBase.repository";
 
-class UserRepository implements IUserRepository {
-  constructor(private User: Model<IUser>) {}
+class UserRepository extends BaseRepository<IUser> implements IUserRepository {
+  constructor(private User: Model<IUser>) {
+    super(User);
+  }
 
   public async createUser(user: Partial<IUser>): Promise<IUser> {
-    return await this.User.create(user);
+    return await this.create(user);
   }
 
   public async getUsers(
@@ -23,7 +26,7 @@ class UserRepository implements IUserRepository {
   }
 
   public async getUserById(userId: string): Promise<IUser | null> {
-    return await this.User.findById(userId);
+    return await this.findById(userId);
   }
 
   public async getUserByEmail(email: string): Promise<IUser | null> {

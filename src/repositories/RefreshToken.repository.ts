@@ -1,14 +1,18 @@
 import { IRefreshToken } from "../models/RefreshToken.model";
 import { IRefreshTokenRepository } from "../interfaces/IRefreshToken.repository";
 import { Model } from "mongoose";
+import BaseRepository from "./IBase.repository";
 
-class RefreshTokenRepository implements IRefreshTokenRepository {
-  constructor(public RefreshToken: Model<IRefreshToken>) {}
+class RefreshTokenRepository
+  extends BaseRepository<IRefreshToken>
+  implements IRefreshTokenRepository
+{
+  constructor(public RefreshToken: Model<IRefreshToken>) {
+    super(RefreshToken);
+  }
 
   public async addToken(token: string): Promise<IRefreshToken> {
-    const refreshToken = new this.RefreshToken({ token });
-    await refreshToken.save();
-    return refreshToken;
+    return await this.create({ token });
   }
 
   public async deleteToken(token: string): Promise<void> {

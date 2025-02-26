@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { ITrainerRequest } from "../../models/TrainerRequest.model";
 
 export interface ITrainerRequestRepository {

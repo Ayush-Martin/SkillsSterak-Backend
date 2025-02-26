@@ -11,6 +11,15 @@ import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
 import { generateOTP } from "../utils/OTP";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";
+import {
+  BLOCKED_ERROR_MESSAGE,
+  EMAIL_EXIST_ERROR_MESSAGE,
+  INVALID_CREDENTIALS_ERROR_MESSAGE,
+  INVALID_OTP_ERROR_MESSAGE,
+  OTP_EXPIRED_ERROR_MESSAGE,
+  OTP_NOT_VERIFIED_ERROR_MESSAGE,
+  USER_NOT_FOUND_ERROR_MESSAGE,
+} from "../constants/messages";
 
 class AuthService implements IAuthService {
   constructor(
@@ -26,10 +35,7 @@ class AuthService implements IAuthService {
     const userExist = await this.userRepository.getUserByEmail(email);
 
     if (userExist) {
-      return errorCreator(
-        "User with email already exists ",
-        StatusCodes.CONFLICT
-      );
+      return errorCreator(EMAIL_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
     }
 
     const OTP = generateOTP();
@@ -49,13 +55,13 @@ class AuthService implements IAuthService {
     const storedData = await this.OTPRepository.get(email);
 
     if (!storedData) {
-      return errorCreator("OTP is expired", StatusCodes.GONE);
+      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
     }
 
     const registerData = JSON.parse(storedData) as IOTPRegisterSchema;
 
     if (OTP !== registerData.OTP) {
-      return errorCreator("Invalid OTP", StatusCodes.UNAUTHORIZED);
+      return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
     }
 
     await this.userRepository.createUser({
@@ -71,25 +77,25 @@ class AuthService implements IAuthService {
     const user = await this.userRepository.getUserByEmail(email);
 
     if (!user) {
-      return errorCreator("User not found", StatusCodes.NOT_FOUND);
+      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
     if (!user.password) {
-      return errorCreator("Invalid credentials", StatusCodes.UNAUTHORIZED);
+      return errorCreator(
+        INVALID_CREDENTIALS_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
     }
-    
+
     const isPasswordValid = comparePassword(password, user.password!);
 
     if (!isPasswordValid) {
-      errorCreator("Invalid credentials", StatusCodes.UNAUTHORIZED);
+      errorCreator(INVALID_CREDENTIALS_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
       return;
     }
 
     if (user.isBlocked) {
-      return errorCreator(
-        "You have been blocked by admin",
-        StatusCodes.FORBIDDEN
-      );
+      return errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
     return user;
@@ -117,7 +123,7 @@ class AuthService implements IAuthService {
     const user = await this.userRepository.getUserByEmail(email);
 
     if (!user) {
-      return errorCreator("User not exist", StatusCodes.NOT_FOUND);
+      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
     const OTP = generateOTP();
@@ -141,13 +147,13 @@ class AuthService implements IAuthService {
     const storedData = await this.OTPRepository.get(email);
 
     if (!storedData) {
-      return errorCreator("OTP is expired", StatusCodes.GONE);
+      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
     }
 
     const registerData = JSON.parse(storedData) as IOTPResetPasswordSchema;
 
     if (OTP !== registerData.OTP) {
-      return errorCreator("Invalid OTP", StatusCodes.UNAUTHORIZED);
+      return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
     }
 
     await this.OTPRepository.set(
@@ -166,13 +172,16 @@ class AuthService implements IAuthService {
     const storedData = await this.OTPRepository.get(email);
 
     if (!storedData) {
-      return errorCreator("OTP is expired", StatusCodes.GONE);
+      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
     }
 
     const registerData = JSON.parse(storedData) as IOTPResetPasswordSchema;
 
     if (!registerData.isVerified) {
-      return errorCreator("OTP is not verified", StatusCodes.UNAUTHORIZED);
+      return errorCreator(
+        OTP_NOT_VERIFIED_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
     }
 
     const hashedPassword = hashPassword(password);

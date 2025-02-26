@@ -1,0 +1,4 @@
+
+class TrainerController{
+    constructor(){}
+}

@@ -14,7 +14,7 @@ import TrainerRequestRepository from "../repositories/trainerRequest.repository"
 import UserService from "../services/user.service";
 
 //controllers
-import UserController from "../controllers/user/user.controller";
+import UserController from "../controllers/user.controller";
 
 //middlewares
 import multerUpload from "../config/multer";
@@ -32,13 +32,13 @@ const userController = new UserController(userService);
 //setting middleware
 router.use(accessTokenValidator);
 
-router.put(
-  "/changeProfileImage",
-  multerUpload.single("image"),
-  userController.changeProfileImage.bind(userController)
-);
-
-router.put("/updateProfile", userController.updateProfile.bind(userController));
+router
+  .route("/profile")
+  .patch(
+    multerUpload.single("image"),
+    userController.changeProfileImage.bind(userController)
+  )
+  .put(userController.updateProfile.bind(userController));
 
 router.get(
   "/trainerRequest",

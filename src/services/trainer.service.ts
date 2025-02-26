@@ -1,3 +1,4 @@
+import { RECORDS_PER_PAGE } from "../constants/general";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
@@ -14,15 +15,14 @@ class TrainerService implements ITrainerService {
     currentPage: number;
     totalPages: number;
   }> {
-    const limit = 1;
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * RECORDS_PER_PAGE;
     const users = await this.trainerRequestRepository.getRequestedUsers(
       skip,
-      limit
+      RECORDS_PER_PAGE
     );
     const totalUsers =
       await this.trainerRequestRepository.getRequestedUserCount();
-    const totalPages = Math.ceil(totalUsers / limit);
+    const totalPages = Math.ceil(totalUsers / RECORDS_PER_PAGE);
 
     return {
       users: users,

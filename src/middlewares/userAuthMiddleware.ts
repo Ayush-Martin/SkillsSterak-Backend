@@ -15,6 +15,11 @@ import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 //services
 import AuthService from "../services/auth.service";
 import JWTService from "../services/jwt.service";
+import {
+  BLOCKED_ERROR_MESSAGE,
+  INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+  INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+} from "../constants/messages";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -36,14 +41,20 @@ export const accessTokenValidator = async (
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-      errorCreator("Access token not found", StatusCodes.UNAUTHORIZED);
+      errorCreator(
+        INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
       return;
     }
 
     jwt.verify(token, ACCESS_TOKEN_SECRET, async (err, payload) => {
       try {
         if (err) {
-          errorCreator("Invalid token", StatusCodes.UNAUTHORIZED);
+          errorCreator(
+            INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+            StatusCodes.UNAUTHORIZED
+          );
         }
 
         const JwtPayload = payload as { _id: string };
@@ -55,7 +66,7 @@ export const accessTokenValidator = async (
         }
 
         if (userData?.isBlocked) {
-          errorCreator("you are blocked by admin", StatusCodes.FORBIDDEN);
+          errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
         }
 
         req.userId = String(userData?._id);
@@ -78,7 +89,10 @@ export const refreshTokenValidator = async (
     const refreshToken = req.cookies.refreshToken as string | undefined;
 
     if (!refreshToken) {
-      errorCreator("No refresh token provided", StatusCodes.UNAUTHORIZED);
+      errorCreator(
+        INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
       return;
     }
 
@@ -88,7 +102,10 @@ export const refreshTokenValidator = async (
       try {
         if (err) {
           req.cookies.remove();
-          errorCreator("invalid refresh token", StatusCodes.UNAUTHORIZED);
+          errorCreator(
+            INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+            StatusCodes.UNAUTHORIZED
+          );
         }
         req.userId = payload?.sub as string;
         await jwtService.deleteRefreshToken(refreshToken);
