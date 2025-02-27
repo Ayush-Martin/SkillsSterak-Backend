@@ -1,6 +1,7 @@
 import { IUser } from "../../models/User.model";
+import BaseRepository from "../../repositories/Base.repository";
 
-export interface ITrainerRepository {
+export interface ITrainerRepository extends BaseRepository<IUser> {
   getTrainers(
     search: RegExp,
     skip: number,

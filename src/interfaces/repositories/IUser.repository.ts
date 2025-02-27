@@ -1,9 +1,8 @@
 import { IUser } from "../../models/User.model";
+import BaseRepository from "../../repositories/Base.repository";
 
-export interface IUserRepository {
-  createUser(user: Partial<IUser>): Promise<IUser>;
+export interface IUserRepository extends BaseRepository<IUser> {
   getUsers(search: RegExp, skip: number, limit: number): Promise<Array<IUser>>;
-  getUserById(userId: string): Promise<IUser | null>;
   getUserByEmail(email: string): Promise<IUser | null>;
   getUserByGoogleId(googleId: string): Promise<IUser | null>;
   getUserBlockStatus(userId: string): Promise<{ isBlocked: boolean } | null>;

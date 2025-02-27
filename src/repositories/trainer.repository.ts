@@ -1,9 +1,15 @@
 import { Model } from "mongoose";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { IUser } from "../models/User.model";
+import BaseRepository from "./Base.repository";
 
-class TrainerRepository implements ITrainerRepository {
-  constructor(private User: Model<IUser>) {}
+class TrainerRepository
+  extends BaseRepository<IUser>
+  implements ITrainerRepository
+{
+  constructor(private User: Model<IUser>) {
+    super(User);
+  }
 
   public async getTrainers(
     search: RegExp,

@@ -2,16 +2,17 @@ import { z } from "zod";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { IUser } from "../models/User.model";
+import {
+  EmailValidationRule,
+  PasswordValidationRule,
+  UsernameValidationRule,
+} from "../utils/validationRules";
 
-export const registerUserValidator = (user: Partial<IUser>) => {
+export const registerUserValidator = (user: any) => {
   const schema = z.object({
-    username: z
-      .string()
-      .min(3, { message: "Name must be at least 3 characters long." }),
-    email: z.string().email({ message: "Please enter a valid email address." }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters long." }),
+    username: UsernameValidationRule,
+    email: EmailValidationRule,
+    password: PasswordValidationRule,
   });
 
   return schema.parse(user);
@@ -30,23 +31,18 @@ export const loginUserValidator = (user: Partial<IUser>) => {
   return { email, password };
 };
 
-export const forgetPasswordValidator = (data: { email: string | null }) => {
+export const forgetPasswordValidator = (data: any) => {
   const schema = z.object({
-    email: z.string().email("Invalid email"),
+    email: EmailValidationRule,
   });
 
   return schema.parse(data);
 };
 
-export const resetPasswordValidator = (data: {
-  password: string | null;
-  email: string | null;
-}) => {
+export const resetPasswordValidator = (data: any) => {
   const schema = z.object({
-    email: z.string().email("invalid email"),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters long." }),
+    email: EmailValidationRule,
+    password: PasswordValidationRule,
   });
 
   return schema.parse(data);

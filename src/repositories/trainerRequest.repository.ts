@@ -11,13 +11,6 @@ class TrainerRequestRepository
     super(TrainerRequest);
   }
 
-  public async addTrainerRequest(
-    userId: string
-  ): Promise<ITrainerRequest | null> {
-    const objectId = new mongoose.Schema.Types.ObjectId(userId);
-    return await this.create({ userId: objectId });
-  }
-
   public async changeRequestStatus(
     userId: string,
     status: "approved" | "rejected"

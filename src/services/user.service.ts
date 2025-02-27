@@ -6,6 +6,7 @@ import { StatusCodes } from "../utils/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
+import mongoose from "mongoose";
 
 class UserService implements IUserService {
   constructor(
@@ -17,7 +18,7 @@ class UserService implements IUserService {
     userId: string,
     { username, about }: { username: string; about: string }
   ): Promise<void | IUser | null> {
-    const oldUserData = await this.userRepository.getUserById(userId);
+    const oldUserData = await this.userRepository.findById(userId);
     if (!oldUserData) {
       return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
@@ -67,7 +68,8 @@ class UserService implements IUserService {
   }
 
   public async sendTrainerRequest(userId: string): Promise<void> {
-    await this.trainerRequestRepository.addTrainerRequest(userId);
+    const UserId = new mongoose.Schema.Types.ObjectId(userId);
+    await this.trainerRequestRepository.create({ userId: UserId });
   }
 }
 

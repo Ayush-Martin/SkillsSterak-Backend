@@ -11,10 +11,6 @@ class RefreshTokenRepository
     super(RefreshToken);
   }
 
-  public async addToken(token: string): Promise<IRefreshToken> {
-    return await this.create({ token });
-  }
-
   public async deleteToken(token: string): Promise<void> {
     await this.RefreshToken.deleteOne({ token });
   }

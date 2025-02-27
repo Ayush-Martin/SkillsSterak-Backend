@@ -1,12 +1,13 @@
 import { z } from "zod";
+import {
+  EmailValidationRule,
+  OTPValidationRule,
+} from "../utils/validationRules";
 
-export const OTPValidator = (data: {
-  OTP: string | null;
-  email: string | null;
-}) => {
+export const OTPValidator = (data: any) => {
   const schema = z.object({
-    OTP: z.string().length(6, "OTP must contain 6 digits"),
-    email: z.string().email("Invalid email"),
+    OTP: OTPValidationRule,
+    email: EmailValidationRule,
   });
 
   return schema.parse(data);

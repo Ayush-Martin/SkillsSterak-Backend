@@ -64,7 +64,7 @@ class AuthService implements IAuthService {
       return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
     }
 
-    await this.userRepository.createUser({
+    await this.userRepository.create({
       username: registerData.username,
       email: registerData.email,
       password: registerData.password,
@@ -109,7 +109,7 @@ class AuthService implements IAuthService {
     let user = await this.userRepository.getUserByGoogleId(googleId);
 
     if (!user) {
-      user = await this.userRepository.createUser({
+      user = await this.userRepository.create({
         googleId,
         email,
         username,
@@ -190,7 +190,7 @@ class AuthService implements IAuthService {
   }
 
   public async getUserById(userId: string): Promise<IUser | null> {
-    return await this.userRepository.getUserById(userId);
+    return await this.userRepository.findById(userId);
   }
 }
 

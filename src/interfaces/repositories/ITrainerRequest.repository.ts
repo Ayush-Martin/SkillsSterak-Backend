@@ -1,8 +1,8 @@
-import { ObjectId } from "mongoose";
 import { ITrainerRequest } from "../../models/TrainerRequest.model";
+import BaseRepository from "../../repositories/Base.repository";
 
-export interface ITrainerRequestRepository {
-  addTrainerRequest(userId: string): Promise<ITrainerRequest | null>;
+export interface ITrainerRequestRepository
+  extends BaseRepository<ITrainerRequest> {
   changeRequestStatus(
     userId: string,
     status: "approved" | "rejected"

@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { updateProfileValidator } from "../validators/profile.validator";
+import {
+  getUsersValidator,
+  updateProfileValidator,
+} from "../validators/user.validator";
 import { IUserService } from "../interfaces/services/IUser.service";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE,
-  GET_USERS_SUCCESS_MESSAGE,
+  GET_DATA_SUCCESS_MESSAGE,
   NO_PROFILE_IMAGE_ERROR_MESSAGE,
   SEND_TRAINER_REQUEST_SUCCESS_MESSAGE,
   UPDATE_PROFILE_SUCCESS_MESSAGE,
@@ -69,9 +72,7 @@ class UserController {
     next: NextFunction
   ) {
     try {
-      const userId = req.userId;
-
-      if (!userId) return;
+      const userId = req.userId!;
 
       await this.userService.sendTrainerRequest(userId);
 
@@ -85,17 +86,21 @@ class UserController {
 
   public async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { search, page } = req.query as { search: string; page: string };
+      const { search, page } = getUsersValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.userService.getUsers(search || "", Number(page) || 1);
+        await this.userService.getUsers(search, page);
 
       res.status(StatusCodes.OK).json(
-        successResponse(GET_USERS_SUCCESS_MESSAGE, {
-          users,
-          currentPage,
-          totalPages,
-        })
+        successResponse(
+          GET_DATA_SUCCESS_MESSAGE,
+
+          {
+            users,
+            currentPage,
+            totalPages,
+          }
+        )
       );
     } catch (err) {
       next(err);

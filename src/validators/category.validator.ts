@@ -1,11 +1,13 @@
 import { string, z } from "zod";
+import {
+  CategoryNameValidationRule,
+  PageValidationRule,
+  SearchValidationRule,
+} from "../utils/validationRules";
 
 export const addCategoryValidator = (data: any) => {
   const schema = z.object({
-    categoryName: z
-      .string()
-      .min(3, "category name must have at least 3 characters")
-      .max(20, "category name must be within 20 characters"),
+    categoryName: CategoryNameValidationRule,
   });
 
   return schema.parse(data);
@@ -13,10 +15,7 @@ export const addCategoryValidator = (data: any) => {
 
 export const editCategoryValidator = (data: any) => {
   const schema = z.object({
-    categoryName: z
-      .string()
-      .min(3, "category name must have at least 3 characters")
-      .max(20, "category name must be within 20 characters"),
+    categoryName: CategoryNameValidationRule,
   });
 
   return schema.parse(data);
@@ -24,8 +23,8 @@ export const editCategoryValidator = (data: any) => {
 
 export const getCategoriesValidator = (data: any) => {
   const schema = z.object({
-    search: z.string().default(""),
-    page: z.preprocess((val) => Number(val), z.number().default(1)),
+    search: SearchValidationRule,
+    page: PageValidationRule,
   });
 
   return schema.parse(data);

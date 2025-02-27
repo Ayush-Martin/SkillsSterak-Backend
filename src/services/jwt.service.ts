@@ -15,7 +15,7 @@ class JWTService implements IJWTService {
     const accessToken = generateAccessToken(user.toObject());
     const refreshToken = generateRefreshToken(user.toObject());
 
-    await this.refreshTokenRepository.addToken(refreshToken);
+    await this.refreshTokenRepository.create({ token: refreshToken });
 
     return { accessToken, refreshToken };
   }

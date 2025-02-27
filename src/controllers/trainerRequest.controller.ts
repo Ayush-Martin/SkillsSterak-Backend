@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
+import {
+  approveRejectRequestValidator,
+  getTrainerRequestValidator,
+} from "../validators/trainerRequest.validator";
+import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 
 class TrainerRequestController {
   constructor(private trainerService: ITrainerService) {}
@@ -12,16 +17,18 @@ class TrainerRequestController {
     next: NextFunction
   ) {
     try {
-      const { page } = req.query as { search: string; page: string };
+      const { page } = getTrainerRequestValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.trainerService.getTrainerRequest(Number(page) || 1);
+        await this.trainerService.getTrainerRequest(page);
 
-      res
-        .status(StatusCodes.OK)
-        .json(
-          successResponse("Requests found", { users, currentPage, totalPages })
-        );
+      res.status(StatusCodes.OK).json(
+        successResponse(GET_DATA_SUCCESS_MESSAGE, {
+          users,
+          currentPage,
+          totalPages,
+        })
+      );
     } catch (err) {
       next(err);
     }
@@ -32,9 +39,7 @@ class TrainerRequestController {
     res: Response,
     next: NextFunction
   ) {
-    const { status } = req.query as {
-      status: "approved" | "rejected";
-    };
+    const { status } = approveRejectRequestValidator(req.query);
 
     const { userId } = req.params;
 

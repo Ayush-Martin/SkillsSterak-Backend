@@ -8,9 +8,9 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     super(User);
   }
 
-  public async createUser(user: Partial<IUser>): Promise<IUser> {
-    return await this.create(user);
-  }
+  // public async createUser(user: Partial<IUser>): Promise<IUser> {
+  //   return await this.create(user);
+  // }
 
   public async getUsers(
     search: RegExp,
@@ -25,9 +25,9 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
       .limit(limit);
   }
 
-  public async getUserById(userId: string): Promise<IUser | null> {
-    return await this.findById(userId);
-  }
+  // public async getUserById(userId: string): Promise<IUser | null> {
+  //   return await this.findById(userId);
+  // }
 
   public async getUserByEmail(email: string): Promise<IUser | null> {
     return await this.User.findOne({ email });
