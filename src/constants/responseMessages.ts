@@ -19,8 +19,9 @@ export const NO_PROFILE_IMAGE_ERROR_MESSAGE = "profile image is not given";
 export const CATEGORY_EXIST_ERROR_MESSAGE = "Category already exist";
 export const CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Category not found";
 
-
-
+//Course
+export const COURSE_TITLE_EXIST_ERROR_MESSAGE =
+  "Course with same title already exist";
 
 //* --------Success Message--------------- *//
 export const GET_DATA_SUCCESS_MESSAGE = "Data Returned";
@@ -46,3 +47,6 @@ export const SEND_TRAINER_REQUEST_SUCCESS_MESSAGE =
 //Category
 export const ADD_CATEGORY_SUCCESS_MESSAGE = "New category created";
 export const EDIT_CATEGORY_SUCCESS_MESSAGE = "Category updated";
+
+//Course
+export const COURSE_CREATED_SUCCESS_MESSAGE = "New course created";

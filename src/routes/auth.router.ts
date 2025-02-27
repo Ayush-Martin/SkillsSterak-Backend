@@ -18,7 +18,7 @@ import JWTService from "../services/jwt.service";
 import AuthController from "../controllers/auth.controller";
 
 //middlewares
-import { refreshTokenValidator } from "../middlewares/userAuthMiddleware";
+import { refreshTokenValidator } from "../middlewares/userAuth.middleware";
 
 const userRepository = new UserRepository(User);
 const otpRepository = new OTPRepository();

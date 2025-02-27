@@ -18,7 +18,7 @@ import UserController from "../controllers/user.controller";
 
 //middlewares
 import multerUpload from "../config/multer";
-import { accessTokenValidator } from "../middlewares/userAuthMiddleware";
+import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 
 const userRepository = new UserRepository(UserModel);
 const trainerRequestRepository = new TrainerRequestRepository(

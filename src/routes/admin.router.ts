@@ -20,7 +20,7 @@ import UserController from "../controllers/user.controller";
 import TrainerRequestController from "../controllers/trainerRequest.controller";
 
 //middlewares
-import { adminAuthMiddleware } from "../middlewares/adminAuthMiddleware";
+import { adminAuthMiddleware } from "../middlewares/adminAuth.middleware";
 import CategoryController from "../controllers/category.controller";
 import CategoryService from "../services/category.service";
 import CategoryRepository from "../repositories/category.repository";

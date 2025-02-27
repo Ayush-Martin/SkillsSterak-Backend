@@ -41,7 +41,6 @@ class CategoryController {
         categoryName
       );
 
-      console.log("category", category);
 
       res
         .status(StatusCodes.OK)
@@ -86,7 +85,7 @@ class CategoryController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, { categories }));
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, categories));
     } catch (err) {
       next(err);
     }

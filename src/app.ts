@@ -9,6 +9,8 @@ import nocache from "nocache";
 import authRouter from "./routes/auth.router";
 import userRouter from "./routes/user.router";
 import adminRouter from "./routes/admin.router";
+import publicRouter from "./routes/public.router";
+import TrainerRouter from "./routes/trainer.router";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use(nocache());
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/admin", adminRouter);
+app.use("/trainer", TrainerRouter);
+app.use("/", publicRouter);
 
 app.use(errorHandler);
 

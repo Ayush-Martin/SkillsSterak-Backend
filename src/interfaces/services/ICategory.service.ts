@@ -7,7 +7,7 @@ export interface ICategoryService {
     categoryName: string
   ): Promise<ICategory | null>;
   listUnListCategory(categoryId: string): Promise<boolean>;
-  getAllCategories(): Promise<Array<ICategory>>;
+  getAllCategories(): Promise<Array<Partial<ICategory>>>;
   getCategories(
     search: string,
     page: number

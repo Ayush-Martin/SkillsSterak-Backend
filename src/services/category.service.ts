@@ -57,8 +57,8 @@ class CategoryService implements ICategoryService {
     return !isListed;
   }
 
-  public async getAllCategories(): Promise<Array<ICategory>> {
-    return await this.categoryRepository.findAll();
+  public async getAllCategories(): Promise<Array<Partial<ICategory>>> {
+    return await this.categoryRepository.getAllCategories();
   }
 
   public async getCategories(

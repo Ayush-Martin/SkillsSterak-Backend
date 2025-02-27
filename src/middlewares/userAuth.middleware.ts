@@ -21,6 +21,7 @@ import {
   INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
+import mongoose from "mongoose";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -60,7 +61,7 @@ export const accessTokenValidator = async (
       errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    req.userId = String(userData?._id);
+    req.userId = userData?._id as string;
     next();
   } catch (err) {
     next(err);

@@ -17,13 +17,14 @@ import {
   NO_ACCESS_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
+import mongoose from "mongoose";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
 
 const authService = new AuthService(userRepository, otpRepository);
 
-export const adminAuthMiddleware = async (
+export const trainerAuthMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -51,11 +52,11 @@ export const adminAuthMiddleware = async (
       errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    if (userData.role != "admin") {
+    if (userData.role != "trainer") {
       errorCreator(NO_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    req.userId = String(userData?._id);
+    req.userId = userData?._id as string;
     next();
   } catch (err) {
     next(err);
