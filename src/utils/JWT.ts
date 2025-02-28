@@ -1,5 +1,7 @@
 import { sign, verify } from "jsonwebtoken";
 import { IUser } from "../models/User.model";
+import errorCreator from "./customError";
+import { StatusCodes } from "./statusCodes";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
@@ -19,7 +21,8 @@ export const generateAccessToken = (user: Partial<IUser>) => {
 export const verifyToken = (token: string): Promise<any> =>
   new Promise((resolve, reject) => {
     verify(token, ACCESS_TOKEN_SECRET, (err, payload) => {
-      if (err) return reject(err);
+      if (err)
+        return reject(errorCreator("Invalid token", StatusCodes.UNAUTHORIZED));
       resolve(payload);
     });
   });

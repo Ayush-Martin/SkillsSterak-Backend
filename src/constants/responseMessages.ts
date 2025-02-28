@@ -50,3 +50,5 @@ export const EDIT_CATEGORY_SUCCESS_MESSAGE = "Category updated";
 
 //Course
 export const COURSE_CREATED_SUCCESS_MESSAGE = "New course created";
+export const COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE =
+  "Course thumbnail changed";

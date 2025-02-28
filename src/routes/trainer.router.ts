@@ -29,9 +29,31 @@ router.use(trainerAuthMiddleware);
 
 router
   .route("/courses")
+  .get(courseController.getCourses.bind(courseController))
   .post(
     upload.single("image"),
     courseController.createCourse.bind(courseController)
   );
+
+router
+  .route("/courses/:courseId/image")
+  .patch(
+    upload.single("image"),
+    courseController.changeCourseThumbnail.bind(courseController)
+  );
+
+router
+  .route("/courses/:courseId/basicDetails")
+  .put(courseController.updateCourseBasicDetails.bind(courseController));
+
+router.patch(
+  "/courses/:courseId/requirements",
+  courseController.updateCourseRequirements.bind(courseController)
+);
+
+router.patch(
+  "/courses/:courseId/skillsCovered",
+  courseController.updateCourseSkillsCovered.bind(courseController)
+);
 
 export default router;
