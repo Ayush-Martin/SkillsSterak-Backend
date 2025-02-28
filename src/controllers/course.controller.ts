@@ -13,6 +13,9 @@ import {
   COURSE_CREATED_SUCCESS_MESSAGE,
   COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE,
   GET_DATA_SUCCESS_MESSAGE,
+  UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE,
+  UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE,
+  UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import { unknown } from "zod";
 import mongoose from "mongoose";
@@ -108,7 +111,9 @@ class CourseController {
 
       await this.courseService.updateCourse(courseId, data);
 
-      res.status(StatusCodes.OK).json(successResponse("updated"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -125,7 +130,9 @@ class CourseController {
 
       await this.courseService.updateCourse(courseId, data);
 
-      res.status(StatusCodes.OK).json(successResponse("updated"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -142,7 +149,9 @@ class CourseController {
 
       await this.courseService.updateCourse(courseId, data);
 
-      res.status(StatusCodes.OK).json(successResponse("updated"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }

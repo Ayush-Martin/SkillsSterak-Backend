@@ -113,3 +113,5 @@ export const CourseCategoryIdValidationRule = z
     message: "Invalid ObjectId",
   })
   .transform((value) => value as unknown as mongoose.Schema.Types.ObjectId);
+
+export const ModuleTitleValidationRule = z.string();
