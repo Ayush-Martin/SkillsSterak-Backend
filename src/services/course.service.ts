@@ -52,6 +52,36 @@ class CourseService implements ICourseService {
     };
   }
 
+  public async getTrainerCourses(
+    trainerId: string,
+    search: string,
+    page: number
+  ): Promise<{
+    courses: Array<ICourse>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const searchRegex = new RegExp(search, "i");
+    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const courses = await this.courseRepository.getTrainerCourses(
+      trainerId,
+      searchRegex,
+      skip,
+      RECORDS_PER_PAGE
+    );
+
+    const totalCourses = await this.courseRepository.getTrainerCourseCount(
+      trainerId,
+      searchRegex
+    );
+    const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);
+    return {
+      courses,
+      currentPage: page,
+      totalPages,
+    };
+  }
+
   public async changeCourseThumbnail(
     courseId: string,
     thumbnail: string

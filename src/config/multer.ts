@@ -27,6 +27,9 @@ const storage = new CloudinaryStorage({
     } else if (file.mimetype.startsWith("video")) {
       folder = "videos";
       resourceType = "video";
+    } else if (file.mimetype === "application/pdf") {
+      folder = "documents";
+      resourceType = "raw";
     }
 
     return {
@@ -38,7 +41,9 @@ const storage = new CloudinaryStorage({
       allowed_formats:
         resourceType === "image"
           ? ["jpg", "jpeg", "png"]
-          : ["mp4", "avi", "mov"],
+          : resourceType === "video"
+          ? ["mp4", "avi", "mov"]
+          : ["pdf"], // Allow only PDFs for "raw" resources
     };
   },
 });

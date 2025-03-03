@@ -115,3 +115,9 @@ export const CourseCategoryIdValidationRule = z
   .transform((value) => value as unknown as mongoose.Schema.Types.ObjectId);
 
 export const ModuleTitleValidationRule = z.string();
+
+export const LessonTitleValidationRule = z.string();
+
+export const LessonDescriptionValidationRule = z.string();
+
+export const LessonTypeValidationRule = z.enum(["video", "pdf"]);

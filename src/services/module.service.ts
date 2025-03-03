@@ -14,7 +14,7 @@ class ModuleService implements IModuleService {
   }
 
   public async getModule(moduleId: string): Promise<IModule | null> {
-    return await this.moduleRepository.findById(moduleId);
+    return await this.moduleRepository.getModule(moduleId);
   }
 
   public async updateModuleTitle(

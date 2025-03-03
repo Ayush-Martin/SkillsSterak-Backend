@@ -11,6 +11,15 @@ export interface ICourseService {
     currentPage: number;
     totalPages: number;
   }>;
+  getTrainerCourses(
+    trainerId: string,
+    search: string,
+    page: number
+  ): Promise<{
+    courses: Array<ICourse>;
+    currentPage: number;
+    totalPages: number;
+  }>;
   changeCourseThumbnail(courseId: string, thumbnail: string): Promise<void>;
   updateCourse(courseId: string, course: Partial<ICourse>): Promise<void>;
 }

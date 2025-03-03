@@ -42,8 +42,39 @@ class CourseRepository
       .populate("categoryId");
   }
 
+  public async getTrainerCourses(
+    trainerId: string,
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ICourse>> {
+    return await this.Course.find(
+      { title: search, trainerId },
+      {
+        thumbnail: 1,
+        price: 1,
+        difficulty: 1,
+        title: 1,
+        _id: 1,
+        categoryId: 1,
+        createdAt: 1,
+        isListed: 1,
+      }
+    )
+      .skip(skip)
+      .limit(limit)
+      .populate("categoryId");
+  }
+
   public async getCourseCount(search: RegExp): Promise<number> {
     return await this.Course.countDocuments({ title: search });
+  }
+
+  public async getTrainerCourseCount(
+    trainerId: string,
+    search: RegExp
+  ): Promise<number> {
+    return await this.Course.countDocuments({ title: search, trainerId });
   }
 
   public async changeThumbnail(

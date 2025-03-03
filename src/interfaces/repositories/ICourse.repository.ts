@@ -9,7 +9,13 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
     skip: number,
     limit: number
   ): Promise<Array<ICourse>>;
+  getTrainerCourses(
+    trainerId: string,
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ICourse>>;
   getCourseCount(search: RegExp): Promise<number>;
+  getTrainerCourseCount(trainerId: string, search: RegExp): Promise<number>;
   changeThumbnail(courseId: string, thumbnail: string): Promise<ICourse | null>;
-
 }

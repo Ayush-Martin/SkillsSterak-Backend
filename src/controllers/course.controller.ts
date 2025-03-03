@@ -17,7 +17,6 @@ import {
   UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE,
   UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
-import { unknown } from "zod";
 import mongoose from "mongoose";
 
 class CourseController {
@@ -60,11 +59,20 @@ class CourseController {
     }
   }
 
-  public async getCourses(req: Request, res: Response, next: NextFunction) {
+  public async getTrainerCourses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { page, search } = getCoursesValidator(req.query);
+      const trainerId = req.userId!;
 
-      const data = await this.courseService.getCourses(search, page);
+      const data = await this.courseService.getTrainerCourses(
+        trainerId,
+        search,
+        page
+      );
 
       res
         .status(StatusCodes.OK)
