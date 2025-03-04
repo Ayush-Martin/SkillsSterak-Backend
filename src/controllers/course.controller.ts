@@ -82,6 +82,28 @@ class CourseController {
     }
   }
 
+  public async getCourses(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page, search, category, difficulty, price } = getCoursesValidator(
+        req.query
+      );
+
+      const data = await this.courseService.getCourses(
+        search,
+        page,
+        category,
+        difficulty,
+        price
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async changeCourseThumbnail(
     req: Request,
     res: Response,

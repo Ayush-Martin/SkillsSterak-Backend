@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { ICourse } from "../../models/Course.model";
 import BaseRepository from "../../repositories/Base.repository";
 
@@ -7,7 +8,12 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   getCourses(
     search: RegExp,
     skip: number,
-    limit: number
+    limit: number,
+    filter: {
+      categoryId?: mongoose.Types.ObjectId;
+      difficulty?: "beginner" | "intermediate" | "advance";
+      price?: { $eq: 0 } | { $ne: 0 };
+    }
   ): Promise<Array<ICourse>>;
   getTrainerCourses(
     trainerId: string,

@@ -34,6 +34,8 @@ router.get(
 
 // router.get("/courses")
 
+router.get("/courses", courseController.getCourses.bind(courseController));
+
 router
   .route("/courses/:courseId")
   .get(courseController.getCourse.bind(courseController));

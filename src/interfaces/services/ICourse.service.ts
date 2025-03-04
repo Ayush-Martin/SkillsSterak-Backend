@@ -5,7 +5,10 @@ export interface ICourseService {
   getCourse(courseId: string): Promise<null | ICourse>;
   getCourses(
     search: string,
-    page: number
+    page: number,
+    category: string,
+    difficulty: "all" | "beginner" | "intermediate" | "advance",
+    price: "all" | "free" | "paid"
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;

@@ -3,6 +3,7 @@ import {
   CourseCategoryIdValidationRule,
   CourseDescriptionValidationRule,
   CourseDifficultyValidationRule,
+  CoursePriceFilterValidationRule,
   CoursePriceValidationRule,
   CourseRequirementsValidationRule,
   CourseSkillsCoveredValidationRule,
@@ -57,6 +58,9 @@ export const getCoursesValidator = (data: any) => {
   const schema = z.object({
     search: SearchValidationRule,
     page: PageValidationRule,
+    difficulty: CourseDifficultyValidationRule.or(z.enum(["all"])),
+    category: z.string(),
+    price: CoursePriceFilterValidationRule,
   });
 
   return schema.parse(data);

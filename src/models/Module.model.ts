@@ -3,7 +3,6 @@ import { ObjectId, Document, Schema, model } from "mongoose";
 export interface IModule extends Document {
   courseId: ObjectId;
   title: string;
-  order?: number;
 }
 
 const ModuleSchema = new Schema<IModule>({
@@ -15,10 +14,6 @@ const ModuleSchema = new Schema<IModule>({
   title: {
     type: String,
     required: true,
-  },
-  order: {
-    type: Number,
-    default: 0,
   },
 });
 

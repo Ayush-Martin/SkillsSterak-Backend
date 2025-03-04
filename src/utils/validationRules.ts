@@ -121,3 +121,5 @@ export const LessonTitleValidationRule = z.string();
 export const LessonDescriptionValidationRule = z.string();
 
 export const LessonTypeValidationRule = z.enum(["video", "pdf"]);
+
+export const CoursePriceFilterValidationRule = z.enum(["all", "free", "paid"]);

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { COURSE_TITLE_EXIST_ERROR_MESSAGE } from "../constants/responseMessages";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
@@ -27,18 +28,40 @@ class CourseService implements ICourseService {
 
   public async getCourses(
     search: string,
-    page: number
+    page: number,
+    category: string,
+    difficulty: "all" | "beginner" | "intermediate" | "advance",
+    price: "all" | "free" | "paid"
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;
     totalPages: number;
   }> {
+    const filter: {
+      categoryId?: string;
+      difficulty?: "beginner" | "intermediate" | "advance";
+      price?: { $eq: 0 } | { $ne: 0 };
+    } = {};
+
+    if (category !== "all") {
+      filter.categoryId = new mongoose.Types.ObjectId(category);
+    }
+
+    if (difficulty !== "all") {
+      filter.difficulty = difficulty;
+    }
+
+    if (price !== "all") {
+      filter.price = price === "free" ? { $eq: 0 } : { $ne: 0 };
+    }
+
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * RECORDS_PER_PAGE;
     const courses = await this.courseRepository.getCourses(
       searchRegex,
       skip,
-      RECORDS_PER_PAGE
+      RECORDS_PER_PAGE,
+      filter
     );
 
     const totalCourses = await this.courseRepository.getCourseCount(

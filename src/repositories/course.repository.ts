@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import { ICourse } from "../models/Course.model";
 import BaseRepository from "./Base.repository";
@@ -22,24 +22,83 @@ class CourseRepository
   public async getCourses(
     search: RegExp,
     skip: number,
-    limit: number
+    limit: number,
+    filter: {
+      categoryId?: mongoose.Types.ObjectId;
+      difficulty?: "beginner" | "intermediate" | "advance";
+      price?: { $eq: 0 } | { $ne: 0 };
+    }
   ): Promise<Array<ICourse>> {
-    return await this.Course.find(
-      { title: search },
+    console.log(filter);
+    return await this.Course.aggregate([
       {
-        thumbnail: 1,
-        price: 1,
-        difficulty: 1,
-        title: 1,
-        _id: 1,
-        categoryId: 1,
-        createdAt: 1,
-        isListed: 1,
-      }
-    )
-      .skip(skip)
-      .limit(limit)
-      .populate("categoryId");
+        $match: {
+          isListed: true,
+          title: search,
+          ...filter,
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                isListed: true,
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                categoryName: 1,
+              },
+            },
+          ],
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $lookup: {
+          from: "modules",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $count: "moduleCount",
+            },
+          ],
+          as: "moduleCount",
+        },
+      },
+      {
+        $unwind: {
+          path: "$moduleCount",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          trainerId: 1,
+          title: 1,
+          price: 1,
+          difficulty: 1,
+          thumbnail: 1,
+          category: 1,
+          moduleCount: "$moduleCount.moduleCount",
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
   }
 
   public async getTrainerCourses(
