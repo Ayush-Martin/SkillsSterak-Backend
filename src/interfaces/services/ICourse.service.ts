@@ -3,6 +3,7 @@ import { ICourse } from "../../models/Course.model";
 export interface ICourseService {
   createCourse(course: Partial<ICourse>): Promise<ICourse>;
   getCourse(courseId: string): Promise<null | ICourse>;
+  getTrainerCourse(courseId: string): Promise<null | ICourse>;
   getCourses(
     search: string,
     page: number,

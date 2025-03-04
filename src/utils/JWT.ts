@@ -27,6 +27,7 @@ export const verifyToken = (token: string): Promise<any> =>
     });
   });
 
+
 export const generateRefreshToken = (user: Partial<IUser>) => {
   return sign({ sub: user._id, email: user.email }, REFRESH_TOKEN_SECRET, {
     expiresIn: `${REFRESH_TOKEN_EXPIRY_DAY}d`,

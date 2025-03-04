@@ -65,3 +65,12 @@ export const getCoursesValidator = (data: any) => {
 
   return schema.parse(data);
 };
+
+export const getTrainerCoursesValidator = (data: any) => {
+  const schema = z.object({
+    search: SearchValidationRule,
+    page: PageValidationRule,
+  });
+
+  return schema.parse(data);
+};

@@ -51,8 +51,7 @@ router
 
 router
   .route("/courses/:courseId")
-  .get(moduleController.getModules.bind(moduleController))
-  .post(moduleController.addModule.bind(moduleController));
+  .get(courseController.getTrainerCourse.bind(courseController));
 
 router.patch(
   "/courses/:courseId/image",
@@ -76,7 +75,12 @@ router.patch(
 );
 
 router
-  .route("/courses/:courseId/:moduleId")
+  .route("/courses/:courseId/modules")
+  .get(moduleController.getModules.bind(moduleController))
+  .post(moduleController.addModule.bind(moduleController));
+
+router
+  .route("/courses/:courseId/modules/:moduleId")
   .delete(moduleController.deleteModule.bind(moduleController))
   .get(moduleController.getModule.bind(moduleController))
   .patch(moduleController.updateTitle.bind(moduleController))
@@ -86,7 +90,7 @@ router
   );
 
 router
-  .route("/courses/:courseId/:moduleId/:lessonId")
+  .route("/courses/:courseId/modules/:moduleId/:lessonId")
   .delete(lessonController.deleteLesson.bind(lessonController));
 
 export default router;

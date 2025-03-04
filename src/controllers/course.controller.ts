@@ -3,6 +3,7 @@ import { ICourseService } from "../interfaces/services/ICourse.service";
 import {
   createCourseValidator,
   getCoursesValidator,
+  getTrainerCoursesValidator,
   updateCourseBasicDetailsValidator,
   updateCourseRequirementsValidator,
   updateCourseSkillsCoveredValidator,
@@ -59,13 +60,31 @@ class CourseController {
     }
   }
 
+  public async getTrainerCourse(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { courseId } = req.params;
+
+      const course = await this.courseService.getTrainerCourse(courseId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, course));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getTrainerCourses(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { page, search } = getCoursesValidator(req.query);
+      const { page, search } = getTrainerCoursesValidator(req.query);
       const trainerId = req.userId!;
 
       const data = await this.courseService.getTrainerCourses(

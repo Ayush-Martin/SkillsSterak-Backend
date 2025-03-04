@@ -38,7 +38,7 @@ class CourseService implements ICourseService {
     totalPages: number;
   }> {
     const filter: {
-      categoryId?: string;
+      categoryId?: mongoose.Types.ObjectId;
       difficulty?: "beginner" | "intermediate" | "advance";
       price?: { $eq: 0 } | { $ne: 0 };
     } = {};
@@ -73,6 +73,10 @@ class CourseService implements ICourseService {
       currentPage: page,
       totalPages,
     };
+  }
+
+  public async getTrainerCourse(courseId: string): Promise<null | ICourse> {
+    return await this.courseRepository.getTrainerCourse(courseId);
   }
 
   public async getTrainerCourses(

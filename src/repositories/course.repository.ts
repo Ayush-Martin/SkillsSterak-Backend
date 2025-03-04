@@ -16,6 +16,101 @@ class CourseRepository
   }
 
   public async getCourse(courseId: string): Promise<ICourse | null> {
+    const data = await this.Course.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(courseId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                username: 1,
+                about: 1,
+                profileImage: 1,
+              },
+            },
+          ],
+          as: "trainer",
+        },
+      },
+      {
+        $unwind: "$trainer",
+      },
+      {
+        $lookup: {
+          from: "modules",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "moduleId",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      title: 1,
+                      type: 1,
+                    },
+                  },
+                ],
+                as: "lessons",
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                lessons: 1,
+              },
+            },
+          ],
+          as: "modules",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                categoryName: 1,
+              },
+            },
+          ],
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $project: {
+          trainerId: 0,
+          categoryId: 0,
+          isListed: 0,
+          createdAt: 0,
+          updatedAt: 0,
+        },
+      },
+    ]);
+
+    return data[0];
+  }
+
+  public async getTrainerCourse(courseId: string): Promise<ICourse | null> {
     return await this.Course.findById(courseId);
   }
 
