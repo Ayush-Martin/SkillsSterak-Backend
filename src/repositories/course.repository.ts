@@ -15,6 +15,21 @@ class CourseRepository
     return await this.Course.findOne({ title: new RegExp(title, "i") });
   }
 
+  public async changeListStatus(
+    courseId: string,
+    isListed: boolean
+  ): Promise<ICourse | null> {
+    return await this.Course.findByIdAndUpdate(courseId, { isListed });
+  }
+
+  public async getCourseListedStatus(
+    categoryId: string
+  ): Promise<boolean | null> {
+    const data = await this.Course.findOne({ _id: categoryId });
+    if (!data) return null;
+    return data.isListed!;
+  }
+
   public async getCourse(courseId: string): Promise<ICourse | null> {
     const data = await this.Course.aggregate([
       {
@@ -194,6 +209,28 @@ class CourseRepository
         $limit: limit,
       },
     ]);
+  }
+
+  public async getAdminCourses(
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ICourse>> {
+    return await this.Course.find(
+      { title: search },
+      {
+        _id: 1,
+        title: 1,
+        thumbnail: 1,
+        categoryId: 1,
+        trainerId: 1,
+        price: 1,
+        isListed: 1,
+        difficulty: 1,
+      }
+    )
+      .populate("trainerId", "_id email")
+      .populate("categoryId", "_id categoryName");
   }
 
   public async getTrainerCourses(

@@ -43,7 +43,7 @@ const storage = new CloudinaryStorage({
           ? ["jpg", "jpeg", "png"]
           : resourceType === "video"
           ? ["mp4", "avi", "mov"]
-          : ["pdf"], // Allow only PDFs for "raw" resources
+          : ["pdf"],
     };
   },
 });

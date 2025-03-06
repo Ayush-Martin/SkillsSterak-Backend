@@ -6,21 +6,27 @@ const router = Router();
 import CourseModel from "../models/Course.model";
 import ModuleModel from "../models/Module.model";
 import LessonModel from "../models/Lesson.model";
+import WalletModel from "../models/Wallet.model";
+import TransactionModel from "../models/Transaction.model";
 
 //repositories
 import CourseRepository from "../repositories/course.repository";
 import ModuleRepository from "../repositories/Module.repository";
 import LessonRepository from "../repositories/Lesson.repository";
+import WalletRepository from "../repositories/wallet.repository";
+import TransactionRepository from "../repositories/transaction.repository";
 
 //services
 import CourseService from "../services/course.service";
 import ModuleService from "../services/module.service";
 import LessonService from "../services/lesson.service";
+import WalletService from "../services/wallet.service";
 
 //controllers
 import CourseController from "../controllers/course.controller";
 import ModuleController from "../controllers/module.controller";
 import LessonController from "../controllers/lesson.controller";
+import WalletController from "../controllers/wallet.controller";
 
 //middlewares
 import { trainerAuthMiddleware } from "../middlewares/trainerAuth.middleware";
@@ -29,14 +35,21 @@ import upload from "../config/multer";
 const courseRepository = new CourseRepository(CourseModel);
 const moduleRepository = new ModuleRepository(ModuleModel);
 const lessonRepository = new LessonRepository(LessonModel);
+const walletRepository = new WalletRepository(WalletModel);
+const transactionRepository = new TransactionRepository(TransactionModel);
 
 const courseService = new CourseService(courseRepository);
 const moduleService = new ModuleService(moduleRepository);
 const lessonService = new LessonService(lessonRepository);
+const walletService = new WalletService(
+  walletRepository,
+  transactionRepository
+);
 
 const courseController = new CourseController(courseService);
 const moduleController = new ModuleController(moduleService);
 const lessonController = new LessonController(lessonService);
+const walletController = new WalletController(walletService);
 
 //setting middleware
 router.use(trainerAuthMiddleware);
@@ -51,7 +64,8 @@ router
 
 router
   .route("/courses/:courseId")
-  .get(courseController.getTrainerCourse.bind(courseController));
+  .get(courseController.getTrainerCourse.bind(courseController))
+  .patch(courseController.listUnListCourse.bind(courseController));
 
 router.patch(
   "/courses/:courseId/image",
@@ -92,5 +106,9 @@ router
 router
   .route("/courses/:courseId/modules/:moduleId/:lessonId")
   .delete(lessonController.deleteLesson.bind(lessonController));
+
+router
+  .route("/wallet")
+  .get(walletController.getWalletInfo.bind(walletController));
 
 export default router;

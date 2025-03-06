@@ -15,8 +15,17 @@ export interface ICourseService {
     currentPage: number;
     totalPages: number;
   }>;
+  listUnListCourse(courseId: string): Promise<boolean>;
   getTrainerCourses(
     trainerId: string,
+    search: string,
+    page: number
+  ): Promise<{
+    courses: Array<ICourse>;
+    currentPage: number;
+    totalPages: number;
+  }>;
+  getAdminCourses(
     search: string,
     page: number
   ): Promise<{

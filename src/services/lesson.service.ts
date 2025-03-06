@@ -13,6 +13,10 @@ class LessonService implements ILessonService {
     return await this.lessonRepository.getLessons(moduleId);
   }
 
+  public async getLesson(lessonId: string): Promise<ILesson | null> {
+    return await this.lessonRepository.getLesson(lessonId);
+  }
+
   public async deleteLesson(lessonId: string): Promise<void> {
     await this.lessonRepository.deleteById(lessonId);
   }

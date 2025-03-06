@@ -17,7 +17,7 @@ const CourseSchema = new Schema<ICourse>(
   {
     trainerId: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     title: {

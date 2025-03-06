@@ -32,7 +32,7 @@ class LessonController {
     }
   }
 
-  public async getLesson(req: Request, res: Response, next: NextFunction) {
+  public async getLessons(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
 
@@ -51,6 +51,18 @@ class LessonController {
       await this.lessonService.deleteLesson(lessonId);
 
       res.status(StatusCodes.OK).json(successResponse("deleted"));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getLesson(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { lessonId } = req.params;
+
+      const lesson = await this.lessonService.getLesson(lessonId);
+
+      res.status(StatusCodes.OK).json(successResponse("data ", lesson));
     } catch (err) {
       next(err);
     }

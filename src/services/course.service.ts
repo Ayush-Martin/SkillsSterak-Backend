@@ -26,6 +26,18 @@ class CourseService implements ICourseService {
     return await this.courseRepository.getCourse(courseId);
   }
 
+  public async listUnListCourse(courseId: string): Promise<boolean> {
+    const isListed = await this.courseRepository.getCourseListedStatus(
+      courseId
+    );
+    if (isListed == null) {
+      errorCreator("Course not found", StatusCodes.NOT_FOUND);
+    }
+
+    await this.courseRepository.changeListStatus(courseId, !isListed);
+    return !isListed;
+  }
+
   public async getCourses(
     search: string,
     page: number,
@@ -99,6 +111,32 @@ class CourseService implements ICourseService {
 
     const totalCourses = await this.courseRepository.getTrainerCourseCount(
       trainerId,
+      searchRegex
+    );
+    const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);
+    return {
+      courses,
+      currentPage: page,
+      totalPages,
+    };
+  }
+  public async getAdminCourses(
+    search: string,
+    page: number
+  ): Promise<{
+    courses: Array<ICourse>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const searchRegex = new RegExp(search, "i");
+    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const courses = await this.courseRepository.getAdminCourses(
+      searchRegex,
+      skip,
+      RECORDS_PER_PAGE
+    );
+
+    const totalCourses = await this.courseRepository.getCourseCount(
       searchRegex
     );
     const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);

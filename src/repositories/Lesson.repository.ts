@@ -14,6 +14,16 @@ class LessonRepository
   public async getLessons(moduleId: string): Promise<Array<ILesson>> {
     return await this.Lesson.find({ moduleId });
   }
+
+  public async getLesson(lessonId: string): Promise<ILesson | null> {
+    return await this.Lesson.findById(lessonId, {
+      _id: 1,
+      title: 1,
+      description: 1,
+      type: 1,
+      path: 1,
+    });
+  }
 }
 
 export default LessonRepository;

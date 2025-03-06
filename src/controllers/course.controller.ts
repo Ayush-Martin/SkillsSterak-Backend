@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import {
   createCourseValidator,
+  getAdminCoursesValidator,
   getCoursesValidator,
   getTrainerCoursesValidator,
   updateCourseBasicDetailsValidator,
@@ -60,6 +61,30 @@ class CourseController {
     }
   }
 
+  public async listUnListCourse(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { courseId } = req.params;
+      console.log(courseId);
+
+      const isListed = await this.courseService.listUnListCourse(courseId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(
+          successResponse(
+            `category has been ${isListed ? "listed" : "unlisted"}`,
+            { courseId, isListed }
+          )
+        );
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getTrainerCourse(
     req: Request,
     res: Response,
@@ -92,6 +117,24 @@ class CourseController {
         search,
         page
       );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getAdminCourses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { page, search } = getAdminCoursesValidator(req.query);
+
+      const data = await this.courseService.getAdminCourses(search, page);
 
       res
         .status(StatusCodes.OK)

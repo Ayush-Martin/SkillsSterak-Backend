@@ -6,6 +6,11 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   findCourseByTitle(title: string): Promise<ICourse | null>;
   getCourse(courseId: string): Promise<ICourse | null>;
   getTrainerCourse(courseId: string): Promise<ICourse | null>;
+  changeListStatus(
+    courseId: string,
+    isListed: boolean
+  ): Promise<ICourse | null>;
+  getCourseListedStatus(categoryId: string): Promise<boolean | null>;
   getCourses(
     search: RegExp,
     skip: number,
@@ -18,6 +23,11 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   ): Promise<Array<ICourse>>;
   getTrainerCourses(
     trainerId: string,
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ICourse>>;
+  getAdminCourses(
     search: RegExp,
     skip: number,
     limit: number
