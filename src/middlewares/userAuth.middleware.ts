@@ -75,7 +75,6 @@ export const refreshTokenValidator = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken as string | undefined;
-
     if (!refreshToken) {
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
