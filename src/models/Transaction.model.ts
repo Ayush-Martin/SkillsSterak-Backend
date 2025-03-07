@@ -2,9 +2,9 @@ import { Document, ObjectId, Schema, model } from "mongoose";
 
 export interface ITransaction extends Document {
   payerId: ObjectId;
-  receiverId: ObjectId;
+  receiverId?: ObjectId;
   amount: number;
-  type: "payment" | "commission";
+  type: "payment" | "commission" | "subscription" | "redeem";
   transactionId: string;
   courseId?: ObjectId;
 }
@@ -18,7 +18,6 @@ const TransactionSchema = new Schema<ITransaction>({
   receiverId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   amount: {
     type: Number,
@@ -26,7 +25,7 @@ const TransactionSchema = new Schema<ITransaction>({
   },
   type: {
     type: String,
-    enum: ["payment", "commission"],
+    enum: ["payment", "commission", "subscription", "redeem"],
     required: true,
   },
   transactionId: {

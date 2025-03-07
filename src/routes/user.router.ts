@@ -11,6 +11,7 @@ import CategoryModel from "../models/Category.model";
 import LessonModel from "../models/Lesson.model";
 import WalletModel from "../models/Wallet.model";
 import TransactionModel from "../models/Transaction.model";
+import SubscriptionModel from "../models/Subscription.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
@@ -21,6 +22,7 @@ import CategoryRepository from "../repositories/category.repository";
 import LessonRepository from "../repositories/Lesson.repository";
 import WalletRepository from "../repositories/wallet.repository";
 import TransactionRepository from "../repositories/transaction.repository";
+import SubscriptionRepository from "../repositories/subscription.repository";
 
 //services
 import UserService from "../services/user.service";
@@ -29,6 +31,7 @@ import CourseService from "../services/course.service";
 import CategoryService from "../services/category.service";
 import LessonService from "../services/lesson.service";
 import TransactionService from "../services/transaction.service";
+import SubscriptionService from "../services/subscription.service";
 
 //controllers
 import UserController from "../controllers/user.controller";
@@ -37,10 +40,12 @@ import CourseController from "../controllers/course.controller";
 import CategoryController from "../controllers/category.controller";
 import LessonController from "../controllers/lesson.controller";
 import TransactionController from "../controllers/transaction.controller";
+import SubscriptionController from "../controllers/subscription.controller";
 
 //middlewares
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
+import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
 
 //repositories
 const userRepository = new UserRepository(UserModel);
@@ -55,6 +60,7 @@ const categoryRepository = new CategoryRepository(CategoryModel);
 const lessonRepository = new LessonRepository(LessonModel);
 const walletRepository = new WalletRepository(WalletModel);
 const transactionRepository = new TransactionRepository(TransactionModel);
+const subscriptionRepository = new SubscriptionRepository(SubscriptionModel);
 
 //services
 const userService = new UserService(userRepository, trainerRequestRepository);
@@ -68,6 +74,10 @@ const courseService = new CourseService(courseRepository);
 const categoryService = new CategoryService(categoryRepository);
 const lessonService = new LessonService(lessonRepository);
 const transactionService = new TransactionService(transactionRepository);
+const subscriptionService = new SubscriptionService(
+  subscriptionRepository,
+  transactionRepository
+);
 
 //controllers
 const userController = new UserController(userService);
@@ -76,6 +86,7 @@ const courseController = new CourseController(courseService);
 const categoryController = new CategoryController(categoryService);
 const lessonController = new LessonController(lessonService);
 const transactionController = new TransactionController(transactionService);
+const subscriptionController = new SubscriptionController(subscriptionService);
 
 router.get("/courses", courseController.getCourses.bind(courseController));
 router.get(
@@ -141,4 +152,16 @@ router.get(
   userController.sendTrainerRequest.bind(userController)
 );
 
+router
+  .route("/subscription")
+  .get(
+    subscriptionController.createSubscriptionOrder.bind(subscriptionController)
+  )
+  .post(
+    subscriptionController.completeSubscription.bind(subscriptionController)
+  );
+
+router.get("/chat", subscriptionValidator, (req, res) => {
+  res.status(200).json({ message: "success" });
+});
 export default router;
