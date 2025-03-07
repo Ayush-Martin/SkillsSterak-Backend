@@ -41,6 +41,10 @@ class CategoryRepository
       .limit(limit);
   }
 
+  public async getAllCategories(): Promise<Array<Partial<ICategory>>> {
+    return await this.Category.find({ isListed: true },{categoryName:1,_id:1});
+  }
+
   public async getCategoryListedStatus(
     categoryId: string
   ): Promise<boolean | null> {

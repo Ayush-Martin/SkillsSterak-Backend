@@ -47,7 +47,7 @@ class AuthService implements IAuthService {
       JSON.stringify({ OTP, username, email, password: hashedPassword })
     );
 
-    await sendMail(email, "OTP", OTP);
+    // await sendMail(email, "OTP", OTP);
     console.log("OTP", OTP);
   }
 
@@ -114,6 +114,10 @@ class AuthService implements IAuthService {
         email,
         username,
       });
+    }
+
+    if (user.isBlocked) {
+      errorCreator("you are blocked by admin", StatusCodes.FORBIDDEN);
     }
 
     return user;

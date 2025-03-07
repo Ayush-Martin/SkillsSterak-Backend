@@ -10,6 +10,4 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-cors();
-
 export default cors(corsOptions);

@@ -9,4 +9,5 @@ export interface ITrainerRepository extends BaseRepository<IUser> {
   ): Promise<Array<IUser>>;
   countTrainers(search: RegExp): Promise<number>;
   changeRole(userId: string, role: "user" | "trainer"): Promise<IUser | null>;
+
 }

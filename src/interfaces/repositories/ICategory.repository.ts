@@ -13,5 +13,6 @@ export interface ICategoryRepository extends IBaseRepository<ICategory> {
     skip: number,
     limit: number
   ): Promise<Array<ICategory>>;
+  getAllCategories(): Promise<Array<Partial<ICategory>>>;
   getCategoriesCount(search: RegExp): Promise<number>;
 }

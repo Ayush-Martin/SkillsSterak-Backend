@@ -68,7 +68,7 @@ class UserService implements IUserService {
   }
 
   public async sendTrainerRequest(userId: string): Promise<void> {
-    const UserId = new mongoose.Schema.Types.ObjectId(userId);
+    const UserId = userId as unknown as mongoose.Schema.Types.ObjectId;
     await this.trainerRequestRepository.create({ userId: UserId });
   }
 }

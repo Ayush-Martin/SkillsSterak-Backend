@@ -55,7 +55,7 @@ export const adminAuthMiddleware = async (
       errorCreator(NO_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    req.userId = String(userData?._id);
+    req.userId = userData?._id as string;
     next();
   } catch (err) {
     next(err);
