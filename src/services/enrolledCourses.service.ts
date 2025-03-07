@@ -10,6 +10,7 @@ import { Orders } from "razorpay/dist/types/orders";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
+import { COURSE_ACCESS_ERROR_MESSAGE } from "../constants/responseMessages";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
@@ -125,10 +126,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
     );
 
     if (!enrolledData)
-      return errorCreator(
-        "You cannot access this course",
-        StatusCodes.FORBIDDEN
-      );
+      return errorCreator(COURSE_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
   }
 
   public async completeUnCompleteLesson(
@@ -143,7 +141,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
       );
 
     if (!enrolledCourse) {
-      return errorCreator("No enrolled course", StatusCodes.NOT_FOUND);
+      return errorCreator(COURSE_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
     if (

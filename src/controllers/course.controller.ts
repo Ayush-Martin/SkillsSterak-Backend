@@ -76,7 +76,7 @@ class CourseController {
         .status(StatusCodes.OK)
         .json(
           successResponse(
-            `category has been ${isListed ? "listed" : "unlisted"}`,
+            `course has been ${isListed ? "listed" : "unlisted"}`,
             { courseId, isListed }
           )
         );

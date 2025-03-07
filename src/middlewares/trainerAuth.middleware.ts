@@ -17,7 +17,6 @@ import {
   NO_ACCESS_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
-import mongoose from "mongoose";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();

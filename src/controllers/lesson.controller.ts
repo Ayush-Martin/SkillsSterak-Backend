@@ -5,6 +5,11 @@ import { unknown } from "zod";
 import { Schema } from "mongoose";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
+import {
+  GET_DATA_SUCCESS_MESSAGE,
+  LESSON_ADDED_SUCCESS_MESSAGE,
+  LESSON_DELETED_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 
 class LessonController {
   constructor(private lessonService: ILessonService) {}
@@ -26,7 +31,9 @@ class LessonController {
         path: file.path,
       });
 
-      res.status(StatusCodes.OK).json(successResponse("lesson added", data));
+      res
+        .status(StatusCodes.CREATED)
+        .json(successResponse(LESSON_ADDED_SUCCESS_MESSAGE, data));
     } catch (err) {
       next(err);
     }
@@ -38,7 +45,9 @@ class LessonController {
 
       const data = await this.lessonService.getLessons(moduleId);
 
-      res.status(StatusCodes.OK).json(successResponse("data ", data));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
     } catch (err) {
       next(err);
     }
@@ -50,7 +59,9 @@ class LessonController {
 
       await this.lessonService.deleteLesson(lessonId);
 
-      res.status(StatusCodes.OK).json(successResponse("deleted"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(LESSON_DELETED_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -62,7 +73,9 @@ class LessonController {
 
       const lesson = await this.lessonService.getLesson(lessonId);
 
-      res.status(StatusCodes.OK).json(successResponse("data ", lesson));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, lesson));
     } catch (err) {
       next(err);
     }

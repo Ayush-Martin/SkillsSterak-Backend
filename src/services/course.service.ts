@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { RECORDS_PER_PAGE } from "../constants/general";
-import { COURSE_TITLE_EXIST_ERROR_MESSAGE } from "../constants/responseMessages";
+import {
+  COURSE_NOT_FOUND_ERROR_MESSAGE,
+  COURSE_TITLE_EXIST_ERROR_MESSAGE,
+} from "../constants/responseMessages";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import { ICourse } from "../models/Course.model";
@@ -12,7 +15,6 @@ class CourseService implements ICourseService {
 
   public async createCourse(course: Partial<ICourse>): Promise<ICourse> {
     const { title } = course;
-
     const courseExist = await this.courseRepository.findCourseByTitle(title!);
 
     if (courseExist) {
@@ -31,7 +33,7 @@ class CourseService implements ICourseService {
       courseId
     );
     if (isListed == null) {
-      errorCreator("Course not found", StatusCodes.NOT_FOUND);
+      errorCreator(COURSE_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
     await this.courseRepository.changeListStatus(courseId, !isListed);

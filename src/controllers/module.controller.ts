@@ -7,7 +7,12 @@ import {
 import mongoose from "mongoose";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import {
+  GET_DATA_SUCCESS_MESSAGE,
+  MODULE_ADDED_SUCCESS_MESSAGE,
+  MODULE_DELETED_SUCCESS_MESSAGE,
+  MODULE_TITLE_CHANGED_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 
 class ModuleController {
   constructor(private moduleService: IModuleService) {}
@@ -24,7 +29,7 @@ class ModuleController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse("new module added", module));
+        .json(successResponse(MODULE_ADDED_SUCCESS_MESSAGE, module));
     } catch (err) {
       next(err);
     }
@@ -64,7 +69,9 @@ class ModuleController {
 
       await this.moduleService.deleteModule(moduleId);
 
-      res.status(StatusCodes.OK).json(successResponse("module deleted"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(MODULE_DELETED_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -77,7 +84,9 @@ class ModuleController {
 
       await this.moduleService.updateModuleTitle(moduleId, title);
 
-      res.status(StatusCodes.OK).json(successResponse("title changed"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(MODULE_TITLE_CHANGED_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }

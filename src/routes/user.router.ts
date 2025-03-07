@@ -114,17 +114,14 @@ router.get(
   enrolledCourseController.getEnrolledCourse.bind(enrolledCourseController)
 );
 
-router.patch(
-  "/enrolledCourses/:courseId/:lessonId",
-  enrolledCourseController.completeUnCompleteLesson.bind(
-    enrolledCourseController
-  )
-);
-
-router.get(
-  "/lessons/:lessonId",
-  lessonController.getLesson.bind(lessonController)
-);
+router
+  .route("/enrolledCourses/:courseId/lessons/:lessonId")
+  .get(lessonController.getLesson.bind(lessonController))
+  .patch(
+    enrolledCourseController.completeUnCompleteLesson.bind(
+      enrolledCourseController
+    )
+  );
 
 router
   .route("/profile")

@@ -2,7 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import {
+  COURSE_ACCESS_SUCCESS_MESSAGE,
+  COURSE_ENROLLED_SUCCESS_MESSAGE,
+  COURSE_ORDER_CREATED_SUCCESS_MESSAGE,
+  GET_DATA_SUCCESS_MESSAGE,
+  LESSON_COMPLETED_SUCCESS_MESSAGE,
+  LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
+import mongoose from "mongoose";
 
 class EnrolledCourses {
   constructor(private enrolledCoursesService: IEnrolledCoursesService) {}
@@ -17,7 +25,14 @@ class EnrolledCourses {
       );
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(order ? "order created" : "enrolled", order));
+        .json(
+          successResponse(
+            order
+              ? COURSE_ORDER_CREATED_SUCCESS_MESSAGE
+              : COURSE_ENROLLED_SUCCESS_MESSAGE,
+            order
+          )
+        );
     } catch (error) {
       next(error);
     }
@@ -34,7 +49,7 @@ class EnrolledCourses {
       await this.enrolledCoursesService.completePurchase(orderId);
       res
         .status(StatusCodes.OK)
-        .json(successResponse("order completed successfully")); // TODO: change message
+        .json(successResponse(COURSE_ENROLLED_SUCCESS_MESSAGE));
     } catch (error) {
       next(error);
     }
@@ -47,7 +62,7 @@ class EnrolledCourses {
       await this.enrolledCoursesService.checkEnrolled(userId, courseId);
       res
         .status(StatusCodes.OK)
-        .json(successResponse("You can access this course"));
+        .json(successResponse(COURSE_ACCESS_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }
@@ -65,7 +80,9 @@ class EnrolledCourses {
       const enrolledCourses =
         await this.enrolledCoursesService.getEnrolledCourses(userId, page);
 
-      res.status(StatusCodes.OK).json(successResponse("Data", enrolledCourses));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, enrolledCourses));
     } catch (err) {
       next(err);
     }
@@ -101,13 +118,25 @@ class EnrolledCourses {
 
       const { courseId, lessonId } = req.params;
 
-      const enrolledCourse=await this.enrolledCoursesService.completeUnCompleteLesson(
-        userId,
-        courseId,
-        lessonId
-      );
+      const enrolledCourse =
+        await this.enrolledCoursesService.completeUnCompleteLesson(
+          userId,
+          courseId,
+          lessonId
+        );
 
-      res.status(StatusCodes.OK).json(successResponse("changed",enrolledCourse));
+      res
+        .status(StatusCodes.OK)
+        .json(
+          successResponse(
+            enrolledCourse?.completedLessons?.includes(
+              lessonId as unknown as mongoose.Schema.Types.ObjectId
+            )
+              ? LESSON_COMPLETED_SUCCESS_MESSAGE
+              : LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
+            enrolledCourse
+          )
+        );
     } catch (err) {
       next(err);
     }

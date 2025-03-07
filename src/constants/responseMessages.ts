@@ -22,6 +22,8 @@ export const CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Category not found";
 //Course
 export const COURSE_TITLE_EXIST_ERROR_MESSAGE =
   "Course with same title already exist";
+export const COURSE_NOT_FOUND_ERROR_MESSAGE = "Course not found";
+export const COURSE_ACCESS_ERROR_MESSAGE = "You have no access to this course";
 
 //* --------Success Message--------------- *//
 export const GET_DATA_SUCCESS_MESSAGE = "Data Returned";
@@ -58,3 +60,13 @@ export const UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE =
   "Course requirements updated";
 export const UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE =
   "Course skills covered updated";
+export const COURSE_ENROLLED_SUCCESS_MESSAGE = "Course Enrolled";
+export const COURSE_ORDER_CREATED_SUCCESS_MESSAGE = "Order Created";
+export const COURSE_ACCESS_SUCCESS_MESSAGE = "Course access granted";
+export const LESSON_COMPLETED_SUCCESS_MESSAGE = "Lesson completed";
+export const LESSON_NOT_COMPLETED_SUCCESS_MESSAGE = "Lesson not completed";
+export const LESSON_ADDED_SUCCESS_MESSAGE = "New lesson added";
+export const LESSON_DELETED_SUCCESS_MESSAGE = "Lesson deleted";
+export const MODULE_ADDED_SUCCESS_MESSAGE = "New module added";
+export const MODULE_DELETED_SUCCESS_MESSAGE = "Module deleted";
+export const MODULE_TITLE_CHANGED_SUCCESS_MESSAGE = "Module title changed";

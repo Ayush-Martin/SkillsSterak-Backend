@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
+import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import { pageValidator } from "../validators/index.validator";
 
 class TransactionController {
   constructor(private transactionService: ITransactionService) {}
@@ -13,14 +15,16 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const page = parseInt(req.query.page as string) || 1;
+      const { page } = pageValidator(req.query);
 
       const data = await this.transactionService.getUserTransactions(
         userId,
         page
       );
 
-      res.status(StatusCodes.OK).json(successResponse("Data", data));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
     } catch (err) {
       next(err);
     }
@@ -32,11 +36,13 @@ class TransactionController {
     next: NextFunction
   ) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
+      const { page } = pageValidator(req.query);
 
       const data = await this.transactionService.getTransactions(page);
 
-      res.status(StatusCodes.OK).json(successResponse("Data", data));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
     } catch (err) {
       next(err);
     }
