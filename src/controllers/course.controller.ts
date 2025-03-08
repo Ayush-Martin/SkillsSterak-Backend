@@ -158,6 +158,8 @@ class CourseController {
         price
       );
 
+      console.log(data);
+
       res
         .status(StatusCodes.OK)
         .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
