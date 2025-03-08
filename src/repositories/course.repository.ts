@@ -144,6 +144,7 @@ class CourseRepository
       {
         $match: {
           isListed: true,
+          isVerified: true,
           title: search,
           ...filter,
         },
