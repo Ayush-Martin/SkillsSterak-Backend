@@ -110,4 +110,9 @@ router.patch(
   courseController.listUnListCourse.bind(courseController)
 );
 
+router.patch(
+  "/courses/:courseId/status",
+  courseController.approveRejectCourse.bind(courseController)
+);
+
 export default router;

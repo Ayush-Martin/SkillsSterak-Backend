@@ -66,10 +66,18 @@ export const getCoursesValidator = (data: any) => {
   return schema.parse(data);
 };
 
+export const approveRejectCourseValidator = (data: any) => {
+  const schema = z.object({
+    status: z.enum(["approved", "rejected"]),
+  });
+
+  return schema.parse(data);
+};
+
 export const getAdminCoursesValidator = (data: any) => {
   const schema = z.object({
     search: SearchValidationRule,
-    page: PageValidationRule
+    page: PageValidationRule,
   });
 
   return schema.parse(data);

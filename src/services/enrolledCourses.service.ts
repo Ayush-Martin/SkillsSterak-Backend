@@ -109,6 +109,33 @@ class EnrolledCourses implements IEnrolledCoursesService {
     return { enrolledCourses, currentPage: page, totalPages };
   }
 
+  public async getCompletedEnrolledCourses(
+    userId: string,
+    page: number
+  ): Promise<{
+    completedEnrolledCourses: Array<IEnrolledCourses>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const completedEnrolledCourses =
+      await this.enrolledCoursesRepository.getComptedEnrolledCourses(
+        userId,
+        skip,
+        RECORDS_PER_PAGE
+      );
+
+    const completedEnrolledCoursesCount =
+      await this.enrolledCoursesRepository.getCompletedEnrolledCoursesCount(
+        userId
+      );
+
+    const totalPages = Math.ceil(
+      completedEnrolledCoursesCount / RECORDS_PER_PAGE
+    );
+    return { completedEnrolledCourses, currentPage: page, totalPages };
+  }
+
   public async getEnrolledCourse(
     userId: string,
     courseId: string

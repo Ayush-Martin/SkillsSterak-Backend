@@ -39,6 +39,26 @@ class SubscriptionController {
       next(error);
     }
   }
+
+  public async getSubscriptionDetail(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+
+      const subscription = await this.subscriptionService.getSubscriptionDetail(
+        userId
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, subscription));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default SubscriptionController;

@@ -7,6 +7,7 @@ import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
 import mongoose from "mongoose";
 import { getThreeMonthsFromNow } from "../utils/date";
+import { ISubscription } from "../models/Subscription.model";
 
 class SubscriptionService implements ISubscriptionService {
   constructor(
@@ -54,6 +55,14 @@ class SubscriptionService implements ISubscriptionService {
       transactionId: transaction._id as mongoose.Schema.Types.ObjectId,
       endDate: getThreeMonthsFromNow(),
     });
+  }
+
+  public async getSubscriptionDetail(
+    userId: string
+  ): Promise<ISubscription | null> {
+    return await this.subscriptionRepository.getSubscriptionDetailByUserID(
+      userId
+    );
   }
 }
 

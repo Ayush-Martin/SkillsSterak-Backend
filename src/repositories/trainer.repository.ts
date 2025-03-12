@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { IUser } from "../models/User.model";
 import BaseRepository from "./Base.repository";
@@ -30,6 +30,143 @@ class TrainerRepository
     role: "user" | "trainer"
   ): Promise<IUser | null> {
     return await this.User.findByIdAndUpdate(userId, { role }, { new: true });
+  }
+
+  public async getTotalStudents(
+    trainerId: string,
+    search: RegExp
+  ): Promise<number> {
+    const result = await this.User.aggregate([
+      {
+        $match: {
+          role: { $ne: "admin" },
+          _id: { $ne: new mongoose.Types.ObjectId(trainerId) },
+          email: search,
+        },
+      },
+      {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "userId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $match: {
+                      trainerId: new mongoose.Types.ObjectId(trainerId),
+                    },
+                  },
+                ],
+                as: "course",
+              },
+            },
+            { $unwind: "$course" },
+          ],
+          as: "enrolledCourses",
+        },
+      },
+      {
+        $match: {
+          "enrolledCourses.course": { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalStudents: { $count: {} },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+
+    return result[0]?.totalStudents || 0;
+  }
+
+  public async getStudentsWithEnrolledCourses(
+    trainerId: string,
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<IUser>> {
+    return await this.User.aggregate([
+      {
+        $match: {
+          _id: {
+            $ne: new mongoose.Types.ObjectId(trainerId),
+          },
+          role: {
+            $ne: "admin",
+          },
+          email: search,
+        },
+      },
+      {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "userId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $match: {
+                      trainerId: new mongoose.Types.ObjectId(trainerId),
+                    },
+                  },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                    },
+                  },
+                ],
+                as: "course",
+              },
+            },
+            { $unwind: "$course" },
+            {
+              $project: {
+                course: 1,
+                _id: 0,
+              },
+            },
+          ],
+          as: "enrolledCourses",
+        },
+      },
+      {
+        $unwind: "$enrolledCourses",
+      },
+      {
+        $group: {
+          _id: "$_id",
+          enrolledCourses: {
+            $push: "$enrolledCourses.course",
+          },
+          username: { $first: "$username" },
+          email: { $first: "$email" },
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
   }
 }
 

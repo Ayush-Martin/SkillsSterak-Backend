@@ -10,6 +10,12 @@ class SubscriptionRepository
   constructor(private Subscription: Model<ISubscription>) {
     super(Subscription);
   }
+
+  public async getSubscriptionDetailByUserID(
+    userId: string
+  ): Promise<ISubscription | null> {
+    return await this.Subscription.findOne({ userId });
+  }
 }
 
 export default SubscriptionRepository;

@@ -9,6 +9,7 @@ export interface IEnrolledCoursesRepository
     limit: number
   ): Promise<Array<IEnrolledCourses>>;
   getEnrolledCoursesCount(userId: string): Promise<number>;
+  getCompletedEnrolledCoursesCount(userId: string): Promise<number>;
   getEnrolledCourseByCourseId(
     userId: string,
     courseId: string
@@ -17,7 +18,11 @@ export interface IEnrolledCoursesRepository
     userId: string,
     courseId: string
   ): Promise<IEnrolledCourses | null>;
-
+  getComptedEnrolledCourses(
+    userId: string,
+    skip: number,
+    limit: number
+  ): Promise<Array<IEnrolledCourses>>;
   addLessonComplete(
     userId: string,
     courseId: string,

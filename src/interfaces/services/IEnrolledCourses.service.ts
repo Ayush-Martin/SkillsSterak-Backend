@@ -14,6 +14,14 @@ export interface IEnrolledCoursesService {
     currentPage: number;
     totalPages: number;
   }>;
+  getCompletedEnrolledCourses(
+    userId: string,
+    page: number
+  ): Promise<{
+    completedEnrolledCourses: Array<IEnrolledCourses>;
+    currentPage: number;
+    totalPages: number;
+  }>;
   getEnrolledCourse(
     userId: string,
     courseId: string

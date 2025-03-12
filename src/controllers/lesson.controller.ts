@@ -10,6 +10,7 @@ import {
   LESSON_ADDED_SUCCESS_MESSAGE,
   LESSON_DELETED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
+import errorCreator from "../utils/customError";
 
 class LessonController {
   constructor(private lessonService: ILessonService) {}
@@ -20,7 +21,9 @@ class LessonController {
       const file = req.file;
       const { title, description, type } = addLessonValidator(req.body);
 
-      if (!file) return;
+      if (!file) {
+        return errorCreator("File is required", StatusCodes.BAD_REQUEST);
+      }
 
       const data = await this.lessonService.createLesson({
         title,
@@ -76,6 +79,52 @@ class LessonController {
       res
         .status(StatusCodes.OK)
         .json(successResponse(GET_DATA_SUCCESS_MESSAGE, lesson));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async updateLessonDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { lessonId } = req.params;
+      const { title, description } = req.body;
+
+      const lesson = await this.lessonService.updateLesson(lessonId, {
+        title,
+        description,
+      });
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse("updated lesson details", lesson));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async updateLessonFile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { lessonId } = req.params;
+      const file = req.file;
+
+      if (!file) {
+        return errorCreator("File is required", StatusCodes.BAD_REQUEST);
+      }
+
+      const lesson = await this.lessonService.updateLesson(lessonId, {
+        path: file.path,
+        type: file.mimetype === "application/pdf" ? "pdf" : "video",
+      });
+
+      res.status(StatusCodes.OK).json(successResponse("updated file", lesson));
     } catch (err) {
       next(err);
     }

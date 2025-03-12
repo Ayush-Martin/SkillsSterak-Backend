@@ -20,6 +20,13 @@ class LessonService implements ILessonService {
   public async deleteLesson(lessonId: string): Promise<void> {
     await this.lessonRepository.deleteById(lessonId);
   }
+
+  public async updateLesson(
+    lessonId: string,
+    lesson: Partial<ILesson>
+  ): Promise<ILesson | null> {
+    return await this.lessonRepository.updateById(lessonId, lesson);
+  }
 }
 
 export default LessonService;

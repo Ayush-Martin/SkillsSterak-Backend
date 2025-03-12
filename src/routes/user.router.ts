@@ -11,10 +11,9 @@ import CategoryModel from "../models/Category.model";
 import LessonModel from "../models/Lesson.model";
 import WalletModel from "../models/Wallet.model";
 import TransactionModel from "../models/Transaction.model";
-<<<<<<< HEAD
-=======
 import SubscriptionModel from "../models/Subscription.model";
->>>>>>> main
+import ReviewModel from "../models/Review.model";
+import ReplyModel from "../models/Reply.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
@@ -25,10 +24,9 @@ import CategoryRepository from "../repositories/category.repository";
 import LessonRepository from "../repositories/Lesson.repository";
 import WalletRepository from "../repositories/wallet.repository";
 import TransactionRepository from "../repositories/transaction.repository";
-<<<<<<< HEAD
-=======
 import SubscriptionRepository from "../repositories/subscription.repository";
->>>>>>> main
+import ReviewRepository from "../repositories/review.repository";
+import ReplyRepository from "../repositories/Reply.repository";
 
 //services
 import UserService from "../services/user.service";
@@ -37,10 +35,8 @@ import CourseService from "../services/course.service";
 import CategoryService from "../services/category.service";
 import LessonService from "../services/lesson.service";
 import TransactionService from "../services/transaction.service";
-<<<<<<< HEAD
-=======
 import SubscriptionService from "../services/subscription.service";
->>>>>>> main
+import ReviewService from "../services/review.service";
 
 //controllers
 import UserController from "../controllers/user.controller";
@@ -49,18 +45,13 @@ import CourseController from "../controllers/course.controller";
 import CategoryController from "../controllers/category.controller";
 import LessonController from "../controllers/lesson.controller";
 import TransactionController from "../controllers/transaction.controller";
-<<<<<<< HEAD
-=======
 import SubscriptionController from "../controllers/subscription.controller";
->>>>>>> main
+import ReviewController from "../controllers/review.controller";
 
 //middlewares
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
-<<<<<<< HEAD
-=======
 import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
->>>>>>> main
 
 //repositories
 const userRepository = new UserRepository(UserModel);
@@ -75,10 +66,9 @@ const categoryRepository = new CategoryRepository(CategoryModel);
 const lessonRepository = new LessonRepository(LessonModel);
 const walletRepository = new WalletRepository(WalletModel);
 const transactionRepository = new TransactionRepository(TransactionModel);
-<<<<<<< HEAD
-=======
 const subscriptionRepository = new SubscriptionRepository(SubscriptionModel);
->>>>>>> main
+const reviewRepository = new ReviewRepository(ReviewModel);
+const replyRepository = new ReplyRepository(ReplyModel);
 
 //services
 const userService = new UserService(userRepository, trainerRequestRepository);
@@ -92,13 +82,11 @@ const courseService = new CourseService(courseRepository);
 const categoryService = new CategoryService(categoryRepository);
 const lessonService = new LessonService(lessonRepository);
 const transactionService = new TransactionService(transactionRepository);
-<<<<<<< HEAD
-=======
 const subscriptionService = new SubscriptionService(
   subscriptionRepository,
   transactionRepository
 );
->>>>>>> main
+const reviewService = new ReviewService(reviewRepository, replyRepository);
 
 //controllers
 const userController = new UserController(userService);
@@ -107,10 +95,8 @@ const courseController = new CourseController(courseService);
 const categoryController = new CategoryController(categoryService);
 const lessonController = new LessonController(lessonService);
 const transactionController = new TransactionController(transactionService);
-<<<<<<< HEAD
-=======
 const subscriptionController = new SubscriptionController(subscriptionService);
->>>>>>> main
+const reviewController = new ReviewController(reviewService);
 
 router.get("/courses", courseController.getCourses.bind(courseController));
 router.get(
@@ -125,6 +111,22 @@ router
     accessTokenValidator,
     enrolledCourseController.enrollCourse.bind(enrolledCourseController)
   );
+
+router
+  .route("/courses/:courseId/reviews")
+  .post(accessTokenValidator, reviewController.addReview.bind(reviewController))
+  .get(reviewController.getReviews.bind(reviewController));
+
+router.delete(
+  "/courses/:courseId/reviews/:reviewId",
+  accessTokenValidator,
+  reviewController.deleteReview.bind(reviewController)
+);
+
+router
+  .route("/courses/:courseId/reviews/:reviewId/replies")
+  .post(accessTokenValidator, reviewController.addReply.bind(reviewController))
+  .get(reviewController.getReplies.bind(reviewController));
 
 //setting middleware
 router.use(accessTokenValidator);
@@ -145,9 +147,17 @@ router.get(
 );
 
 router.get(
-  "/enrolledCourses/:courseId",
-  enrolledCourseController.getEnrolledCourse.bind(enrolledCourseController)
+  "/enrolledCourses/completed",
+  enrolledCourseController.getCompletedEnrolledCourses.bind(
+    enrolledCourseController
+  )
 );
+
+router
+  .route("/enrolledCourses/:courseId")
+  .get(
+    enrolledCourseController.getEnrolledCourse.bind(enrolledCourseController)
+  );
 
 router
   .route("/enrolledCourses/:courseId/lessons/:lessonId")
@@ -184,6 +194,11 @@ router
   .post(
     subscriptionController.completeSubscription.bind(subscriptionController)
   );
+
+router.get(
+  "/subscription/detail",
+  subscriptionController.getSubscriptionDetail.bind(subscriptionController)
+);
 
 router.get("/chat", subscriptionValidator, (req, res) => {
   res.status(200).json({ message: "success" });

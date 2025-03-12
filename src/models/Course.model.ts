@@ -11,6 +11,7 @@ export interface ICourse extends Document {
   description: string;
   categoryId: ObjectId;
   isListed?: boolean;
+  status?: "pending" | "approved" | "rejected";
 }
 
 const CourseSchema = new Schema<ICourse>(
@@ -59,6 +60,11 @@ const CourseSchema = new Schema<ICourse>(
     isListed: {
       type: Boolean,
       default: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
   },
   { timestamps: true }

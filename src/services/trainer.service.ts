@@ -44,6 +44,36 @@ class TrainerService implements ITrainerService {
       await this.trainerRepository.changeRole(userId, "trainer");
     }
   }
+
+  public async getStudentsWithEnrolledCourses(
+    trainerId: string,
+    search: string,
+    page: number
+  ): Promise<{
+    students: Array<IUser>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const searchRegex = new RegExp(search, "i");
+    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const students =
+      await this.trainerRepository.getStudentsWithEnrolledCourses(
+        trainerId,
+        searchRegex,
+        skip,
+        RECORDS_PER_PAGE
+      );
+    const totalStudents = await this.trainerRepository.getTotalStudents(
+      trainerId,
+      searchRegex
+    );
+    const totalPages = Math.ceil(totalStudents / RECORDS_PER_PAGE);
+    return {
+      students,
+      currentPage: page,
+      totalPages,
+    };
+  }
 }
 
 export default TrainerService;

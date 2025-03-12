@@ -88,6 +88,26 @@ class EnrolledCourses {
     }
   }
 
+  public async getCompletedEnrolledCourses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const page = parseInt(req.query.page as string) || 1;
+
+      const enrolledCourses =
+        await this.enrolledCoursesService.getCompletedEnrolledCourses(userId, page);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, enrolledCourses));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getEnrolledCourse(
     req: Request,
     res: Response,

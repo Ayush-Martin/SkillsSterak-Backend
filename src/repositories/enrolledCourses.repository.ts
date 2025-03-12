@@ -109,8 +109,171 @@ class EnrolledCoursesRepository
     ]);
   }
 
+  public async getComptedEnrolledCourses(
+    userId: string,
+    skip: number,
+    limit: number
+  ): Promise<Array<IEnrolledCourses>> {
+    return await this.EnrolledCourses.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "totalLessons",
+                  },
+                ],
+                as: "totalLessons",
+              },
+            },
+            {
+              $unwind: "$totalLessons",
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "trainerId",
+                foreignField: "_id",
+                as: "trainer",
+              },
+            },
+            {
+              $unwind: "$trainer",
+            },
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                thumbnail: 1,
+                trainer: {
+                  _id: 1,
+                  username: 1,
+                  email: 1,
+                },
+                totalLessonsCount: "$totalLessons.totalLessons",
+              },
+            },
+          ],
+          as: "course",
+        },
+      },
+      {
+        $unwind: "$course",
+      },
+      {
+        $addFields: {
+          completedLessonsCount: {
+            $size: "$completedLessons",
+          },
+          totalLessonsCount: "$course.totalLessonsCount",
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $eq: ["$completedLessonsCount", "$totalLessonsCount"],
+          },
+        },
+      },
+      {
+        $project: {
+          completedLessonsCount: 0,
+          totalLessonsCount: 0,
+          createdAt: 0,
+          updatedAt: 0,
+          completedLessons: 0,
+          __v: 0,
+          courseId: 0,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+  }
+
   public async getEnrolledCoursesCount(userId: string): Promise<number> {
     return await this.EnrolledCourses.countDocuments({ userId });
+  }
+
+  public async getCompletedEnrolledCoursesCount(
+    userId: string
+  ): Promise<number> {
+    const enrolledCourses = await this.EnrolledCourses.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "totalLessons",
+                  },
+                ],
+                as: "totalLessons",
+              },
+            },
+            {
+              $unwind: "$totalLessons",
+            },
+          ],
+          as: "course",
+        },
+      },
+      {
+        $unwind: "$course",
+      },
+      {
+        $addFields: {
+          completedLessonsCount: {
+            $size: "$completedLessons",
+          },
+          totalLessonsCount: "$course.totalLessons.totalLessons",
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $eq: ["$completedLessonsCount", "$totalLessonsCount"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          enrolledCoursesCompletedCount: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          enrolledCoursesCompletedCount: 1,
+        },
+      },
+    ]);
+
+    return enrolledCourses[0]["enrolledCoursesCompletedCount"];
   }
 
   public async checkEnrolled(

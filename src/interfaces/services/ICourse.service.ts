@@ -16,6 +16,10 @@ export interface ICourseService {
     totalPages: number;
   }>;
   listUnListCourse(courseId: string): Promise<boolean>;
+  approveRejectCourse(
+    courseId: string,
+    status: "approved" | "rejected"
+  ): Promise<void>;
   getTrainerCourses(
     trainerId: string,
     search: string,

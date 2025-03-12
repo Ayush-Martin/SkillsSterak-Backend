@@ -22,6 +22,17 @@ class CourseRepository
     return await this.Course.findByIdAndUpdate(courseId, { isListed });
   }
 
+  public async changeCourseStatus(
+    courseId: string,
+    status: string
+  ): Promise<ICourse | null> {
+    return await this.Course.findByIdAndUpdate(
+      courseId,
+      { status },
+      { new: true }
+    );
+  }
+
   public async getCourseListedStatus(
     categoryId: string
   ): Promise<boolean | null> {
@@ -145,6 +156,7 @@ class CourseRepository
         $match: {
           isListed: true,
           title: search,
+          status: "approved",
           ...filter,
         },
       },
@@ -227,6 +239,7 @@ class CourseRepository
         price: 1,
         isListed: 1,
         difficulty: 1,
+        status: 1,
       }
     )
       .populate("trainerId", "_id email")
@@ -250,6 +263,7 @@ class CourseRepository
         categoryId: 1,
         createdAt: 1,
         isListed: 1,
+        status: 1,
       }
     )
       .skip(skip)

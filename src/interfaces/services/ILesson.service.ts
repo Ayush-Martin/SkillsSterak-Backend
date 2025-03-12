@@ -5,4 +5,8 @@ export interface ILessonService {
   getLessons(moduleId: string): Promise<Array<ILesson>>;
   getLesson(lessonId: string): Promise<ILesson | null>;
   deleteLesson(lessonId: string): Promise<void>;
+  updateLesson(
+    lessonId: string,
+    lesson: Partial<ILesson>
+  ): Promise<ILesson | null>;
 }

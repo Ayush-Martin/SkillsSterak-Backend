@@ -9,4 +9,14 @@ export interface ITrainerService {
     userId: string,
     status: "approved" | "rejected"
   ): Promise<void>;
+
+  getStudentsWithEnrolledCourses(
+    trainerId: string,
+    search: string,
+    page: number
+  ): Promise<{
+    students: Array<IUser>;
+    currentPage: number;
+    totalPages: number;
+  }>;
 }

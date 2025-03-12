@@ -11,6 +11,7 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
     isListed: boolean
   ): Promise<ICourse | null>;
   getCourseListedStatus(categoryId: string): Promise<boolean | null>;
+  changeCourseStatus(courseId: string, status: string): Promise<ICourse | null>;
   getCourses(
     search: RegExp,
     skip: number,

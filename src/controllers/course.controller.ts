@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import {
+  approveRejectCourseValidator,
   createCourseValidator,
   getAdminCoursesValidator,
   getCoursesValidator,
@@ -79,6 +80,28 @@ class CourseController {
             `course has been ${isListed ? "listed" : "unlisted"}`,
             { courseId, isListed }
           )
+        );
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async approveRejectCourse(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { courseId } = req.params;
+
+      const { status } = approveRejectCourseValidator(req.query);
+
+      await this.courseService.approveRejectCourse(courseId, status);
+
+      res
+        .status(StatusCodes.OK)
+        .json(
+          successResponse(`course has been ${status}`, { courseId, status })
         );
     } catch (err) {
       next(err);

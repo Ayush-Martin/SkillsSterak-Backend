@@ -40,6 +40,13 @@ class CourseService implements ICourseService {
     return !isListed;
   }
 
+  public async approveRejectCourse(
+    courseId: string,
+    status: "approved" | "rejected"
+  ): Promise<void> {
+    await this.courseRepository.changeCourseStatus(courseId, status);
+  }
+
   public async getCourses(
     search: string,
     page: number,
