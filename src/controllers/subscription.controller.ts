@@ -3,9 +3,13 @@ import { ISubscriptionService } from "../interfaces/services/ISubscription.servi
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { StatusCodes } from "../utils/statusCodes";
+import binder from "../utils/binder";
+
 
 class SubscriptionController {
-  constructor(private subscriptionService: ISubscriptionService) {}
+  constructor(private subscriptionService: ISubscriptionService) {
+    binder(this)
+  }
 
   public async createSubscriptionOrder(
     req: Request,

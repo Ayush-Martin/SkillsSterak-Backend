@@ -12,9 +12,12 @@ import {
   EDIT_CATEGORY_SUCCESS_MESSAGE,
   GET_DATA_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class CategoryController {
-  constructor(private categoryService: ICategoryService) {}
+  constructor(private categoryService: ICategoryService) {
+    binder(this);
+  }
 
   public async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,7 +43,6 @@ class CategoryController {
         categoryId,
         categoryName
       );
-
 
       res
         .status(StatusCodes.OK)

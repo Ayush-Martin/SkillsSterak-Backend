@@ -11,9 +11,12 @@ import {
   LESSON_DELETED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import errorCreator from "../utils/customError";
+import binder from "../utils/binder";
 
 class LessonController {
-  constructor(private lessonService: ILessonService) {}
+  constructor(private lessonService: ILessonService) {
+    binder(this);
+  }
 
   public async addLesson(req: Request, res: Response, next: NextFunction) {
     try {

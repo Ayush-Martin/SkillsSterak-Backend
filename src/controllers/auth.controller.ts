@@ -23,6 +23,7 @@ import {
   USER_NOT_FOUND_ERROR_MESSAGE,
   VERIFY_OTP_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
@@ -35,7 +36,9 @@ class AuthController {
   constructor(
     public authService: IAuthService,
     public jwtService: IJWTService
-  ) {}
+  ) {
+    binder(this);
+  }
 
   public async register(
     req: Request,

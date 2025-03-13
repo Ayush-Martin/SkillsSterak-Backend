@@ -21,9 +21,13 @@ import {
   UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import mongoose from "mongoose";
+import binder from "../utils/binder";
+
 
 class CourseController {
-  constructor(private courseService: ICourseService) {}
+  constructor(private courseService: ICourseService) {
+    binder(this);
+  }
 
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {

@@ -4,9 +4,12 @@ import { getStudentsWithEnrolledCoursesValidator } from "../validators/trainer.v
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class TrainerController {
-  constructor(private trainerService: ITrainerService) {}
+  constructor(private trainerService: ITrainerService) {
+    binder(this);
+  }
 
   public async getStudentsWithEnrolledCourses(
     req: Request,

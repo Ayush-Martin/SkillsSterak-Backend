@@ -11,9 +11,13 @@ import {
   LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import mongoose from "mongoose";
+import binder from "../utils/binder";
+
 
 class EnrolledCourses {
-  constructor(private enrolledCoursesService: IEnrolledCoursesService) {}
+  constructor(private enrolledCoursesService: IEnrolledCoursesService) {
+    binder(this);
+  }
 
   public async enrollCourse(req: Request, res: Response, next: NextFunction) {
     try {
@@ -98,7 +102,10 @@ class EnrolledCourses {
       const page = parseInt(req.query.page as string) || 1;
 
       const enrolledCourses =
-        await this.enrolledCoursesService.getCompletedEnrolledCourses(userId, page);
+        await this.enrolledCoursesService.getCompletedEnrolledCourses(
+          userId,
+          page
+        );
 
       res
         .status(StatusCodes.OK)

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.8",
+    "auto-bind": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
     "concurrently": "^9.1.2",

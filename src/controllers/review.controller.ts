@@ -7,9 +7,12 @@ import {
 import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../utils/statusCodes";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class ReviewController {
-  constructor(private reviewService: IReviewService) {}
+  constructor(private reviewService: IReviewService) {
+    binder(this);
+  }
   public async addReview(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;

@@ -4,9 +4,12 @@ import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { pageValidator } from "../validators/index.validator";
+import binder from "../utils/binder";
 
 class TransactionController {
-  constructor(private transactionService: ITransactionService) {}
+  constructor(private transactionService: ITransactionService) {
+    binder(this);
+  }
 
   public async getUserTransactions(
     req: Request,

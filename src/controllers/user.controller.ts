@@ -14,9 +14,12 @@ import {
   SEND_TRAINER_REQUEST_SUCCESS_MESSAGE,
   UPDATE_PROFILE_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class UserController {
-  constructor(private userService: IUserService) {}
+  constructor(private userService: IUserService) {
+    binder(this);
+  }
 
   public async changeProfileImage(
     req: Request,

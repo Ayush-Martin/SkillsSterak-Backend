@@ -7,9 +7,12 @@ import {
   getTrainerRequestValidator,
 } from "../validators/trainerRequest.validator";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class TrainerRequestController {
-  constructor(private trainerService: ITrainerService) {}
+  constructor(private trainerService: ITrainerService) {
+    binder(this);
+  }
 
   public async getTrainerRequests(
     req: Request,

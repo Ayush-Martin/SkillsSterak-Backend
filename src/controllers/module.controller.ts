@@ -13,9 +13,12 @@ import {
   MODULE_DELETED_SUCCESS_MESSAGE,
   MODULE_TITLE_CHANGED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class ModuleController {
-  constructor(private moduleService: IModuleService) {}
+  constructor(private moduleService: IModuleService) {
+    binder(this)
+  }
 
   public async addModule(req: Request, res: Response, next: NextFunction) {
     try {

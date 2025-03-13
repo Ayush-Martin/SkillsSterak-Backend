@@ -3,9 +3,12 @@ import { IWalletService } from "../interfaces/services/IWallet.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import binder from "../utils/binder";
 
 class WalletController {
-  constructor(private walletService: IWalletService) {}
+  constructor(private walletService: IWalletService) {
+    binder(this);
+  }
 
   public async getWalletInfo(req: Request, res: Response, next: NextFunction) {
     try {
