@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { IEnrolledCoursesRepository } from "../interfaces/repositories/IEnrolledCourses.repository";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
 import { IEnrolledCourses } from "../models/EnrolledCourse.model";
@@ -10,7 +9,12 @@ import { Orders } from "razorpay/dist/types/orders";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
-import { COURSE_ACCESS_ERROR_MESSAGE } from "../constants/responseMessages";
+import {
+  COURSE_ACCESS_ERROR_MESSAGE,
+  ORDER_NOT_FOUND_ERROR_MESSAGE,
+  ORDER_NOT_PAID_ERROR_MESSAGE,
+} from "../constants/responseMessages";
+import { getObjectId } from "../utils/objectId";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
@@ -29,8 +33,8 @@ class EnrolledCourses implements IEnrolledCoursesService {
 
     if (course.price === 0 || String(course.trainerId) == String(userId)) {
       await this.enrolledCoursesRepository.create({
-        userId: userId as unknown as mongoose.Schema.Types.ObjectId,
-        courseId: courseId as unknown as mongoose.Schema.Types.ObjectId,
+        userId: getObjectId(userId),
+        courseId: getObjectId(courseId),
       });
 
       return null;
@@ -52,23 +56,26 @@ class EnrolledCourses implements IEnrolledCoursesService {
   public async completePurchase(orderId: string): Promise<void> {
     const order = await razorpay.orders.fetch(orderId);
 
-    const userId = order.notes?.userId;
-    const courseId = order.notes?.courseId;
+    const userId = order.notes?.userId as string | undefined;
+    const courseId = order.notes?.courseId as string | undefined;
 
     const course = await this.courseRepository.findById(courseId as string);
     if (!course) return errorCreator("Course not found", StatusCodes.NOT_FOUND);
 
     if (!userId || !courseId) {
-      return errorCreator("Order not found", StatusCodes.NOT_FOUND);
+      return errorCreator(ORDER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
     if (order.status !== "paid") {
-      return errorCreator("Order not paid", StatusCodes.BAD_REQUEST);
+      return errorCreator(
+        ORDER_NOT_PAID_ERROR_MESSAGE,
+        StatusCodes.BAD_REQUEST
+      );
     }
 
     await this.enrolledCoursesRepository.create({
-      userId: userId as unknown as mongoose.Schema.Types.ObjectId,
-      courseId: courseId as unknown as mongoose.Schema.Types.ObjectId,
+      userId: getObjectId(userId),
+      courseId: getObjectId(courseId),
     });
 
     await this.walletRepository.creditWallet(
@@ -77,9 +84,9 @@ class EnrolledCourses implements IEnrolledCoursesService {
     );
 
     await this.transactionRepository.create({
-      payerId: userId as unknown as mongoose.Schema.Types.ObjectId,
+      payerId: getObjectId(userId),
       receiverId: course?.trainerId,
-      courseId: courseId as unknown as mongoose.Schema.Types.ObjectId,
+      courseId: getObjectId(courseId),
       amount: course.price,
       type: "payment",
       transactionId: orderId,
@@ -171,11 +178,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
       return errorCreator(COURSE_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    if (
-      enrolledCourse.completedLessons?.includes(
-        lessonId as unknown as mongoose.Schema.Types.ObjectId
-      )
-    ) {
+    if (enrolledCourse.completedLessons?.includes(getObjectId(lessonId))) {
       return await this.enrolledCoursesRepository.removeLessonComplete(
         userId,
         courseId,

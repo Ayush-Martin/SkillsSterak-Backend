@@ -18,6 +18,7 @@ import {
   INVALID_OTP_ERROR_MESSAGE,
   OTP_EXPIRED_ERROR_MESSAGE,
   OTP_NOT_VERIFIED_ERROR_MESSAGE,
+  USER_BLOCKED_ERROR_MESSAGE,
   USER_NOT_FOUND_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 
@@ -35,6 +36,7 @@ class AuthService implements IAuthService {
     const userExist = await this.userRepository.getUserByEmail(email);
 
     if (userExist) {
+      //if user exists should create a new user
       return errorCreator(EMAIL_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
     }
 
@@ -47,7 +49,7 @@ class AuthService implements IAuthService {
       JSON.stringify({ OTP, username, email, password: hashedPassword })
     );
 
-    // await sendMail(email, "OTP", OTP);
+    await sendMail(email, "OTP", OTP);
     console.log("OTP", OTP);
   }
 
@@ -117,7 +119,7 @@ class AuthService implements IAuthService {
     }
 
     if (user.isBlocked) {
-      errorCreator("you are blocked by admin", StatusCodes.FORBIDDEN);
+      errorCreator(USER_BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
     return user;
@@ -199,3 +201,5 @@ class AuthService implements IAuthService {
 }
 
 export default AuthService;
+
+

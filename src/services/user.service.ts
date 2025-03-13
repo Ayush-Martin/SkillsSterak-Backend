@@ -6,7 +6,7 @@ import { StatusCodes } from "../utils/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
-import mongoose from "mongoose";
+import { getObjectId } from "../utils/objectId";
 
 class UserService implements IUserService {
   constructor(
@@ -68,7 +68,7 @@ class UserService implements IUserService {
   }
 
   public async sendTrainerRequest(userId: string): Promise<void> {
-    const UserId = userId as unknown as mongoose.Schema.Types.ObjectId;
+    const UserId = getObjectId(userId);
     await this.trainerRequestRepository.create({ userId: UserId });
   }
 }

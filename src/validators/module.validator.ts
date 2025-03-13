@@ -9,10 +9,4 @@ export const addModuleValidator = (data: any) => {
   return schema.parse(data);
 };
 
-export const editModuleTitleValidator = (data: any) => {
-  const schema = z.object({
-    title: ModuleTitleValidationRule,
-  });
-
-  return schema.parse(data);
-};
+export const editModuleTitleValidator = addModuleValidator;

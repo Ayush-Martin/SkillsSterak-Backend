@@ -4,7 +4,6 @@ import {
   addModuleValidator,
   editModuleTitleValidator,
 } from "../validators/module.validator";
-import mongoose from "mongoose";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
@@ -14,10 +13,11 @@ import {
   MODULE_TITLE_CHANGED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { getObjectId } from "../utils/objectId";
 
 class ModuleController {
   constructor(private moduleService: IModuleService) {
-    binder(this)
+    binder(this);
   }
 
   public async addModule(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +26,7 @@ class ModuleController {
       const { title } = addModuleValidator(req.body);
 
       const module = await this.moduleService.createModule({
-        courseId: courseId as unknown as mongoose.Schema.Types.ObjectId,
+        courseId: getObjectId(courseId),
         title,
       });
 

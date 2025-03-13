@@ -6,7 +6,12 @@ import {
 } from "../validators/review.validator";
 import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../utils/statusCodes";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import {
+  GET_DATA_SUCCESS_MESSAGE,
+  REPLY_ADDED_SUCCESS_MESSAGE,
+  REVIEW_ADDED_SUCCESS_MESSAGE,
+  REVIEW_DELETE_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 import binder from "../utils/binder";
 
 class ReviewController {
@@ -28,7 +33,7 @@ class ReviewController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse("Review added", review));
+        .json(successResponse(REVIEW_ADDED_SUCCESS_MESSAGE, review));
     } catch (err) {
       next(err);
     }
@@ -60,11 +65,9 @@ class ReviewController {
         content
       );
 
-      console.log(reply);
-
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse("Reply added", reply));
+        .json(successResponse(REPLY_ADDED_SUCCESS_MESSAGE, reply));
     } catch (err) {
       next(err);
     }
@@ -90,7 +93,9 @@ class ReviewController {
 
       await this.reviewService.deleteReview(reviewId);
 
-      res.status(StatusCodes.OK).json(successResponse("review deleted"));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(REVIEW_DELETE_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }

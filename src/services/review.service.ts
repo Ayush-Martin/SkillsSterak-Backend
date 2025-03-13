@@ -1,9 +1,9 @@
-import mongoose, { mongo } from "mongoose";
 import { IReviewRepository } from "../interfaces/repositories/IReview.repository";
 import { IReviewService } from "../interfaces/services/IReview.service";
 import { IReview } from "../models/Review.model";
 import { IReplyRepository } from "../interfaces/repositories/IReply.repository";
 import { IReply } from "../models/Reply.model";
+import { getObjectId } from "../utils/objectId";
 
 class ReviewService implements IReviewService {
   constructor(
@@ -18,8 +18,8 @@ class ReviewService implements IReviewService {
     content: string
   ): Promise<IReview> {
     return await this.reviewRepository.create({
-      userId: userId as unknown as mongoose.Schema.Types.ObjectId,
-      courseId: courseId as unknown as mongoose.Schema.Types.ObjectId,
+      userId: getObjectId(userId),
+      courseId: getObjectId(courseId),
       rating,
       content,
     });
@@ -35,8 +35,8 @@ class ReviewService implements IReviewService {
     content: string
   ): Promise<IReply | null> {
     return await this.replyRepository.create({
-      userId: userId as unknown as mongoose.Schema.Types.ObjectId,
-      entityId: reviewId as unknown as mongoose.Schema.Types.ObjectId,
+      userId: getObjectId(userId),
+      entityId: getObjectId(reviewId),
       content,
     });
   }

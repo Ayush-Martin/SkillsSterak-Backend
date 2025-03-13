@@ -16,6 +16,7 @@ import upload from "../config/multer";
 //setting middleware
 router.use(trainerAuthMiddleware);
 
+//courses
 router
   .route("/courses")
   .get(courseController.getTrainerCourses)
@@ -65,8 +66,10 @@ router
   .put(lessonController.updateLessonDetails)
   .patch(upload.single("file"), lessonController.updateLessonFile);
 
+//students
 router.get("/students", trainerController.getStudentsWithEnrolledCourses);
 
+//wallet
 router.route("/wallet").get(walletController.getWalletInfo);
 
 export default router;

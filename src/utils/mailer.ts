@@ -14,18 +14,29 @@ const transporter = createTransport({
   },
 });
 
+/**
+ * Function to send an email using nodemailer
+ * @param to - The recipient's email address
+ * @param subject - The subject line of the email
+ * @param text - The body of the email
+ */
 export const sendMail = async (
   to: string,
   subject: string,
   text: string
 ): Promise<void> => {
-  await transporter.sendMail({
+  // Create the email message
+  const message = {
     from: NODEMAILER_USER,
     to,
     subject,
     text,
+    // Generate the HTML body of the email
     html: httpGenerator(subject, text),
-  });
+  };
+
+  // Send the email
+  await transporter.sendMail(message);
 };
 
 const httpGenerator = (subject: string, text: string) => {

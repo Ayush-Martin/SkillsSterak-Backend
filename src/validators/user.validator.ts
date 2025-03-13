@@ -14,12 +14,3 @@ export const updateProfileValidator = (user: any) => {
 
   return schema.parse(user);
 };
-
-export const getUsersValidator = (data: any) => {
-  const schema = z.object({
-    search: SearchValidationRule,
-    page: PageValidationRule,
-  });
-
-  return schema.parse(data);
-};

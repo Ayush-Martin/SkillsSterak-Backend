@@ -150,7 +150,6 @@ class CourseRepository
       price?: { $eq: 0 } | { $ne: 0 };
     }
   ): Promise<Array<ICourse>> {
-    console.log(filter);
     return await this.Course.aggregate([
       {
         $match: {

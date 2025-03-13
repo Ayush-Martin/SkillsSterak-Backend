@@ -4,6 +4,13 @@ import { errorResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../utils/statusCodes";
 import { z } from "zod";
 
+/**
+ * The error handler middleware.
+ * @param {ICustomError | z.ZodError} err The error to be handled.
+ * @param {Request} req The Express request object.
+ * @param {Response} res The Express response object.
+ * @param {NextFunction} next The Express next function.
+ */
 const errorHandler = (
   err: ICustomError | z.ZodError,
   req: Request,
@@ -12,6 +19,7 @@ const errorHandler = (
 ) => {
   console.log(err);
   if (!(err instanceof z.ZodError)) {
+    // Custom error
     res
       .status(Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR)
       .json(errorResponse(err.message));

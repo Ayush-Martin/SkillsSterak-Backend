@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import {
-  getUsersValidator,
-  updateProfileValidator,
-} from "../validators/user.validator";
+import { updateProfileValidator } from "../validators/user.validator";
 import { IUserService } from "../interfaces/services/IUser.service";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
@@ -13,8 +10,11 @@ import {
   NO_PROFILE_IMAGE_ERROR_MESSAGE,
   SEND_TRAINER_REQUEST_SUCCESS_MESSAGE,
   UPDATE_PROFILE_SUCCESS_MESSAGE,
+  USER_BLOCKED_SUCCESS_MESSAGE,
+  USER_UN_BLOCKED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { paginatedGetDataValidator } from "../validators/index.validator";
 
 class UserController {
   constructor(private userService: IUserService) {
@@ -89,7 +89,7 @@ class UserController {
 
   public async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { search, page } = getUsersValidator(req.query);
+      const { search, page } = paginatedGetDataValidator(req.query);
 
       const { users, currentPage, totalPages } =
         await this.userService.getUsers(search, page);
@@ -119,10 +119,15 @@ class UserController {
       const { userId } = req.params;
       const blockStatus = await this.userService.blockUnblockUser(userId);
       res.status(StatusCodes.OK).json(
-        successResponse(`user is ${blockStatus ? "blocked" : "unblocked"}`, {
-          userId,
-          blockStatus,
-        })
+        successResponse(
+          blockStatus
+            ? USER_BLOCKED_SUCCESS_MESSAGE
+            : USER_UN_BLOCKED_SUCCESS_MESSAGE,
+          {
+            userId,
+            blockStatus,
+          }
+        )
       );
     } catch (err) {
       next(err);

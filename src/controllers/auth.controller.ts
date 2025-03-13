@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { OAuth2Client } from "google-auth-library";
 import { IAuthService } from "../interfaces/services/IAuth.service";
 import { IJWTService } from "../interfaces/services/IJWT.service";
 import { successResponse } from "../utils/responseCreators";
@@ -24,18 +23,16 @@ import {
   VERIFY_OTP_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
 
 const REFRESH_TOKEN_EXPIRY_DAY =
   Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
-
-const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-
 class AuthController {
   constructor(
     public authService: IAuthService,
-    public jwtService: IJWTService
+    public jwtService: IJWTService,
+    private googleAuthService: IGoogleAuthService
   ) {
     binder(this);
   }
@@ -105,27 +102,25 @@ class AuthController {
   }
 
   public async logout(req: Request, res: Response, next: NextFunction) {
-    res
-      .clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-      })
-      .status(StatusCodes.OK)
-      .json(successResponse(LOGOUT_SUCCESS_MESSAGE));
+    try {
+      res
+        .clearCookie("refreshToken", {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+        })
+        .status(StatusCodes.OK)
+        .json(successResponse(LOGOUT_SUCCESS_MESSAGE));
+    } catch (err) {
+      next(err);
+    }
   }
 
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: GOOGLE_CLIENT_ID,
-      });
+      const { sub, email, name } = await this.googleAuthService.getUser(token);
 
-      const payload = ticket.getPayload()!;
-
-      const { sub, email, name } = payload;
       const user = await this.authService.googleAuth(sub, email!, name!);
       if (!user) return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
       const { accessToken, refreshToken } = await this.jwtService.createTokens(

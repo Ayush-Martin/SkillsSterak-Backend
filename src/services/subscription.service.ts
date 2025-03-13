@@ -5,9 +5,13 @@ import { ISubscriptionService } from "../interfaces/services/ISubscription.servi
 import razorpay from "../config/razorpay";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../utils/statusCodes";
-import mongoose from "mongoose";
 import { getThreeMonthsFromNow } from "../utils/date";
 import { ISubscription } from "../models/Subscription.model";
+import {
+  ORDER_NOT_FOUND_ERROR_MESSAGE,
+  ORDER_NOT_PAID_ERROR_MESSAGE,
+} from "../constants/responseMessages";
+import { getObjectId } from "../utils/objectId";
 
 class SubscriptionService implements ISubscriptionService {
   constructor(
@@ -33,26 +37,29 @@ class SubscriptionService implements ISubscriptionService {
   public async completeSubscription(orderId: string): Promise<void> {
     const order = await razorpay.orders.fetch(orderId);
 
-    const userId = order.notes?.userId;
+    const userId = order.notes?.userId as string | undefined;
 
     if (!userId) {
-      return errorCreator("Order not found", StatusCodes.NOT_FOUND);
+      return errorCreator(ORDER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
     if (order.status !== "paid") {
-      return errorCreator("Order not paid", StatusCodes.BAD_REQUEST);
+      return errorCreator(
+        ORDER_NOT_PAID_ERROR_MESSAGE,
+        StatusCodes.BAD_REQUEST
+      );
     }
 
     const transaction = await this.transactionRepository.create({
-      payerId: userId as unknown as mongoose.Schema.Types.ObjectId,
+      payerId: getObjectId(userId),
       amount: 1000,
       type: "subscription",
       transactionId: orderId,
     });
 
     await this.subscriptionRepository.create({
-      userId: userId as unknown as mongoose.Schema.Types.ObjectId,
-      transactionId: transaction._id as mongoose.Schema.Types.ObjectId,
+      userId: getObjectId(userId),
+      transactionId: getObjectId(transaction._id as string),
       endDate: getThreeMonthsFromNow(),
     });
   }

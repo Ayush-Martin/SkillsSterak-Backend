@@ -1,11 +1,15 @@
-// This function binds all methods of a class instance to the instance itself.
+/**
+ * Binds methods to the instance of the class.
+ * This is useful for TypeScript classes since methods are not automatically bound to the instance.
+ * @param instance - The instance of the class
+ */
 function binder<T extends object>(instance: T): void {
-  const proto = Object.getPrototypeOf(instance); // Get the prototype (methods) of the instance
+  const proto = Object.getPrototypeOf(instance);
 
   Object.getOwnPropertyNames(proto).forEach((methodName) => {
     const method = proto[methodName];
+
     if (typeof method === "function" && methodName !== "constructor") {
-      // Bind the method to the instance
       instance[methodName as keyof T] = method.bind(instance);
     }
   });

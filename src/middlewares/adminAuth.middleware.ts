@@ -23,6 +23,10 @@ const otpRepository = new OTPRepository();
 
 const authService = new AuthService(userRepository, otpRepository);
 
+/**
+ * Middleware to authenticate admin users.
+ * Verifies the access token from the request header and checks if the user is an admin.
+ */
 export const adminAuthMiddleware = async (
   req: Request,
   res: Response,

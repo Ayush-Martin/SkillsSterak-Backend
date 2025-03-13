@@ -24,7 +24,6 @@ class TransactionService implements ITransactionService {
 
     const totalTransactions =
       await this.transactionRepository.getUserTransactionCount(userId);
-    console.log(transactions, totalTransactions);
     const totalPages = Math.ceil(totalTransactions / RECORDS_PER_PAGE);
     return { transactions, currentPage: page, totalPages };
   }

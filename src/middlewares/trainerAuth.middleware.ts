@@ -23,11 +23,15 @@ const otpRepository = new OTPRepository();
 
 const authService = new AuthService(userRepository, otpRepository);
 
+/**
+ * Middleware to authenticate trainer users.
+ * Verifies the access token from the request header and checks if the user is a trainer.
+ */
 export const trainerAuthMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const token = extractTokenFromHeader(req.get("authorization"));
 

@@ -18,8 +18,10 @@ import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
 
-router.get("/courses", courseController.getCourses);
 router.get("/categories", categoryController.getAllCategories);
+
+//course
+router.get("/courses", courseController.getCourses);
 
 router
   .route("/courses/:courseId")
@@ -52,6 +54,7 @@ router.post(
 
 router.get("/courses/:courseId/access", enrolledCourseController.checkEnrolled);
 
+//enrolled courses
 router.get("/enrolledCourses", enrolledCourseController.getEnrolledCourses);
 
 router.get(
@@ -68,15 +71,19 @@ router
   .get(lessonController.getLesson)
   .patch(enrolledCourseController.completeUnCompleteLesson);
 
+//profile
 router
   .route("/profile")
   .patch(multerUpload.single("image"), userController.changeProfileImage)
   .put(userController.updateProfile);
 
+//transactions
 router.get("/transactions", transactionController.getUserTransactions);
 
+//trainer request
 router.get("/trainerRequest", userController.sendTrainerRequest);
 
+//subscriptions
 router
   .route("/subscription")
   .get(subscriptionController.createSubscriptionOrder)

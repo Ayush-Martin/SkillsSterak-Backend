@@ -1,17 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import { ILessonService } from "../interfaces/services/ILesson.service";
-import { addLessonValidator } from "../validators/lesson.validator";
-import { unknown } from "zod";
-import { Schema } from "mongoose";
+import {
+  addLessonValidator,
+  updateLessonDetailsValidator,
+} from "../validators/lesson.validator";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   GET_DATA_SUCCESS_MESSAGE,
   LESSON_ADDED_SUCCESS_MESSAGE,
   LESSON_DELETED_SUCCESS_MESSAGE,
+  LESSON_DETAILS_UPDATED_SUCCESS_MESSAGE,
+  LESSON_FILE_UPDATED_SUCCESS_MESSAGE,
+  LESSON_NO_FILE_ATTACHED_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import errorCreator from "../utils/customError";
 import binder from "../utils/binder";
+import { getObjectId } from "../utils/objectId";
 
 class LessonController {
   constructor(private lessonService: ILessonService) {
@@ -25,15 +30,18 @@ class LessonController {
       const { title, description, type } = addLessonValidator(req.body);
 
       if (!file) {
-        return errorCreator("File is required", StatusCodes.BAD_REQUEST);
+        return errorCreator(
+          LESSON_NO_FILE_ATTACHED_ERROR_MESSAGE,
+          StatusCodes.BAD_REQUEST
+        );
       }
 
       const data = await this.lessonService.createLesson({
         title,
         description,
         type,
-        courseId: courseId as unknown as Schema.Types.ObjectId,
-        moduleId: moduleId as unknown as Schema.Types.ObjectId,
+        courseId: getObjectId(courseId),
+        moduleId: getObjectId(moduleId),
         path: file.path,
       });
 
@@ -94,7 +102,7 @@ class LessonController {
   ) {
     try {
       const { lessonId } = req.params;
-      const { title, description } = req.body;
+      const { title, description } = updateLessonDetailsValidator(req.body);
 
       const lesson = await this.lessonService.updateLesson(lessonId, {
         title,
@@ -103,7 +111,7 @@ class LessonController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse("updated lesson details", lesson));
+        .json(successResponse(LESSON_DETAILS_UPDATED_SUCCESS_MESSAGE, lesson));
     } catch (err) {
       next(err);
     }
@@ -119,7 +127,10 @@ class LessonController {
       const file = req.file;
 
       if (!file) {
-        return errorCreator("File is required", StatusCodes.BAD_REQUEST);
+        return errorCreator(
+          LESSON_NO_FILE_ATTACHED_ERROR_MESSAGE,
+          StatusCodes.BAD_REQUEST
+        );
       }
 
       const lesson = await this.lessonService.updateLesson(lessonId, {
@@ -127,7 +138,9 @@ class LessonController {
         type: file.mimetype === "application/pdf" ? "pdf" : "video",
       });
 
-      res.status(StatusCodes.OK).json(successResponse("updated file", lesson));
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(LESSON_FILE_UPDATED_SUCCESS_MESSAGE, lesson));
     } catch (err) {
       next(err);
     }

@@ -3,9 +3,7 @@ import { ICourseService } from "../interfaces/services/ICourse.service";
 import {
   approveRejectCourseValidator,
   createCourseValidator,
-  getAdminCoursesValidator,
   getCoursesValidator,
-  getTrainerCoursesValidator,
   updateCourseBasicDetailsValidator,
   updateCourseRequirementsValidator,
   updateCourseSkillsCoveredValidator,
@@ -13,16 +11,20 @@ import {
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
+  COURSE_APPROVED_SUCCESS_MESSAGE,
   COURSE_CREATED_SUCCESS_MESSAGE,
+  COURSE_LISTED_SUCCESS_MESSAGE,
+  COURSE_REJECTED_SUCCESS_MESSAGE,
   COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE,
+  COURSE_UN_LISTED_SUCCESS_MESSAGE,
   GET_DATA_SUCCESS_MESSAGE,
   UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE,
   UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE,
   UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
-import mongoose from "mongoose";
 import binder from "../utils/binder";
-
+import { paginatedGetDataValidator } from "../validators/index.validator";
+import { getObjectId } from "../utils/objectId";
 
 class CourseController {
   constructor(private courseService: ICourseService) {
@@ -31,8 +33,7 @@ class CourseController {
 
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const trainerId =
-        req.userId! as unknown as mongoose.Schema.Types.ObjectId;
+      const trainerId = getObjectId(req.userId!);
       const thumbnail = req.file;
       const courseData = createCourseValidator(req.body);
 
@@ -73,15 +74,15 @@ class CourseController {
   ) {
     try {
       const { courseId } = req.params;
-      console.log(courseId);
-
       const isListed = await this.courseService.listUnListCourse(courseId);
 
       res
         .status(StatusCodes.OK)
         .json(
           successResponse(
-            `course has been ${isListed ? "listed" : "unlisted"}`,
+            isListed
+              ? COURSE_LISTED_SUCCESS_MESSAGE
+              : COURSE_UN_LISTED_SUCCESS_MESSAGE,
             { courseId, isListed }
           )
         );
@@ -105,7 +106,12 @@ class CourseController {
       res
         .status(StatusCodes.OK)
         .json(
-          successResponse(`course has been ${status}`, { courseId, status })
+          successResponse(
+            status == "approved"
+              ? COURSE_APPROVED_SUCCESS_MESSAGE
+              : COURSE_REJECTED_SUCCESS_MESSAGE,
+            { courseId, status }
+          )
         );
     } catch (err) {
       next(err);
@@ -136,7 +142,7 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const { page, search } = getTrainerCoursesValidator(req.query);
+      const { page, search } = paginatedGetDataValidator(req.query);
       const trainerId = req.userId!;
 
       const data = await this.courseService.getTrainerCourses(
@@ -159,7 +165,7 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const { page, search } = getAdminCoursesValidator(req.query);
+      const { page, search } = paginatedGetDataValidator(req.query);
 
       const data = await this.courseService.getAdminCourses(search, page);
 

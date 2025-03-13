@@ -3,16 +3,18 @@ import { ICategoryService } from "../interfaces/services/ICategory.service";
 import {
   addCategoryValidator,
   editCategoryValidator,
-  getCategoriesValidator,
 } from "../validators/category.validator";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   ADD_CATEGORY_SUCCESS_MESSAGE,
+  CATEGORY_LISTED_SUCCESS_MESSAGE,
+  CATEGORY_UN_LISTED_SUCCESS_MESSAGE,
   EDIT_CATEGORY_SUCCESS_MESSAGE,
   GET_DATA_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { paginatedGetDataValidator } from "../validators/index.validator";
 
 class CategoryController {
   constructor(private categoryService: ICategoryService) {
@@ -68,7 +70,9 @@ class CategoryController {
         .status(StatusCodes.OK)
         .json(
           successResponse(
-            `category has been ${isListed ? "listed" : "unlisted"}`,
+            isListed
+              ? CATEGORY_LISTED_SUCCESS_MESSAGE
+              : CATEGORY_UN_LISTED_SUCCESS_MESSAGE,
             { categoryId, isListed }
           )
         );
@@ -95,7 +99,7 @@ class CategoryController {
 
   public async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search } = getCategoriesValidator(req.query);
+      const { page, search } = paginatedGetDataValidator(req.query);
 
       const data = await this.categoryService.getCategories(search, page);
 

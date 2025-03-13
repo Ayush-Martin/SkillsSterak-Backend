@@ -10,9 +10,12 @@ import {
   LESSON_COMPLETED_SUCCESS_MESSAGE,
   LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
-import mongoose from "mongoose";
 import binder from "../utils/binder";
-
+import {
+  pageValidator,
+  razorpayCompletePurchaseValidator,
+} from "../validators/index.validator";
+import { getObjectId } from "../utils/objectId";
 
 class EnrolledCourses {
   constructor(private enrolledCoursesService: IEnrolledCoursesService) {
@@ -48,8 +51,7 @@ class EnrolledCourses {
     next: NextFunction
   ) {
     try {
-      const { orderId } = req.body;
-      console.log(orderId, req.body);
+      const { orderId } = razorpayCompletePurchaseValidator(req.body);
       await this.enrolledCoursesService.completePurchase(orderId);
       res
         .status(StatusCodes.OK)
@@ -79,7 +81,7 @@ class EnrolledCourses {
   ) {
     try {
       const userId = req.userId!;
-      const page = parseInt(req.query.page as string) || 1;
+      const { page } = pageValidator(req.query);
 
       const enrolledCourses =
         await this.enrolledCoursesService.getEnrolledCourses(userId, page);
@@ -99,7 +101,7 @@ class EnrolledCourses {
   ) {
     try {
       const userId = req.userId!;
-      const page = parseInt(req.query.page as string) || 1;
+      const { page } = pageValidator(req.query);
 
       const enrolledCourses =
         await this.enrolledCoursesService.getCompletedEnrolledCourses(
@@ -156,9 +158,7 @@ class EnrolledCourses {
         .status(StatusCodes.OK)
         .json(
           successResponse(
-            enrolledCourse?.completedLessons?.includes(
-              lessonId as unknown as mongoose.Schema.Types.ObjectId
-            )
+            enrolledCourse?.completedLessons?.includes(getObjectId(lessonId))
               ? LESSON_COMPLETED_SUCCESS_MESSAGE
               : LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
             enrolledCourse

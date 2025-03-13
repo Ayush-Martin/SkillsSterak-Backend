@@ -8,7 +8,13 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 const ACCESS_TOKEN_EXPIRY_MIN = Number(process.env.ACCESS_TOKEN_EXPIRY_MIN)!;
 const REFRESH_TOKEN_EXPIRY_DAY = Number(process.env.REFRESH_TOKEN_EXPIRY_DAY)!;
 
-export const generateAccessToken = (user: Partial<IUser>) => {
+/**
+ * Generates a JSON Web Token to use as an access token.
+ * The token will include the user's id, email and other information except the password.
+ * The token will expire after ACCESS_TOKEN_EXPIRY_MIN minutes.
+ * @param user User object
+ */
+export const generateAccessToken = (user: Partial<IUser>): string => {
   return sign(
     { sub: user._id, ...user, password: undefined }, //removing password from token
     ACCESS_TOKEN_SECRET,
@@ -18,15 +24,22 @@ export const generateAccessToken = (user: Partial<IUser>) => {
   );
 };
 
+/**
+ * Verifies a given token.
+ * @param token The token to verify
+ * @returns A Promise that resolves with the payload of the token if it is valid, or rejects with an error if it is not.
+ */
 export const verifyToken = (token: string): Promise<any> =>
   new Promise((resolve, reject) => {
     verify(token, ACCESS_TOKEN_SECRET, (err, payload) => {
-      if (err)
+      if (err) {
+        // If the token is invalid, reject with an error
         return reject(errorCreator("Invalid token", StatusCodes.UNAUTHORIZED));
+      }
+      // If the token is valid, resolve with the payload
       resolve(payload);
     });
   });
-
 
 export const generateRefreshToken = (user: Partial<IUser>) => {
   return sign({ sub: user._id, email: user.email }, REFRESH_TOKEN_SECRET, {
@@ -34,11 +47,17 @@ export const generateRefreshToken = (user: Partial<IUser>) => {
   });
 };
 
+/**
+ * Extracts a token from an authorization header.
+ * @param authHeader The authorization header. If missing or malformed, returns null.
+ * @returns The extracted token, or null if the header is invalid.
+ */
 export const extractTokenFromHeader = (
   authHeader: string | undefined
 ): string | null => {
   if (!authHeader) return null;
   const parts = authHeader.split(" ");
-  if (parts.length !== 2 || parts[0] !== "Bearer") return null;
+  if (parts.length !== 2) return null;
+  if (parts[0] !== "Bearer") return null;
   return parts[1];
 };

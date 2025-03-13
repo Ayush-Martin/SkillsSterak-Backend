@@ -21,7 +21,6 @@ import {
   INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
-import mongoose from "mongoose";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -32,6 +31,9 @@ const jwtService = new JWTService(refreshTokenRepository);
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
+/**
+ * Middleware to verify the access token sent in the Authorization header.
+ */
 export const accessTokenValidator = async (
   req: Request,
   res: Response,
@@ -61,6 +63,7 @@ export const accessTokenValidator = async (
       errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
+
     req.userId = userData?._id as string;
     next();
   } catch (err) {
@@ -68,6 +71,11 @@ export const accessTokenValidator = async (
   }
 };
 
+/**
+ * Middleware to validate the refresh token sent in the cookie.
+ * If the token is valid, it is deleted from the DB and the user ID is assigned to the request object.
+
+ */
 export const refreshTokenValidator = async (
   req: Request,
   res: Response,
@@ -84,6 +92,14 @@ export const refreshTokenValidator = async (
     }
 
     const validRefreshToken = await jwtService.getRefreshToken(refreshToken);
+    if (!validRefreshToken) {
+      req.cookies.remove();
+      errorCreator(
+        INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
+      return;
+    }
 
     jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, payload) => {
       try {
@@ -93,10 +109,11 @@ export const refreshTokenValidator = async (
             INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
             StatusCodes.UNAUTHORIZED
           );
+        } else {
+          req.userId = payload?.sub as string;
+          await jwtService.deleteRefreshToken(refreshToken);
+          next();
         }
-        req.userId = payload?.sub as string;
-        await jwtService.deleteRefreshToken(refreshToken);
-        next();
       } catch (err) {
         next(err);
       }

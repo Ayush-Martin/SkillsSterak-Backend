@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import { IWalletService } from "../interfaces/services/IWallet.service";
 import { COURSE_COMMISSION_RATE } from "../constants/general";
+import { getObjectId } from "../utils/objectId";
 
 class WalletService implements IWalletService {
   constructor(
@@ -18,7 +18,7 @@ class WalletService implements IWalletService {
     const wallet = await this.walletRepository.getUserWalletInfo(userId);
     if (!wallet) {
       await this.walletRepository.create({
-        userId: userId as unknown as mongoose.Schema.Types.ObjectId,
+        userId: getObjectId(userId),
       });
 
       return { balance: 0, commission: 0, redeemable: 0 };
@@ -26,7 +26,6 @@ class WalletService implements IWalletService {
 
     const calculatedCommission = wallet.balance * COURSE_COMMISSION_RATE;
     const calculatedRedeemableAmount = wallet.balance - calculatedCommission;
-    console.log(calculatedCommission, calculatedRedeemableAmount, wallet);
     return {
       balance: wallet.balance,
       commission: calculatedCommission,

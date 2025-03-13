@@ -2,12 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
 import { StatusCodes } from "../utils/statusCodes";
 import { successResponse } from "../utils/responseCreators";
+import { approveRejectRequestValidator } from "../validators/trainerRequest.validator";
 import {
-  approveRejectRequestValidator,
-  getTrainerRequestValidator,
-} from "../validators/trainerRequest.validator";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+  GET_DATA_SUCCESS_MESSAGE,
+  TRAINER_REQUEST_APPROVED_SUCCESS_MESSAGE,
+  TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { pageValidator } from "../validators/index.validator";
 
 class TrainerRequestController {
   constructor(private trainerService: ITrainerService) {
@@ -20,7 +22,7 @@ class TrainerRequestController {
     next: NextFunction
   ) {
     try {
-      const { page } = getTrainerRequestValidator(req.query);
+      const { page } = pageValidator(req.query);
 
       const { users, currentPage, totalPages } =
         await this.trainerService.getTrainerRequest(page);
@@ -50,7 +52,14 @@ class TrainerRequestController {
 
     res
       .status(StatusCodes.OK)
-      .json(successResponse(`Request has been ${status}`, { userId, status }));
+      .json(
+        successResponse(
+          status == "approved"
+            ? TRAINER_REQUEST_APPROVED_SUCCESS_MESSAGE
+            : TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE,
+          { userId, status }
+        )
+      );
   }
 }
 

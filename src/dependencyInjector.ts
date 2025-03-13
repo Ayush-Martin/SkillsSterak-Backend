@@ -44,6 +44,7 @@ import TrainerService from "./services/trainer.service";
 import TransactionService from "./services/transaction.service";
 import UserService from "./services/user.service";
 import WalletService from "./services/wallet.service";
+import GoogleAuthService from "./services/googleAuth.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -109,9 +110,14 @@ const walletService = new WalletService(
   walletRepository,
   transactionRepository
 );
+const googleAuthService = new GoogleAuthService();
 
 // Instantiate Controllers
-export const authController = new AuthController(authService, jwtService);
+export const authController = new AuthController(
+  authService,
+  jwtService,
+  googleAuthService
+);
 export const categoryController = new CategoryController(categoryService);
 export const courseController = new CourseController(courseService);
 export const enrolledCourseController = new EnrolledCoursesController(

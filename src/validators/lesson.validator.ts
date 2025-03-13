@@ -14,3 +14,12 @@ export const addLessonValidator = (data: any) => {
 
   return schema.parse(data);
 };
+
+export const updateLessonDetailsValidator = (data: any) => {
+  const schema = z.object({
+    title: LessonTitleValidationRule,
+    description: LessonDescriptionValidationRule,
+  });
+
+  return schema.parse(data);
+};

@@ -1,5 +1,5 @@
 import { IJWTService } from "../interfaces/services/IJWT.service";
-import { IRefreshTokenRepository } from "../interfaces/IRefreshToken.repository";
+import { IRefreshTokenRepository } from "../interfaces/repositories/IRefreshToken.repository";
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { generateAccessToken, generateRefreshToken } from "../utils/JWT";

@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
+import {
+  GET_DATA_SUCCESS_MESSAGE,
+  SUBSCRIPTION_ADDED_SUCCESS_MESSAGE,
+} from "../constants/responseMessages";
 import { StatusCodes } from "../utils/statusCodes";
 import binder from "../utils/binder";
 
-
 class SubscriptionController {
   constructor(private subscriptionService: ISubscriptionService) {
-    binder(this)
+    binder(this);
   }
 
   public async createSubscriptionOrder(
@@ -34,11 +36,10 @@ class SubscriptionController {
   ) {
     try {
       const { orderId } = req.body;
-      console.log(orderId, req.body);
       await this.subscriptionService.completeSubscription(orderId);
       res
         .status(StatusCodes.OK)
-        .json(successResponse("Subscription completed successfully"));
+        .json(successResponse(SUBSCRIPTION_ADDED_SUCCESS_MESSAGE));
     } catch (error) {
       next(error);
     }

@@ -1,5 +1,5 @@
 import { IRefreshToken } from "../models/RefreshToken.model";
-import { IRefreshTokenRepository } from "../interfaces/IRefreshToken.repository";
+import { IRefreshTokenRepository } from "../interfaces/repositories/IRefreshToken.repository";
 import { Model } from "mongoose";
 import BaseRepository from "./Base.repository";
 
