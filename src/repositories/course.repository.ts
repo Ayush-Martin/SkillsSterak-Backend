@@ -136,6 +136,10 @@ class CourseRepository
     return data[0];
   }
 
+  public async getAdminCourseCount(search: RegExp): Promise<number> {
+    return await this.Course.countDocuments({ title: search });
+  }
+
   public async getTrainerCourse(courseId: string): Promise<ICourse | null> {
     return await this.Course.findById(courseId);
   }
@@ -271,7 +275,11 @@ class CourseRepository
   }
 
   public async getCourseCount(search: RegExp): Promise<number> {
-    return await this.Course.countDocuments({ title: search });
+    return await this.Course.countDocuments({
+      title: search,
+      isListed: true,
+      isValid: true,
+    });
   }
 
   public async getTrainerCourseCount(

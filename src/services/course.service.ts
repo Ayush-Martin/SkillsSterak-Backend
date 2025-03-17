@@ -8,7 +8,7 @@ import { ICourseRepository } from "../interfaces/repositories/ICourse.repository
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import { ICourse } from "../models/Course.model";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 
 class CourseService implements ICourseService {
   constructor(private courseRepository: ICourseRepository) {}

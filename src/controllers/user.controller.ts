@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { updateProfileValidator } from "../validators/user.validator";
 import { IUserService } from "../interfaces/services/IUser.service";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE,

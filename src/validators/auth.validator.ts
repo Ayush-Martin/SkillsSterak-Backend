@@ -1,6 +1,6 @@
 import { z } from "zod";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { IUser } from "../models/User.model";
 import {
   EmailValidationRule,

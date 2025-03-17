@@ -1,18 +1,13 @@
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { config } from "dotenv";
 import path from "path";
-config();
-
-const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME!;
-const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY!;
-const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET!;
+import envConfig from "./env";
 
 cloudinary.config({
-  cloud_name: CLOUDINARY_CLOUD_NAME,
-  api_key: CLOUDINARY_API_KEY,
-  api_secret: CLOUDINARY_API_SECRET,
+  cloud_name: envConfig.CLOUDINARY_CLOUD_NAME,
+  api_key: envConfig.CLOUDINARY_API_KEY,
+  api_secret: envConfig.CLOUDINARY_API_SECRET,
 });
 
 const storage = new CloudinaryStorage({

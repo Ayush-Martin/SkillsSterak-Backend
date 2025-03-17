@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import SubscriptionModel from "../models/Subscription.model";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import {
   SUBSCRIPTION_EXPIRED_ERROR_MESSAGE,
   USER_NOT_SUBSCRIBED_ERROR_MESSAGE,

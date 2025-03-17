@@ -5,7 +5,7 @@ import {
   addReviewValidator,
 } from "../validators/review.validator";
 import { successResponse } from "../utils/responseCreators";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import {
   GET_DATA_SUCCESS_MESSAGE,
   REPLY_ADDED_SUCCESS_MESSAGE,

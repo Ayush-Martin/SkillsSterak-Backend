@@ -12,6 +12,7 @@ import TrainerRequestModel from "./models/TrainerRequest.model";
 import TransactionModel from "./models/Transaction.model";
 import UserModel from "./models/User.model";
 import WalletModel from "./models/Wallet.model";
+import NotificationModel from "./models/Notification.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -29,6 +30,7 @@ import TrainerRequestRepository from "./repositories/trainerRequest.repository";
 import TransactionRepository from "./repositories/transaction.repository";
 import UserRepository from "./repositories/user.repository";
 import WalletRepository from "./repositories/wallet.repository";
+import NotificationRepository from "./repositories/notification.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -45,6 +47,7 @@ import TransactionService from "./services/transaction.service";
 import UserService from "./services/user.service";
 import WalletService from "./services/wallet.service";
 import GoogleAuthService from "./services/googleAuth.service";
+import NotificationService from "./services/notification.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -81,6 +84,7 @@ const trainerRequestRepository = new TrainerRequestRepository(
 const transactionRepository = new TransactionRepository(TransactionModel);
 const userRepository = new UserRepository(UserModel);
 const walletRepository = new WalletRepository(WalletModel);
+const notificationRepository = new NotificationRepository(NotificationModel);
 
 // Instantiate Services
 const authService = new AuthService(userRepository, otpRepository);
@@ -111,6 +115,11 @@ const walletService = new WalletService(
   transactionRepository
 );
 const googleAuthService = new GoogleAuthService();
+const notificationService = new NotificationService(
+  notificationRepository,
+  userRepository,
+  trainerRepository
+);
 
 // Instantiate Controllers
 export const authController = new AuthController(
@@ -119,7 +128,10 @@ export const authController = new AuthController(
   googleAuthService
 );
 export const categoryController = new CategoryController(categoryService);
-export const courseController = new CourseController(courseService);
+export const courseController = new CourseController(
+  courseService,
+  notificationService
+);
 export const enrolledCourseController = new EnrolledCoursesController(
   enrolledCoursesService
 );

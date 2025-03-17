@@ -5,7 +5,7 @@ import {
   GET_DATA_SUCCESS_MESSAGE,
   SUBSCRIPTION_ADDED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
 
 class SubscriptionController {

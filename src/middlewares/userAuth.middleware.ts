@@ -1,5 +1,5 @@
 import { NextFunction, Request, response, Response } from "express";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import jwt from "jsonwebtoken";
 
@@ -21,6 +21,7 @@ import {
   INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
+import envConfig from "../config/env";
 
 const userRepository = new UserRepository(UserModel);
 const otpRepository = new OTPRepository();
@@ -28,8 +29,6 @@ const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
 
 const authService = new AuthService(userRepository, otpRepository);
 const jwtService = new JWTService(refreshTokenRepository);
-
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
 /**
  * Middleware to verify the access token sent in the Authorization header.
@@ -62,7 +61,6 @@ export const accessTokenValidator = async (
     if (userData?.isBlocked) {
       errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
-
 
     req.userId = userData?._id as string;
     next();
@@ -101,23 +99,27 @@ export const refreshTokenValidator = async (
       return;
     }
 
-    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, payload) => {
-      try {
-        if (err) {
-          req.cookies.remove();
-          errorCreator(
-            INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
-            StatusCodes.UNAUTHORIZED
-          );
-        } else {
-          req.userId = payload?.sub as string;
-          await jwtService.deleteRefreshToken(refreshToken);
-          next();
+    jwt.verify(
+      refreshToken,
+      envConfig.REFRESH_TOKEN_SECRET,
+      async (err, payload) => {
+        try {
+          if (err) {
+            req.cookies.remove();
+            errorCreator(
+              INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+              StatusCodes.UNAUTHORIZED
+            );
+          } else {
+            req.userId = payload?.sub as string;
+            await jwtService.deleteRefreshToken(refreshToken);
+            next();
+          }
+        } catch (err) {
+          next(err);
         }
-      } catch (err) {
-        next(err);
       }
-    });
+    );
   } catch (err) {
     next(err);
   }

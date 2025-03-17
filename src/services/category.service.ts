@@ -7,7 +7,7 @@ import { ICategoryRepository } from "../interfaces/repositories/ICategory.reposi
 import { ICategoryService } from "../interfaces/services/ICategory.service";
 import { ICategory } from "../models/Category.model";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 
 class CategoryService implements ICategoryService {
   constructor(private categoryRepository: ICategoryRepository) {}

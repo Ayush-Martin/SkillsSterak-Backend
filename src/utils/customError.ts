@@ -1,4 +1,4 @@
-import { StatusCodes } from "./statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { ICustomError } from "../interfaces/ICustomError";
 
 /**

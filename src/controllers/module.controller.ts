@@ -4,7 +4,7 @@ import {
   addModuleValidator,
   editModuleTitleValidator,
 } from "../validators/module.validator";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   GET_DATA_SUCCESS_MESSAGE,

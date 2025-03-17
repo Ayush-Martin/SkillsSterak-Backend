@@ -1,16 +1,11 @@
 import { createTransport } from "nodemailer";
-import { config } from "dotenv";
-config();
-
-const NODEMAILER_USER = process.env.NODEMAILER_USER!;
-const NODEMAILER_PASSWORD = process.env.NODEMAILER_PASSWORD!;
-const APP_NAME = process.env.APP_NAME!;
+import envConfig from "../config/env";
 
 const transporter = createTransport({
   service: "gmail",
   auth: {
-    user: NODEMAILER_USER,
-    pass: NODEMAILER_PASSWORD,
+    user: envConfig.NODEMAILER_USER,
+    pass: envConfig.NODEMAILER_PASSWORD,
   },
 });
 
@@ -27,7 +22,7 @@ export const sendMail = async (
 ): Promise<void> => {
   // Create the email message
   const message = {
-    from: NODEMAILER_USER,
+    from: envConfig.NODEMAILER_USER,
     to,
     subject,
     text,
@@ -45,7 +40,7 @@ const httpGenerator = (subject: string, text: string) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${APP_NAME} Email</title>
+    <title>${envConfig.APP_NAME} Email</title>
     <style>
       body {
         margin: 0;
@@ -101,7 +96,7 @@ const httpGenerator = (subject: string, text: string) => {
     <div class="email-container">
       <!-- Header -->
       <div class="header">
-        <h1>${APP_NAME}</h1>
+        <h1>${envConfig.APP_NAME}</h1>
       </div>
 
       <!-- Body -->
@@ -113,7 +108,9 @@ const httpGenerator = (subject: string, text: string) => {
       <!-- Footer -->
       <div class="footer">
         <p>
-          &copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+          &copy; ${new Date().getFullYear()} ${
+    envConfig.APP_NAME
+  }. All rights reserved.
         </p>
       </div>
     </div>

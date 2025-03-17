@@ -4,7 +4,7 @@ import {
   addCategoryValidator,
   editCategoryValidator,
 } from "../validators/category.validator";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   ADD_CATEGORY_SUCCESS_MESSAGE,

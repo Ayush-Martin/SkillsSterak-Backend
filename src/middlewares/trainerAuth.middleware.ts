@@ -1,5 +1,5 @@
 import { NextFunction, Request, response, Response } from "express";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 
 //models

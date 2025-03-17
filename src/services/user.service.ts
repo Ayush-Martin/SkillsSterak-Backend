@@ -2,7 +2,7 @@ import { IUserService } from "../interfaces/services/IUser.service";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";

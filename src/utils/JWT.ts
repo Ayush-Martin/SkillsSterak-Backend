@@ -1,12 +1,8 @@
 import { sign, verify } from "jsonwebtoken";
 import { IUser } from "../models/User.model";
 import errorCreator from "./customError";
-import { StatusCodes } from "./statusCodes";
-
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
-const ACCESS_TOKEN_EXPIRY_MIN = Number(process.env.ACCESS_TOKEN_EXPIRY_MIN)!;
-const REFRESH_TOKEN_EXPIRY_DAY = Number(process.env.REFRESH_TOKEN_EXPIRY_DAY)!;
+import { StatusCodes } from "../constants/statusCodes";
+import envConfig from "../config/env";
 
 /**
  * Generates a JSON Web Token to use as an access token.
@@ -17,9 +13,9 @@ const REFRESH_TOKEN_EXPIRY_DAY = Number(process.env.REFRESH_TOKEN_EXPIRY_DAY)!;
 export const generateAccessToken = (user: Partial<IUser>): string => {
   return sign(
     { sub: user._id, ...user, password: undefined }, //removing password from token
-    ACCESS_TOKEN_SECRET,
+    envConfig.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: `${ACCESS_TOKEN_EXPIRY_MIN}m`,
+      expiresIn: `${envConfig.ACCESS_TOKEN_EXPIRY_MIN}m`,
     }
   );
 };
@@ -31,7 +27,7 @@ export const generateAccessToken = (user: Partial<IUser>): string => {
  */
 export const verifyToken = (token: string): Promise<any> =>
   new Promise((resolve, reject) => {
-    verify(token, ACCESS_TOKEN_SECRET, (err, payload) => {
+    verify(token, envConfig.ACCESS_TOKEN_SECRET, (err, payload) => {
       if (err) {
         // If the token is invalid, reject with an error
         return reject(errorCreator("Invalid token", StatusCodes.UNAUTHORIZED));
@@ -42,9 +38,13 @@ export const verifyToken = (token: string): Promise<any> =>
   });
 
 export const generateRefreshToken = (user: Partial<IUser>) => {
-  return sign({ sub: user._id, email: user.email }, REFRESH_TOKEN_SECRET, {
-    expiresIn: `${REFRESH_TOKEN_EXPIRY_DAY}d`,
-  });
+  return sign(
+    { sub: user._id, email: user.email },
+    envConfig.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: `${envConfig.REFRESH_TOKEN_EXPIRY_DAY}d`,
+    }
+  );
 };
 
 /**

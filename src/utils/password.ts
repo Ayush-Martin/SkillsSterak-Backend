@@ -1,8 +1,6 @@
 import { hashSync, compareSync } from "bcryptjs";
-import { config } from "dotenv";
-config();
+import envConfig from "../config/env";
 
-const PASSWORD_SALT_ROUNDS = Number(process.env.PASSWORD_SALT_ROUNDS) || 12;
 
 /**
  * Hash a password using bcrypt
@@ -10,7 +8,7 @@ const PASSWORD_SALT_ROUNDS = Number(process.env.PASSWORD_SALT_ROUNDS) || 12;
  * @returns a string representing the hashed password
  */
 export const hashPassword = (password: string): string => {
-  return hashSync(password, PASSWORD_SALT_ROUNDS);
+  return hashSync(password, envConfig.PASSWORD_SALT_ROUNDS);
 };
 
 /**

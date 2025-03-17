@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { approveRejectRequestValidator } from "../validators/trainerRequest.validator";
 import {

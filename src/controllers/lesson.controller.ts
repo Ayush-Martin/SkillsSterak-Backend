@@ -4,7 +4,7 @@ import {
   addLessonValidator,
   updateLessonDetailsValidator,
 } from "../validators/lesson.validator";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   GET_DATA_SUCCESS_MESSAGE,

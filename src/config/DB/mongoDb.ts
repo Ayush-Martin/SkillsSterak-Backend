@@ -1,9 +1,7 @@
 import { connect } from "mongoose";
-import { config } from "dotenv";
+import envConfig from "../env";
 
-config();
-
-const MONGO_URI = process.env.MONGO_URI || "";
+const MONGO_URI = envConfig.MONGO_URI;
 
 /**
  * Connects to the MongoDB database using the MONGO_URI environment variable.

@@ -19,6 +19,8 @@ export interface ITrainerRepository extends BaseRepository<IUser> {
     skip: number,
     limit: number
   ): Promise<Array<IUser>>;
+  /** Gets students */
+  getStudentsIds(trainerId: string): Promise<Array<string>>;
   /** Gets total students count*/
   getTotalStudents(trainerId: string, search: RegExp): Promise<number>;
 }

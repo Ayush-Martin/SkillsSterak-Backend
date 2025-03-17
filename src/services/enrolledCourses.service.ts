@@ -4,7 +4,7 @@ import { IEnrolledCourses } from "../models/EnrolledCourse.model";
 import razorpay from "../config/razorpay";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { Orders } from "razorpay/dist/types/orders";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";

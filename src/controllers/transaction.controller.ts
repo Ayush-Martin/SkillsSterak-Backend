@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { pageValidator } from "../validators/index.validator";

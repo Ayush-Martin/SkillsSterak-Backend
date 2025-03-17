@@ -6,7 +6,7 @@ import {
 } from "../interfaces/services/IAuth.service";
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
 import { generateOTP } from "../utils/OTP";
 import { comparePassword, hashPassword } from "../utils/password";
@@ -36,7 +36,6 @@ class AuthService implements IAuthService {
     const userExist = await this.userRepository.getUserByEmail(email);
 
     if (userExist) {
-      //if user exists should create a new user
       return errorCreator(EMAIL_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
     }
 
@@ -201,5 +200,3 @@ class AuthService implements IAuthService {
 }
 
 export default AuthService;
-
-

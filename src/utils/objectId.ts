@@ -6,5 +6,5 @@ import mongoose from "mongoose";
  * @returns {ObjectId} - The converted ObjectId
  */
 export const getObjectId = (id: string): mongoose.Schema.Types.ObjectId => {
-  return new mongoose.Schema.Types.ObjectId(id);
+  return id as unknown as mongoose.Schema.Types.ObjectId;
 };

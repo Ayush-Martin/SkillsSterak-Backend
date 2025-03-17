@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { IAuthService } from "../interfaces/services/IAuth.service";
 import { IJWTService } from "../interfaces/services/IJWT.service";
 import { successResponse } from "../utils/responseCreators";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import {
   forgetPasswordValidator,
@@ -24,9 +24,7 @@ import {
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
-
-const REFRESH_TOKEN_EXPIRY_DAY =
-  Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7;
+import envConfig from "../config/env";
 
 class AuthController {
   constructor(
@@ -92,7 +90,7 @@ class AuthController {
           httpOnly: true,
           secure: false,
           sameSite: "strict",
-          maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
+          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
         .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
@@ -132,7 +130,7 @@ class AuthController {
           httpOnly: true,
           secure: false,
           sameSite: "strict",
-          maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
+          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
         .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
@@ -205,7 +203,7 @@ class AuthController {
           httpOnly: true,
           secure: false,
           sameSite: "strict",
-          maxAge: REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
+          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
         })
         .status(StatusCodes.OK)
         .json(successResponse(TOKEN_REFRESH_SUCCESS_MESSAGE, accessToken));

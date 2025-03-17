@@ -8,7 +8,7 @@ import {
   updateCourseRequirementsValidator,
   updateCourseSkillsCoveredValidator,
 } from "../validators/course.validator";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   COURSE_APPROVED_SUCCESS_MESSAGE,
@@ -25,15 +25,21 @@ import {
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/index.validator";
 import { getObjectId } from "../utils/objectId";
+import NotificationService from "../services/notification.service";
 
 class CourseController {
-  constructor(private courseService: ICourseService) {
+  constructor(
+    private courseService: ICourseService,
+    private notificationService: NotificationService
+  ) {
     binder(this);
   }
 
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log("hello");
       const trainerId = getObjectId(req.userId!);
+      console.log("hello , trainerId", trainerId);
       const thumbnail = req.file;
       const courseData = createCourseValidator(req.body);
 
@@ -44,6 +50,11 @@ class CourseController {
         trainerId,
         thumbnail: thumbnail.path,
       });
+
+      this.notificationService.sendCourseAddedNotification(
+        req.userId!,
+        course.title
+      );
 
       res
         .status(StatusCodes.CREATED)

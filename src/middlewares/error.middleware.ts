@@ -1,7 +1,7 @@
 import { NextFunction, Request, response, Response } from "express";
 import { ICustomError } from "../interfaces/ICustomError";
 import { errorResponse } from "../utils/responseCreators";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { z } from "zod";
 
 /**

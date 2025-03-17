@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
   COURSE_ACCESS_SUCCESS_MESSAGE,

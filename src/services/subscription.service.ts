@@ -4,7 +4,7 @@ import { ITransactionRepository } from "../interfaces/repositories/ITransaction.
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
 import razorpay from "../config/razorpay";
 import errorCreator from "../utils/customError";
-import { StatusCodes } from "../utils/statusCodes";
+import { StatusCodes } from "../constants/statusCodes";
 import { getThreeMonthsFromNow } from "../utils/date";
 import { ISubscription } from "../models/Subscription.model";
 import {

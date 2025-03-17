@@ -91,6 +91,47 @@ class TrainerRepository
     return result[0]?.totalStudents || 0;
   }
 
+  public async getStudentsIds(trainerId: string): Promise<Array<string>> {
+    const users = await this.User.aggregate([
+      {
+        $match: {
+          _id: {
+            $ne: new mongoose.Types.ObjectId(trainerId),
+          },
+          role: { $ne: "admin" },
+        },
+      },
+      {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "userId",
+          as: "enrollments",
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "enrollments.courseId",
+          foreignField: "_id",
+          as: "courses",
+        },
+      },
+      {
+        $match: {
+          "courses.trainerId": new mongoose.Types.ObjectId(trainerId),
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    return users.map((user) => user._id.toString());
+  }
+
   public async getStudentsWithEnrolledCourses(
     trainerId: string,
     search: RegExp,
