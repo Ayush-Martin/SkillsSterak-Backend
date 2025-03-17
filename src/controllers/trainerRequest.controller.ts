@@ -10,9 +10,13 @@ import {
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { pageValidator } from "../validators/index.validator";
+import { INotificationService } from "../interfaces/services/INotification.service";
 
 class TrainerRequestController {
-  constructor(private trainerService: ITrainerService) {
+  constructor(
+    private trainerService: ITrainerService,
+    private notificationService: INotificationService
+  ) {
     binder(this);
   }
 
@@ -49,6 +53,10 @@ class TrainerRequestController {
     const { userId } = req.params;
 
     await this.trainerService.approveRejectTrainerRequest(userId, status);
+
+    status == "approved"
+      ? this.notificationService.sendApproveTrainerRequestNotification(userId)
+      : this.notificationService.sendRejectTrainerRequestNotification(userId);
 
     res
       .status(StatusCodes.OK)

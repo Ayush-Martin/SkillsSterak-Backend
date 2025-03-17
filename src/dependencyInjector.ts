@@ -118,7 +118,8 @@ const googleAuthService = new GoogleAuthService();
 const notificationService = new NotificationService(
   notificationRepository,
   userRepository,
-  trainerRepository
+  trainerRepository,
+  courseRepository
 );
 
 // Instantiate Controllers
@@ -143,10 +144,14 @@ export const subscriptionController = new SubscriptionController(
 );
 export const trainerController = new TrainerController(trainerService);
 export const trainerRequestController = new TrainerRequestController(
-  trainerService
+  trainerService,
+  notificationService
 );
 export const transactionController = new TransactionController(
   transactionService
 );
-export const userController = new UserController(userService);
+export const userController = new UserController(
+  userService,
+  notificationService
+);
 export const walletController = new WalletController(walletService);

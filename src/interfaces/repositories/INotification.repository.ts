@@ -9,4 +9,5 @@ export interface INotificationRepository
     userIds: string[],
     message: string
   ): Promise<INotification[]>;
+  addNotification(userId: string, message: string): Promise<INotification>;
 }

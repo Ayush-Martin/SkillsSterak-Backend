@@ -114,6 +114,10 @@ class CourseController {
 
       await this.courseService.approveRejectCourse(courseId, status);
 
+      status == "approved"
+        ? this.notificationService.sendCourseApprovedNotification(courseId)
+        : this.notificationService.sendCourseRejectedNotification(courseId);
+
       res
         .status(StatusCodes.OK)
         .json(

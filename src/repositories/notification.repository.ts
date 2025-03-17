@@ -13,10 +13,14 @@ class NotificationRepository
   }
 
   public async getAllNotifications(userId: string): Promise<INotification[]> {
-    return await this.Notification.find({ userId }, { message: 1 });
+    return await this.Notification.find(
+      { userId, read: false },
+      { message: 1 }
+    );
   }
 
   public async markAsRead(notificationId: string): Promise<void> {
+    console.log(notificationId);
     await this.Notification.findByIdAndUpdate(notificationId, { read: true });
   }
 
@@ -29,7 +33,18 @@ class NotificationRepository
       message,
     }));
 
+    console.log(notifications);
+
     return await this.Notification.insertMany(notifications);
+  }
+
+  public async addNotification(
+    userId: string,
+    message: string
+  ): Promise<INotification> {
+    const notification = new this.Notification({ userId, message });
+
+    return await notification.save();
   }
 }
 

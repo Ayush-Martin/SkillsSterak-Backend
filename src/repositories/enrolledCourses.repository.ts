@@ -273,6 +273,10 @@ class EnrolledCoursesRepository
       },
     ]);
 
+    if (enrolledCourses.length === 0) {
+      return 0;
+    }
+
     return enrolledCourses[0]["enrolledCoursesCompletedCount"];
   }
 

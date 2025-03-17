@@ -2,6 +2,8 @@ import { IUser } from "../../models/User.model";
 import BaseRepository from "../../repositories/Base.repository";
 
 export interface IUserRepository extends BaseRepository<IUser> {
+  /** Gets admin */
+  getAdmin(): Promise<IUser | null>;
   /** Gets users based on search query and pagination */
   getUsers(search: RegExp, skip: number, limit: number): Promise<Array<IUser>>;
   /** Gets user by email */

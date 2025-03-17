@@ -15,9 +15,13 @@ import {
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/index.validator";
+import { INotificationService } from "../interfaces/services/INotification.service";
 
 class UserController {
-  constructor(private userService: IUserService) {
+  constructor(
+    private userService: IUserService,
+    private notificationService: INotificationService
+  ) {
     binder(this);
   }
 
@@ -78,7 +82,8 @@ class UserController {
       const userId = req.userId!;
 
       await this.userService.sendTrainerRequest(userId);
-
+      this.notificationService.sendTrainerRequestNotification(userId);
+      
       res
         .status(200)
         .json(successResponse(SEND_TRAINER_REQUEST_SUCCESS_MESSAGE));

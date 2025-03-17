@@ -203,6 +203,7 @@ class CourseRepository
       {
         $unwind: {
           path: "$moduleCount",
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -214,7 +215,9 @@ class CourseRepository
           difficulty: 1,
           thumbnail: 1,
           category: 1,
-          moduleCount: "$moduleCount.moduleCount",
+          moduleCount: {
+            $ifNull: ["$moduleCount.moduleCount", 0],
+          },
         },
       },
       {
@@ -278,7 +281,7 @@ class CourseRepository
     return await this.Course.countDocuments({
       title: search,
       isListed: true,
-      isValid: true,
+      status: "approved",
     });
   }
 

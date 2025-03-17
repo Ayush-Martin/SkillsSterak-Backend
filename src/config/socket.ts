@@ -3,9 +3,21 @@ import type { Server } from "http";
 import { SocketEvents } from "../constants/socketEvents";
 import envConfig from "./env";
 import { socketAuthMiddleware } from "../middlewares/socketAuth.middleware";
-import SocketService from "../services/socket.service";
+
+//models
 import NotificationModel from "../models/Notification.model";
+import UserModel from "../models/User.model";
+import CourseModel from "../models/Course.model";
+
+//repositories
 import NotificationRepository from "../repositories/notification.repository";
+import UserRepository from "../repositories/user.repository";
+import TrainerRepository from "../repositories/trainer.repository";
+import CourseRepository from "../repositories/course.repository";
+
+//services
+import SocketService from "../services/socket.service";
+import NotificationService from "../services/notification.service";
 
 const socketCorsConfig: Partial<ServerOptions> = {
   cors: {
@@ -16,8 +28,20 @@ const socketCorsConfig: Partial<ServerOptions> = {
   transports: ["websocket", "polling"],
 };
 
+//repositories
 const notificationRepository = new NotificationRepository(NotificationModel);
-const socketService = new SocketService(notificationRepository);
+const userRepository = new UserRepository(UserModel);
+const trainerRepository = new TrainerRepository(UserModel);
+const courseRepository = new CourseRepository(CourseModel);
+
+//services
+const notificationService = new NotificationService(
+  notificationRepository,
+  userRepository,
+  trainerRepository,
+  courseRepository
+);
+const socketService = new SocketService(notificationService);
 
 const setUpSocket = (server: Server) => {
   const io = new SocketServer(server, socketCorsConfig);
@@ -30,7 +54,7 @@ const setUpSocket = (server: Server) => {
       socket.emit("error", err);
     }
   });
-  
+
   return io;
 };
 
