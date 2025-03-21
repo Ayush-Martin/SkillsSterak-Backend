@@ -145,24 +145,19 @@ class AuthService implements IAuthService {
   }
 
   public async resetPassword(email: string, password: string): Promise<void> {
-    const storedData = await this.OTPRepository.get(email);
-
-    if (!storedData) {
-      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
-    }
-
-    const registerData = JSON.parse(storedData) as IOTPResetPasswordSchema;
-
-    if (!registerData.isVerified) {
+    const data = await this.OTPService.getVerifiedOTPData(email);
+    if (!data) {
       return errorCreator(
         OTP_NOT_VERIFIED_ERROR_MESSAGE,
         StatusCodes.UNAUTHORIZED
       );
     }
 
+    const { id } = data as IOTPResetPasswordSchema;
+
     const hashedPassword = hashPassword(password);
 
-    await this.userRepository.updatePassword(registerData.id, hashedPassword);
+    await this.userRepository.updatePassword(id, hashedPassword);
   }
 
   public async getUserById(userId: string): Promise<IUser | null> {

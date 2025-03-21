@@ -24,7 +24,8 @@ class OTPController {
 
   public async resendOTP(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.query as { email: string };
+      const { email } = req.params;
+      console.log(email);
       await this.OTPService.resendOTP(email);
       res.status(StatusCodes.OK).json(successResponse("otp is resent"));
     } catch (error) {

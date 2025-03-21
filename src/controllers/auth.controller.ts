@@ -152,6 +152,11 @@ class AuthController {
       await this.authService.forgetPassword(email);
 
       res
+        .clearCookie("refreshToken", {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+        })
         .status(StatusCodes.CREATED)
         .json(successResponse(FORGET_PASSWORD_SUCCESS_MESSAGE));
     } catch (err) {

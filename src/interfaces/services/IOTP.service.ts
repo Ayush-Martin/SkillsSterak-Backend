@@ -10,5 +10,5 @@ export interface IOTPService {
   ): Promise<string>;
   verifyOTP(email: string, OTP: string): Promise<void>;
   resendOTP(email: string): Promise<void>;
-  getVerifiedOTPData(email: string): Promise<IOTPSchema | null>;
+  getVerifiedOTPData(email: string): Promise<Record<string, null> | null>;
 }

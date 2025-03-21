@@ -20,7 +20,7 @@ class OTPService implements IOTPService {
 
     await this.OTPRepository.setWithExpiry(
       `otp:${email}`,
-      1,
+      300,
       JSON.stringify({ OTP, isVerified: false })
     );
     await this.OTPRepository.set(`user:${email}`, JSON.stringify(data));
@@ -48,7 +48,10 @@ class OTPService implements IOTPService {
     );
   }
 
-  public async getVerifiedOTPData(email: string): Promise<IOTPSchema | null> {
+  public async getVerifiedOTPData(
+    email: string
+  ): Promise<Record<string, any> | null> {
+    console.log("get verifeid data");
     const otpDataString = await this.OTPRepository.get(`otp:${email}`);
     const storedDataString = await this.OTPRepository.get(`user:${email}`);
     console.log(otpDataString, storedDataString);
@@ -74,7 +77,7 @@ class OTPService implements IOTPService {
       300,
       JSON.stringify({ OTP, isVerified: false })
     );
-    console.log(OTP);
+    console.log(OTP, email);
     sendMail(email, "OTP", OTP);
   }
 }
