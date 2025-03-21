@@ -19,6 +19,7 @@
     "predev": "concurrently \"npm run clean\" \"npm run build\""
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@types/cookie-parser": "^1.4.8",
     "auto-bind": "^5.0.1",
     "bcryptjs": "^2.4.3",

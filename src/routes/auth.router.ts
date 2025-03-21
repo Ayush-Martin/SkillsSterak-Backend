@@ -1,22 +1,29 @@
 import { Router } from "express";
 const router = Router();
 
-import { authController } from "../dependencyInjector";
+import { authController, otpController } from "../dependencyInjector";
 
 //middlewares
 import { refreshTokenValidator } from "../middlewares/userAuth.middleware";
 
-router.post("/register", authController.register);
+router
+  .route("/register")
+  .post(authController.register)
+  .get(authController.completeRegister);
+
+//router.post("/register", authController.register);
 
 router.post("/login", authController.login);
 
 router.get("/logout", authController.logout);
 
-router.post("/completeRegister", authController.completeRegister);
+// router.post("/completeRegister", authController.completeRegister);
 
 router.post("/forgetPassword", authController.forgetPassword);
 
-router.post("/verifyOTP", authController.verifyOTP);
+router.post("/verifyOTP", otpController.verifyOTP);
+
+router.get("/resendOTP/:email", otpController.resendOTP);
 
 router.post("/resetPassword", authController.resetPassword);
 

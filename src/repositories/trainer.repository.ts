@@ -11,6 +11,10 @@ class TrainerRepository
     super(User);
   }
 
+  public async getAllTrainers(): Promise<Array<IUser>> {
+    return await this.User.find({ role: "trainer" }, { username: 1 });
+  }
+
   public async getTrainers(
     search: RegExp,
     skip: number,

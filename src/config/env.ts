@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 config();
+console.log(process.env.ACCESS_TOKEN_EXPIRY_MIN);
 
 const envConfig = {
   //general
@@ -17,7 +18,7 @@ const envConfig = {
   //JWT
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET!,
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET!,
-  ACCESS_TOKEN_EXPIRY_MIN: Number(process.env.REFRESH_TOKEN_EXPIRY_MIN) || 7,
+  ACCESS_TOKEN_EXPIRY_MIN: Number(process.env.ACCESS_TOKEN_EXPIRY_MIN) || 15,
   REFRESH_TOKEN_EXPIRY_DAY: Number(process.env.REFRESH_TOKEN_EXPIRY_DAY) || 7,
 
   //Mailer
@@ -37,6 +38,9 @@ const envConfig = {
   //Razorpay
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID!,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET!,
+
+  //Gemini
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
 };
 
 export default envConfig;

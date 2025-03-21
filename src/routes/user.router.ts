@@ -4,11 +4,13 @@ const router = Router();
 
 import {
   categoryController,
+  chatController,
   courseController,
   enrolledCourseController,
   lessonController,
   reviewController,
   subscriptionController,
+  trainerController,
   transactionController,
   userController,
 } from "../dependencyInjector";
@@ -17,6 +19,7 @@ import {
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
+import upload from "../config/multer";
 
 router.get("/categories", categoryController.getAllCategories);
 
@@ -94,7 +97,14 @@ router.get(
   subscriptionController.getSubscriptionDetail
 );
 
-router.get("/chat", subscriptionValidator, (req, res) => {
-  res.status(200).json({ message: "success" });
-});
+//chats
+router.get("/trainers", trainerController.getAllTrainers);
+
+router
+  .route("/chats")
+  .get(subscriptionValidator, chatController.getUserChats)
+  .post(upload.single("file"), chatController.sendMedia);
+
+router.route("/chats/:chatId").get(chatController.getMessages);
+
 export default router;

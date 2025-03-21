@@ -6,8 +6,16 @@ class OTPRepository implements IOTPRepository {
     return await redisClient.get(key);
   }
 
-  public async set(key: string, expiry: number, value: string): Promise<void> {
+  public async setWithExpiry(
+    key: string,
+    expiry: number,
+    value: string
+  ): Promise<void> {
     await redisClient.setEx(key, expiry, value);
+  }
+
+  public async set(key: string, value: string): Promise<void> {
+    await redisClient.set(key, value);
   }
 
   public async del(key: string): Promise<void> {

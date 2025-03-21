@@ -10,11 +10,7 @@ import UserRepository from "../repositories/user.repository";
 import AuthService from "../services/auth.service";
 import errorCreator from "../utils/customError";
 import { verifyToken } from "../utils/JWT";
-
-const userRepository = new UserRepository(UserModel);
-const otpRepository = new OTPRepository();
-
-const authService = new AuthService(userRepository, otpRepository);
+import { authService } from "../dependencyInjector";
 
 export const socketAuthMiddleware = async (
   socket: Socket,

@@ -1,17 +1,13 @@
 import { IUser } from "../../models/User.model";
+import { IOTPSchema } from "./IOTP.service";
 
-export interface IOTPRegisterSchema {
-  OTP: string;
-  email: string;
+export interface IOTPRegisterSchema extends IOTPSchema {
   username: string;
   password: string;
 }
 
-export interface IOTPResetPasswordSchema {
-  OTP: string;
-  email: string;
+export interface IOTPResetPasswordSchema extends IOTPSchema {
   id: string;
-  isVerified: boolean;
 }
 
 export interface IAuthService {
@@ -19,7 +15,7 @@ export interface IAuthService {
   register(username: string, email: string, password: string): Promise<void>;
 
   /** Complete the registration process with OTP and email */
-  completeRegister(OTP: string, email: string): Promise<void>;
+  completeRegister(email: string): Promise<void>;
 
   /** Login a user with email and password */
   login(email: string, password: string): Promise<IUser | void>;
@@ -31,15 +27,12 @@ export interface IAuthService {
     username: string
   ): Promise<IUser | void>;
 
-  /** Verify OTP for forget password */
-  verifyOTP(OTP: string, email: string): Promise<void>;
-
   /** Send OTP to user for forget password */
   forgetPassword(email: string): Promise<void>;
 
   /** Reset password for a user */
   resetPassword(email: string, password: string): Promise<void>;
-  
+
   /** Get a user by ID */
   getUserById(userId: string): Promise<IUser | null>;
 }

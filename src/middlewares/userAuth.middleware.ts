@@ -22,13 +22,8 @@ import {
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 import envConfig from "../config/env";
-
-const userRepository = new UserRepository(UserModel);
-const otpRepository = new OTPRepository();
-const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
-
-const authService = new AuthService(userRepository, otpRepository);
-const jwtService = new JWTService(refreshTokenRepository);
+import OTPService from "../services/OTP.service";
+import { authService, jwtService } from "../dependencyInjector";
 
 /**
  * Middleware to verify the access token sent in the Authorization header.
@@ -62,7 +57,7 @@ export const accessTokenValidator = async (
       errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
     }
 
-    req.userId = userData?._id as string;
+    req.userId = String(userData?._id);
     next();
   } catch (err) {
     next(err);
@@ -81,6 +76,7 @@ export const refreshTokenValidator = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken as string | undefined;
+    console.log(refreshToken);
     if (!refreshToken) {
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,

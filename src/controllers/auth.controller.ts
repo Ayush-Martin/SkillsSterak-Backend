@@ -25,12 +25,14 @@ import {
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
 import envConfig from "../config/env";
+import { IOTPService } from "../interfaces/services/IOTP.service";
 
 class AuthController {
   constructor(
     public authService: IAuthService,
     public jwtService: IJWTService,
-    private googleAuthService: IGoogleAuthService
+    private googleAuthService: IGoogleAuthService,
+    private OTPService: IOTPService
   ) {
     binder(this);
   }
@@ -59,9 +61,9 @@ class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { OTP, email } = OTPValidator(req.body);
+      const { email } = req.query as { email: string };
 
-      this.authService.completeRegister(OTP, email);
+      await this.authService.completeRegister(email);
 
       res
         .status(StatusCodes.CREATED)
@@ -152,20 +154,6 @@ class AuthController {
       res
         .status(StatusCodes.CREATED)
         .json(successResponse(FORGET_PASSWORD_SUCCESS_MESSAGE));
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  public async verifyOTP(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { OTP, email } = OTPValidator(req.body);
-
-      await this.authService.verifyOTP(OTP, email);
-
-      res
-        .status(StatusCodes.ACCEPTED)
-        .json(successResponse(VERIFY_OTP_SUCCESS_MESSAGE));
     } catch (err) {
       next(err);
     }

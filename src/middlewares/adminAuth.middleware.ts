@@ -8,6 +8,7 @@ import UserModel from "../models/User.model";
 //repositories
 import UserRepository from "../repositories/user.repository";
 import OTPRepository from "../repositories/OTP.repository";
+import OTPService from "../services/OTP.service";
 
 //services
 import AuthService from "../services/auth.service";
@@ -17,11 +18,7 @@ import {
   NO_ACCESS_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
-
-const userRepository = new UserRepository(UserModel);
-const otpRepository = new OTPRepository();
-
-const authService = new AuthService(userRepository, otpRepository);
+import { authService } from "../dependencyInjector";
 
 /**
  * Middleware to authenticate admin users.

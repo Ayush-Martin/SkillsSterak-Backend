@@ -17,11 +17,9 @@ import {
   NO_ACCESS_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
+import OTPService from "../services/OTP.service";
+import { authService } from "../dependencyInjector";
 
-const userRepository = new UserRepository(UserModel);
-const otpRepository = new OTPRepository();
-
-const authService = new AuthService(userRepository, otpRepository);
 
 /**
  * Middleware to authenticate trainer users.

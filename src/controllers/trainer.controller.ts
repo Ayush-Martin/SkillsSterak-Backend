@@ -11,6 +11,18 @@ class TrainerController {
     binder(this);
   }
 
+  public async getAllTrainers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const trainers = await this.trainerService.getAllTrainers();
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, trainers));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getStudentsWithEnrolledCourses(
     req: Request,
     res: Response,

@@ -8,16 +8,22 @@ import { socketAuthMiddleware } from "../middlewares/socketAuth.middleware";
 import NotificationModel from "../models/Notification.model";
 import UserModel from "../models/User.model";
 import CourseModel from "../models/Course.model";
+import PremiumChatModel from "../models/PremiumChat.model";
+import PremiumMessageModel from "../models/PremiumMessage.model";
 
 //repositories
 import NotificationRepository from "../repositories/notification.repository";
 import UserRepository from "../repositories/user.repository";
 import TrainerRepository from "../repositories/trainer.repository";
 import CourseRepository from "../repositories/course.repository";
+import PremiumChatRepository from "../repositories/premiumChat.repository";
+import PremiumMessageRepository from "../repositories/premiumMessage.repository";
 
 //services
 import SocketService from "../services/socket.service";
 import NotificationService from "../services/notification.service";
+import PremiumChatService from "../services/premiumChat.service";
+import { notificationService, premiumChatService } from "../dependencyInjector";
 
 const socketCorsConfig: Partial<ServerOptions> = {
   cors: {
@@ -28,20 +34,12 @@ const socketCorsConfig: Partial<ServerOptions> = {
   transports: ["websocket", "polling"],
 };
 
-//repositories
-const notificationRepository = new NotificationRepository(NotificationModel);
-const userRepository = new UserRepository(UserModel);
-const trainerRepository = new TrainerRepository(UserModel);
-const courseRepository = new CourseRepository(CourseModel);
 
-//services
-const notificationService = new NotificationService(
-  notificationRepository,
-  userRepository,
-  trainerRepository,
-  courseRepository
+
+const socketService = new SocketService(
+  notificationService,
+  premiumChatService
 );
-const socketService = new SocketService(notificationService);
 
 const setUpSocket = (server: Server) => {
   const io = new SocketServer(server, socketCorsConfig);

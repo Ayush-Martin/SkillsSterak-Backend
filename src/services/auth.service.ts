@@ -21,11 +21,13 @@ import {
   USER_BLOCKED_ERROR_MESSAGE,
   USER_NOT_FOUND_ERROR_MESSAGE,
 } from "../constants/responseMessages";
+import { IOTPService } from "../interfaces/services/IOTP.service";
 
 class AuthService implements IAuthService {
   constructor(
     private userRepository: IUserRepository,
-    private OTPRepository: IOTPRepository
+    private OTPRepository: IOTPRepository,
+    private OTPService: IOTPService
   ) {}
 
   public async register(
@@ -39,35 +41,33 @@ class AuthService implements IAuthService {
       return errorCreator(EMAIL_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
     }
 
-    const OTP = generateOTP();
     const hashedPassword = hashPassword(password);
 
-    await this.OTPRepository.set(
+    const OTP = await this.OTPService.generateAndStoreOTP(email, {
       email,
-      300, //expiry in seconds
-      JSON.stringify({ OTP, username, email, password: hashedPassword })
-    );
+      username,
+      password: hashedPassword,
+    });
 
     await sendMail(email, "OTP", OTP);
     console.log("OTP", OTP);
   }
 
-  public async completeRegister(OTP: string, email: string): Promise<void> {
-    const storedData = await this.OTPRepository.get(email);
+  public async completeRegister(email: string): Promise<void> {
+    const storedData = await this.OTPService.getVerifiedOTPData(email);
 
     if (!storedData) {
-      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
+      return errorCreator(
+        OTP_NOT_VERIFIED_ERROR_MESSAGE,
+        StatusCodes.UNAUTHORIZED
+      );
     }
 
-    const registerData = JSON.parse(storedData) as IOTPRegisterSchema;
-
-    if (OTP !== registerData.OTP) {
-      return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
-    }
+    const registerData = storedData as IOTPRegisterSchema;
 
     await this.userRepository.create({
       username: registerData.username,
-      email: registerData.email,
+      email: email,
       password: registerData.password,
     });
 
@@ -131,46 +131,17 @@ class AuthService implements IAuthService {
       return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
-    const OTP = generateOTP();
+    console.log("hello");
 
-    await this.OTPRepository.set(
+    const OTP = await this.OTPService.generateAndStoreOTP(email, {
       email,
-      300,
-      JSON.stringify({
-        email,
-        id: user.id,
-        OTP,
-        isVerified: false,
-      })
-    );
+      id: user.id,
+    });
+
+    console.log(OTP);
 
     await sendMail(email, "OTP", OTP);
     console.log("OTP", OTP);
-  }
-
-  public async verifyOTP(OTP: string, email: string): Promise<void> {
-    const storedData = await this.OTPRepository.get(email);
-
-    if (!storedData) {
-      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
-    }
-
-    const registerData = JSON.parse(storedData) as IOTPResetPasswordSchema;
-
-    if (OTP !== registerData.OTP) {
-      return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
-    }
-
-    await this.OTPRepository.set(
-      email,
-      300,
-      JSON.stringify({
-        email,
-        id: registerData.id,
-        OTP,
-        isVerified: true,
-      })
-    );
   }
 
   public async resetPassword(email: string, password: string): Promise<void> {

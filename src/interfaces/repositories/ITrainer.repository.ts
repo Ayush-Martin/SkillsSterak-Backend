@@ -2,6 +2,7 @@ import { IUser } from "../../models/User.model";
 import BaseRepository from "../../repositories/Base.repository";
 
 export interface ITrainerRepository extends BaseRepository<IUser> {
+  getAllTrainers(): Promise<Array<IUser>>;
   /** Gets trainers*/
   getTrainers(
     search: RegExp,

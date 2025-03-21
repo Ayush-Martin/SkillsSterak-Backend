@@ -13,6 +13,8 @@ import TransactionModel from "./models/Transaction.model";
 import UserModel from "./models/User.model";
 import WalletModel from "./models/Wallet.model";
 import NotificationModel from "./models/Notification.model";
+import PremiumChatModel from "./models/PremiumChat.model";
+import PremiumMessageModel from "./models/PremiumMessage.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -31,6 +33,8 @@ import TransactionRepository from "./repositories/transaction.repository";
 import UserRepository from "./repositories/user.repository";
 import WalletRepository from "./repositories/wallet.repository";
 import NotificationRepository from "./repositories/notification.repository";
+import PremiumChatRepository from "./repositories/premiumChat.repository";
+import PremiumMessageRepository from "./repositories/premiumMessage.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -48,6 +52,8 @@ import UserService from "./services/user.service";
 import WalletService from "./services/wallet.service";
 import GoogleAuthService from "./services/googleAuth.service";
 import NotificationService from "./services/notification.service";
+import PremiumChatService from "./services/premiumChat.service";
+import OTPService from "./services/OTP.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -63,6 +69,8 @@ import TrainerRequestController from "./controllers/trainerRequest.controller";
 import TransactionController from "./controllers/transaction.controller";
 import UserController from "./controllers/user.controller";
 import WalletController from "./controllers/wallet.controller";
+import ChatController from "./controllers/chat.controller";
+import OTPController from "./controllers/OTP.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -85,48 +93,70 @@ const transactionRepository = new TransactionRepository(TransactionModel);
 const userRepository = new UserRepository(UserModel);
 const walletRepository = new WalletRepository(WalletModel);
 const notificationRepository = new NotificationRepository(NotificationModel);
+const premiumChatRepository = new PremiumChatRepository(PremiumChatModel);
+const premiumMessageRepository = new PremiumMessageRepository(
+  PremiumMessageModel
+);
 
 // Instantiate Services
-const authService = new AuthService(userRepository, otpRepository);
-const categoryService = new CategoryService(categoryRepository);
-const courseService = new CourseService(courseRepository);
-const enrolledCoursesService = new EnrolledCoursesService(
+export const otpService = new OTPService(otpRepository);
+export const authService = new AuthService(
+  userRepository,
+  otpRepository,
+  otpService
+);
+export const categoryService = new CategoryService(categoryRepository);
+export const courseService = new CourseService(courseRepository);
+export const enrolledCoursesService = new EnrolledCoursesService(
   enrolledCoursesRepository,
   courseRepository,
   walletRepository,
   transactionRepository
 );
-const jwtService = new JWTService(refreshTokenRepository);
-const lessonService = new LessonService(lessonRepository);
-const moduleService = new ModuleService(moduleRepository);
-const reviewService = new ReviewService(reviewRepository, replyRepository);
-const subscriptionService = new SubscriptionService(
+export const jwtService = new JWTService(refreshTokenRepository);
+export const lessonService = new LessonService(lessonRepository);
+export const moduleService = new ModuleService(moduleRepository);
+export const reviewService = new ReviewService(
+  reviewRepository,
+  replyRepository
+);
+export const subscriptionService = new SubscriptionService(
   subscriptionRepository,
   transactionRepository
 );
-const trainerService = new TrainerService(
+export const trainerService = new TrainerService(
   trainerRepository,
   trainerRequestRepository
 );
-const transactionService = new TransactionService(transactionRepository);
-const userService = new UserService(userRepository, trainerRequestRepository);
-const walletService = new WalletService(
+export const transactionService = new TransactionService(transactionRepository);
+export const userService = new UserService(
+  userRepository,
+  trainerRequestRepository
+);
+export const walletService = new WalletService(
   walletRepository,
   transactionRepository
 );
-const googleAuthService = new GoogleAuthService();
-const notificationService = new NotificationService(
+export const googleAuthService = new GoogleAuthService();
+export const notificationService = new NotificationService(
   notificationRepository,
   userRepository,
   trainerRepository,
   courseRepository
 );
+export const premiumChatService = new PremiumChatService(
+  premiumChatRepository,
+  premiumMessageRepository,
+  userRepository
+);
 
 // Instantiate Controllers
+export const otpController = new OTPController(otpService);
 export const authController = new AuthController(
   authService,
   jwtService,
-  googleAuthService
+  googleAuthService,
+  otpService
 );
 export const categoryController = new CategoryController(categoryService);
 export const courseController = new CourseController(
@@ -155,3 +185,4 @@ export const userController = new UserController(
   notificationService
 );
 export const walletController = new WalletController(walletService);
+export const chatController = new ChatController(premiumChatService);

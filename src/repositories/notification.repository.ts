@@ -16,7 +16,7 @@ class NotificationRepository
     return await this.Notification.find(
       { userId, read: false },
       { message: 1 }
-    );
+    ).sort({ createdAt: -1 });
   }
 
   public async markAsRead(notificationId: string): Promise<void> {

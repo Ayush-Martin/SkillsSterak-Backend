@@ -3,7 +3,6 @@ import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { SocketEvents } from "../constants/socketEvents";
 import { io } from "..";
-import { read } from "fs";
 import { INotificationService } from "../interfaces/services/INotification.service";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 

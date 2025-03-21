@@ -37,9 +37,7 @@ class CourseController {
 
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("hello");
       const trainerId = getObjectId(req.userId!);
-      console.log("hello , trainerId", trainerId);
       const thumbnail = req.file;
       const courseData = createCourseValidator(req.body);
 

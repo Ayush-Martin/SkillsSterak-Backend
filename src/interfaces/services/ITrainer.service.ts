@@ -1,6 +1,7 @@
 import { IUser } from "../../models/User.model";
 
 export interface ITrainerService {
+  getAllTrainers(): Promise<Array<IUser>>;
   /** Gets trainer requests */
   getTrainerRequest(
     page: number
