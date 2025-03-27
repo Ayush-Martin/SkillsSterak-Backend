@@ -6,6 +6,7 @@ import { getObjectId } from "../utils/objectId";
 import { IPremiumChatService } from "../interfaces/services/IPremiumChat.service";
 import { IPremiumChat } from "../models/PremiumChat.model";
 import { IPremiumMessage } from "../models/PremiumMessage.model";
+import { SocketEvents } from "../constants/socketEvents";
 
 class PremiumChatService implements IPremiumChatService {
   constructor(
@@ -29,11 +30,11 @@ class PremiumChatService implements IPremiumChatService {
 
       const user = await this.userRepository.findById(senderId);
       const trainer = await this.userRepository.findById(receiverId);
-      io.to(senderId).emit("new chat", {
+      io.to(senderId).emit(SocketEvents.CHAT_JOIN, {
         ...chat.toObject(),
         name: trainer?.username,
       });
-      io.to(receiverId).emit("new chat", {
+      io.to(receiverId).emit(SocketEvents.CHAT_JOIN, {
         ...chat.toObject(),
         name: user?.username,
       });
@@ -48,7 +49,10 @@ class PremiumChatService implements IPremiumChatService {
       messageType,
     });
     console.log(senderId, receiverId, chatId, message);
-    io.to([senderId, receiverId]).emit("new message", newMessage);
+    io.to([senderId, receiverId]).emit(
+      SocketEvents.CHAT_NEW_MESSAGE,
+      newMessage
+    );
   }
 
   public async getTrainerChats(

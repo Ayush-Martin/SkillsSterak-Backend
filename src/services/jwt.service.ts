@@ -22,6 +22,7 @@ class JWTService implements IJWTService {
 
   public async getRefreshToken(token: string): Promise<string> {
     const tokenObj = await this.refreshTokenRepository.findToken(token);
+    console.log(tokenObj, token, "dfdfdfdfdfdf");
     if (!tokenObj) {
       return errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,

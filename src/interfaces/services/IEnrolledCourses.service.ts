@@ -38,7 +38,7 @@ export interface IEnrolledCoursesService {
   completePurchase(orderId: string): Promise<void>;
 
   /** Checks if a user is enrolled in a course */
-  checkEnrolled(userId: string, courseId: string): Promise<void>;
+  checkEnrolled(userId: string, courseId: string): Promise<boolean>;
 
   /** Completes or un-completes a lesson for a user's enrolled course */
   completeUnCompleteLesson(

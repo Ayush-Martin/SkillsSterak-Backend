@@ -192,16 +192,17 @@ class CourseController {
 
   public async getCourses(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search, category, difficulty, price } = getCoursesValidator(
-        req.query
-      );
+      const { page, search, category, difficulty, price, limit, sort } =
+        getCoursesValidator(req.query);
 
       const data = await this.courseService.getCourses(
         search,
         page,
+        limit,
         category,
         difficulty,
-        price
+        price,
+        sort
       );
 
       res

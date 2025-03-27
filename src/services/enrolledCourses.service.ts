@@ -153,14 +153,20 @@ class EnrolledCourses implements IEnrolledCoursesService {
     );
   }
 
-  public async checkEnrolled(userId: string, courseId: string): Promise<void> {
+  public async checkEnrolled(
+    userId: string,
+    courseId: string
+  ): Promise<boolean> {
     const enrolledData = await this.enrolledCoursesRepository.checkEnrolled(
       userId,
       courseId
     );
 
-    if (!enrolledData)
-      return errorCreator(COURSE_ACCESS_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
+    if (enrolledData) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public async completeUnCompleteLesson(

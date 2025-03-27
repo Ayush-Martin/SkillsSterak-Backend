@@ -7,7 +7,9 @@ import {
   CoursePriceValidationRule,
   CourseRequirementsValidationRule,
   CourseSkillsCoveredValidationRule,
+  CourseSortValidationRule,
   CourseTitleValidationRule,
+  PageRecordLimitValidationRule,
   PageValidationRule,
   SearchValidationRule,
 } from "../utils/validationRules";
@@ -61,6 +63,8 @@ export const getCoursesValidator = (data: any) => {
     difficulty: CourseDifficultyValidationRule.or(z.enum(["all"])),
     category: z.string(),
     price: CoursePriceFilterValidationRule,
+    limit: PageRecordLimitValidationRule,
+    sort: CourseSortValidationRule,
   });
 
   return schema.parse(data);

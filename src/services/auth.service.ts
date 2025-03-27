@@ -63,7 +63,7 @@ class AuthService implements IAuthService {
       );
     }
 
-    const registerData = storedData as IOTPRegisterSchema;
+    const registerData = storedData as any as IOTPRegisterSchema;
 
     await this.userRepository.create({
       username: registerData.username,
@@ -153,7 +153,7 @@ class AuthService implements IAuthService {
       );
     }
 
-    const { id } = data as IOTPResetPasswordSchema;
+    const { id } = data as any as IOTPResetPasswordSchema;
 
     const hashedPassword = hashPassword(password);
 

@@ -66,6 +66,8 @@ class PremiumChatRepository
             {
               $project: {
                 message: 1,
+                createdAt: 1,
+                messageType: 1,
                 _id: 0,
               },
             },
@@ -81,7 +83,12 @@ class PremiumChatRepository
           userId: 1,
           trainerId: 1,
           name: "$user.username",
-          lastMessage: "$lastMessage.message",
+          lastMessage: 1,
+        },
+      },
+      {
+        $sort: {
+          "lastMessage.createdAt": -1,
         },
       },
     ]);
@@ -128,6 +135,8 @@ class PremiumChatRepository
             {
               $project: {
                 message: 1,
+                createdAt: 1,
+                messageType: 1,
                 _id: 0,
               },
             },
@@ -143,7 +152,12 @@ class PremiumChatRepository
           userId: 1,
           trainerId: 1,
           name: "$user.username",
-          lastMessage: "$lastMessage.message",
+          lastMessage: 1,
+        },
+      },
+      {
+        $sort: {
+          "lastMessage.createdAt": -1,
         },
       },
     ]);

@@ -25,6 +25,122 @@ class TrainerRepository
       .limit(limit);
   }
 
+  public async getTrainer(trainerId: string): Promise<IUser | null> {
+    const trainer = await this.User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(trainerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "_id",
+          foreignField: "trainerId",
+          pipeline: [
+            {
+              $match: {
+                isListed: true,
+                status: "approved",
+              },
+            },
+            {
+              $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $match: {
+                      isListed: true,
+                    },
+                  },
+                  {
+                    $project: {
+                      _id: 1,
+                      categoryName: 1,
+                    },
+                  },
+                ],
+                as: "category",
+              },
+            },
+            {
+              $unwind: "$category",
+            },
+            {
+              $lookup: {
+                from: "modules",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "moduleCount",
+                  },
+                ],
+                as: "moduleCount",
+              },
+            },
+            {
+              $unwind: {
+                path: "$moduleCount",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $lookup: {
+                from: "enrolledcourses",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "noOfEnrolled",
+                  },
+                ],
+                as: "noOfEnrolled",
+              },
+            },
+            {
+              $unwind: {
+                path: "$noOfEnrolled",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                trainerId: 1,
+                title: 1,
+                price: 1,
+                difficulty: 1,
+                thumbnail: 1,
+                category: 1,
+                moduleCount: {
+                  $ifNull: ["$moduleCount.moduleCount", 0],
+                },
+                noOfEnrolled: {
+                  $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+                },
+              },
+            },
+          ],
+          as: "courses",
+        },
+      },
+      {
+        $project: {
+          courses: 1,
+          username: 1,
+          email: 1,
+          profileImage: 1,
+          about: 1,
+        },
+      },
+    ]);
+
+    return trainer[0];
+  }
+
   public async countTrainers(search: RegExp): Promise<number> {
     return await this.User.countDocuments({ email: search });
   }

@@ -65,10 +65,13 @@ class EnrolledCourses {
     try {
       const { courseId } = req.params;
       const userId = req.userId!;
-      await this.enrolledCoursesService.checkEnrolled(userId, courseId);
+      const access = await this.enrolledCoursesService.checkEnrolled(
+        userId,
+        courseId
+      );
       res
         .status(StatusCodes.OK)
-        .json(successResponse(COURSE_ACCESS_SUCCESS_MESSAGE));
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, access));
     } catch (err) {
       next(err);
     }

@@ -78,6 +78,7 @@ export const refreshTokenValidator = async (
     const refreshToken = req.cookies.refreshToken as string | undefined;
     console.log(refreshToken);
     if (!refreshToken) {
+      console.log("no refresh token");
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
         StatusCodes.UNAUTHORIZED
@@ -87,6 +88,7 @@ export const refreshTokenValidator = async (
 
     const validRefreshToken = await jwtService.getRefreshToken(refreshToken);
     if (!validRefreshToken) {
+      console.log("invalid refresh token ", validRefreshToken);
       req.cookies.remove();
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
@@ -102,13 +104,13 @@ export const refreshTokenValidator = async (
         try {
           if (err) {
             req.cookies.remove();
+            console.log("invalid refresh token ", validRefreshToken);
             errorCreator(
               INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
               StatusCodes.UNAUTHORIZED
             );
           } else {
             req.userId = payload?.sub as string;
-            await jwtService.deleteRefreshToken(refreshToken);
             next();
           }
         } catch (err) {

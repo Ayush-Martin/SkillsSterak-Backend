@@ -23,7 +23,7 @@ class ReviewController {
       const userId = req.userId!;
       const { courseId } = req.params;
       const { content, rating } = addReviewValidator(req.body);
-
+      console.log(content, rating);
       const review = await this.reviewService.createReview(
         userId,
         courseId,

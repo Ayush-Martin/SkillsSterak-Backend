@@ -23,4 +23,6 @@ export interface ITrainerService {
     currentPage: number;
     totalPages: number;
   }>;
+
+  getTrainer(trainerId: string): Promise<IUser | null>;
 }

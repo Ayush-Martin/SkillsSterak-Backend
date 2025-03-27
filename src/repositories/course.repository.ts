@@ -152,7 +152,8 @@ class CourseRepository
       categoryId?: mongoose.Types.ObjectId;
       difficulty?: "beginner" | "intermediate" | "advance";
       price?: { $eq: 0 } | { $ne: 0 };
-    }
+    },
+    sortQuery: { createdAt?: -1; price?: -1 | 1; title?: -1 | 1 }
   ): Promise<Array<ICourse>> {
     return await this.Course.aggregate([
       {
@@ -207,6 +208,25 @@ class CourseRepository
         },
       },
       {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $count: "noOfEnrolled",
+            },
+          ],
+          as: "noOfEnrolled",
+        },
+      },
+      {
+        $unwind: {
+          path: "$noOfEnrolled",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           _id: 1,
           trainerId: 1,
@@ -218,7 +238,13 @@ class CourseRepository
           moduleCount: {
             $ifNull: ["$moduleCount.moduleCount", 0],
           },
+          noOfEnrolled: {
+            $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+          },
         },
+      },
+      {
+        $sort: sortQuery,
       },
       {
         $skip: skip,

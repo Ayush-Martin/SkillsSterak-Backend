@@ -14,6 +14,10 @@ class TrainerService implements ITrainerService {
     return await this.trainerRepository.getAllTrainers();
   }
 
+  public async getTrainer(trainerId: string): Promise<IUser | null> {
+    return await this.trainerRepository.getTrainer(trainerId);
+  }
+
   public async getTrainerRequest(page: number): Promise<{
     users: Array<IUser>;
     currentPage: number;

@@ -9,6 +9,11 @@ import { ICourseService } from "../interfaces/services/ICourse.service";
 import { ICourse } from "../models/Course.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
+import {
+  CourseDifficultyFilter,
+  CoursePriceFilter,
+  CourseSort,
+} from "../types/courseTypes";
 
 class CourseService implements ICourseService {
   constructor(private courseRepository: ICourseRepository) {}
@@ -50,9 +55,11 @@ class CourseService implements ICourseService {
   public async getCourses(
     search: string,
     page: number,
+    limit: number,
     category: string,
-    difficulty: "all" | "beginner" | "intermediate" | "advance",
-    price: "all" | "free" | "paid"
+    difficulty: CourseDifficultyFilter,
+    price: CoursePriceFilter,
+    sort: CourseSort
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;
@@ -62,6 +69,13 @@ class CourseService implements ICourseService {
       categoryId?: mongoose.Types.ObjectId;
       difficulty?: "beginner" | "intermediate" | "advance";
       price?: { $eq: 0 } | { $ne: 0 };
+    } = {};
+
+    const sortQuery: {
+      createdAt?: -1;
+      price?: -1 | 1;
+      title?: -1 | 1;
+      noOfEnrolled?: -1;
     } = {};
 
     if (category !== "all") {
@@ -76,19 +90,40 @@ class CourseService implements ICourseService {
       filter.price = price === "free" ? { $eq: 0 } : { $ne: 0 };
     }
 
+    switch (sort) {
+      case "new":
+        sortQuery.createdAt = -1;
+        break;
+      case "priceHighToLow":
+        sortQuery.price = -1;
+        break;
+      case "priceHighToLow":
+        sortQuery.price = 1;
+        break;
+      case "aA-zZ":
+        sortQuery.title = 1;
+        break;
+      case "zZ-aA":
+        sortQuery.title = -1;
+        break;
+      default:
+        sortQuery.noOfEnrolled = -1;
+    }
+
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * limit;
     const courses = await this.courseRepository.getCourses(
       searchRegex,
       skip,
-      RECORDS_PER_PAGE,
-      filter
+      limit,
+      filter,
+      sortQuery
     );
 
     const totalCourses = await this.courseRepository.getCourseCount(
       searchRegex
     );
-    const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalCourses / limit);
     return {
       courses,
       currentPage: page,

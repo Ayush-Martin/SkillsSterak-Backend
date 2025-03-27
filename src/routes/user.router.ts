@@ -99,6 +99,7 @@ router.get(
 
 //chats
 router.get("/trainers", trainerController.getAllTrainers);
+router.get("/trainers/:trainerId", trainerController.getTrainer);
 
 router
   .route("/chats")

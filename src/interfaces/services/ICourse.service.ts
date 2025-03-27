@@ -1,4 +1,9 @@
 import { ICourse } from "../../models/Course.model";
+import {
+  CourseDifficultyFilter,
+  CoursePriceFilter,
+  CourseSort,
+} from "../../types/courseTypes";
 
 export interface ICourseService {
   /** Creates a new course */
@@ -11,9 +16,11 @@ export interface ICourseService {
   getCourses(
     search: string,
     page: number,
+    limit: number,
     category: string,
-    difficulty: "all" | "beginner" | "intermediate" | "advance",
-    price: "all" | "free" | "paid"
+    difficulty: CourseDifficultyFilter,
+    price: CoursePriceFilter,
+    sort: CourseSort
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;

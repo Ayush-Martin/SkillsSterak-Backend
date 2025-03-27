@@ -26,6 +26,11 @@ class ModuleRepository
           as: "lessons",
         },
       },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
     ]);
   }
 

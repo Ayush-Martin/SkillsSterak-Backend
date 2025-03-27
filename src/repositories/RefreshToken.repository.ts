@@ -16,6 +16,7 @@ class RefreshTokenRepository
   }
 
   public async findToken(token: string): Promise<IRefreshToken | null> {
+    
     return await this.RefreshToken.findOne({ token });
   }
 }

@@ -33,7 +33,8 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
       categoryId?: mongoose.Types.ObjectId;
       difficulty?: "beginner" | "intermediate" | "advance";
       price?: { $eq: 0 } | { $ne: 0 };
-    }
+    },
+    sortQuery: { createdAt?: -1; price?: -1 | 1; title?: -1 | 1 }
   ): Promise<Array<ICourse>>;
 
   /** Gets trainer courses. */

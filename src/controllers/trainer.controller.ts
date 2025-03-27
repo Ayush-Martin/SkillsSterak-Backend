@@ -23,6 +23,20 @@ class TrainerController {
     }
   }
 
+  public async getTrainer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { trainerId } = req.params;
+
+      const trainer = await this.trainerService.getTrainer(trainerId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, trainer));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getStudentsWithEnrolledCourses(
     req: Request,
     res: Response,

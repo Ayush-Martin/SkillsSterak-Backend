@@ -48,6 +48,11 @@ export const PageValidationRule = z.preprocess(
   z.number().default(1)
 );
 
+export const PageRecordLimitValidationRule = z.preprocess(
+  (val) => Number(val),
+  z.number().default(5)
+);
+
 export const TrainerRequestStatusValidationRule = z.enum(
   ["approved", "rejected"],
   { message: "trainer request status is missing or not in correct format" }
@@ -123,6 +128,15 @@ export const LessonDescriptionValidationRule = z.string();
 export const LessonTypeValidationRule = z.enum(["video", "pdf"]);
 
 export const CoursePriceFilterValidationRule = z.enum(["all", "free", "paid"]);
+
+export const CourseSortValidationRule = z.enum([
+  "popularity",
+  "new",
+  "priceLowToHigh",
+  "priceHighToLow",
+  "aA-zZ",
+  "zZ-aA",
+]);
 
 export const ReviewContentValidationRule = z.string();
 
