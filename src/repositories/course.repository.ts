@@ -123,6 +123,25 @@ class CourseRepository
         $unwind: "$category",
       },
       {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $count: "noOfEnrolled",
+            },
+          ],
+          as: "noOfEnrolled",
+        },
+      },
+      {
+        $unwind: {
+          path: "$noOfEnrolled",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           trainerId: 0,
           categoryId: 0,
@@ -252,7 +271,7 @@ class CourseRepository
       {
         $limit: limit,
       },
-    ]);
+    ]).collation({ locale: "en", strength: 2 });
   }
 
   public async getAdminCourses(

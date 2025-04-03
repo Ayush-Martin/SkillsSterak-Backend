@@ -41,6 +41,11 @@ const envConfig = {
 
   //Gemini
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
+
+  //Zego cloud
+  ZEGO_APP_ID: Number(process.env.ZEGO_APP_ID!),
+  ZEGO_SERVER_SECRET: process.env.ZEGO_SERVER_SECRET!,
+  ZEGO_SERVER_URL: process.env.ZEGO_SERVER_URL!,
 };
 
 export default envConfig;

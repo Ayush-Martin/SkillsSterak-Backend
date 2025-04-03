@@ -94,11 +94,11 @@ class CourseService implements ICourseService {
       case "new":
         sortQuery.createdAt = -1;
         break;
-      case "priceHighToLow":
-        sortQuery.price = -1;
+      case "priceLowToHigh":
+        sortQuery.price = 1;
         break;
       case "priceHighToLow":
-        sortQuery.price = 1;
+        sortQuery.price = -1;
         break;
       case "aA-zZ":
         sortQuery.title = 1;

@@ -9,6 +9,7 @@ import {
   enrolledCourseController,
   lessonController,
   reviewController,
+  streamController,
   subscriptionController,
   trainerController,
   transactionController,
@@ -46,6 +47,9 @@ router
   .route("/courses/:courseId/reviews/:reviewId/replies")
   .post(accessTokenValidator, reviewController.addReply)
   .get(reviewController.getReplies);
+
+router.get("/trainers", trainerController.getAllTrainers);
+router.get("/trainers/:trainerId", trainerController.getTrainer);
 
 //setting middleware
 router.use(accessTokenValidator);
@@ -98,14 +102,14 @@ router.get(
 );
 
 //chats
-router.get("/trainers", trainerController.getAllTrainers);
-router.get("/trainers/:trainerId", trainerController.getTrainer);
-
 router
   .route("/chats")
   .get(subscriptionValidator, chatController.getUserChats)
   .post(upload.single("file"), chatController.sendMedia);
 
 router.route("/chats/:chatId").get(chatController.getMessages);
+
+router.route("/streams").get(streamController.getStreams);
+router.route("/streams/:roomId").get(streamController.viewStream);
 
 export default router;

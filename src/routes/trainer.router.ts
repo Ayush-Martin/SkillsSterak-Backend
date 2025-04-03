@@ -6,6 +6,7 @@ import {
   courseController,
   lessonController,
   moduleController,
+  streamController,
   trainerController,
   walletController,
 } from "../dependencyInjector";
@@ -74,5 +75,12 @@ router.get("/students", trainerController.getStudentsWithEnrolledCourses);
 router.route("/wallet").get(walletController.getWalletInfo);
 
 router.route("/chats").get(chatController.getTrainerChats);
+
+//stream
+router
+  .route("/stream")
+  .post(upload.single("thumbnail"), streamController.startStream);
+
+router.route("/streams/:roomId").patch(streamController.endStream);
 
 export default router;

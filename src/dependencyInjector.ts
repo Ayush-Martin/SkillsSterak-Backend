@@ -15,6 +15,7 @@ import WalletModel from "./models/Wallet.model";
 import NotificationModel from "./models/Notification.model";
 import PremiumChatModel from "./models/PremiumChat.model";
 import PremiumMessageModel from "./models/PremiumMessage.model";
+import StreamModel from "./models/Stream.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -35,6 +36,7 @@ import WalletRepository from "./repositories/wallet.repository";
 import NotificationRepository from "./repositories/notification.repository";
 import PremiumChatRepository from "./repositories/premiumChat.repository";
 import PremiumMessageRepository from "./repositories/premiumMessage.repository";
+import StreamRepository from "./repositories/Stream.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -54,6 +56,7 @@ import GoogleAuthService from "./services/googleAuth.service";
 import NotificationService from "./services/notification.service";
 import PremiumChatService from "./services/premiumChat.service";
 import OTPService from "./services/OTP.service";
+import StreamService from "./services/stream.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -71,6 +74,7 @@ import UserController from "./controllers/user.controller";
 import WalletController from "./controllers/wallet.controller";
 import ChatController from "./controllers/chat.controller";
 import OTPController from "./controllers/OTP.controller";
+import StreamController from "./controllers/stream.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -97,6 +101,7 @@ const premiumChatRepository = new PremiumChatRepository(PremiumChatModel);
 const premiumMessageRepository = new PremiumMessageRepository(
   PremiumMessageModel
 );
+const streamRepository = new StreamRepository(StreamModel);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -149,6 +154,7 @@ export const premiumChatService = new PremiumChatService(
   premiumMessageRepository,
   userRepository
 );
+export const streamService = new StreamService(streamRepository);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -186,3 +192,4 @@ export const userController = new UserController(
 );
 export const walletController = new WalletController(walletService);
 export const chatController = new ChatController(premiumChatService);
+export const streamController = new StreamController(streamService);
