@@ -7,7 +7,7 @@ import UserModel from "../models/User.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/OTP.repository";
+import OTPRepository from "../repositories/redis.repository";
 import OTPService from "../services/OTP.service";
 
 //services

@@ -23,7 +23,7 @@ import CourseRepository from "./repositories/course.repository";
 import EnrolledCoursesRepository from "./repositories/enrolledCourses.repository";
 import LessonRepository from "./repositories/Lesson.repository";
 import ModuleRepository from "./repositories/Module.repository";
-import OTPRepository from "./repositories/OTP.repository";
+import RedisRepository from "./repositories/redis.repository";
 import RefreshTokenRepository from "./repositories/RefreshToken.repository";
 import ReplyRepository from "./repositories/reply.repository";
 import ReviewRepository from "./repositories/review.repository";
@@ -57,6 +57,7 @@ import NotificationService from "./services/notification.service";
 import PremiumChatService from "./services/premiumChat.service";
 import OTPService from "./services/OTP.service";
 import StreamService from "./services/stream.service";
+import AiChatService from "./services/aiChat.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -84,7 +85,7 @@ const enrolledCoursesRepository = new EnrolledCoursesRepository(
 );
 const lessonRepository = new LessonRepository(LessonModel);
 const moduleRepository = new ModuleRepository(ModuleModel);
-const otpRepository = new OTPRepository();
+const redisRepository = new RedisRepository();
 const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
 const replyRepository = new ReplyRepository(ReplyModel);
 const reviewRepository = new ReviewRepository(ReviewModel);
@@ -104,10 +105,10 @@ const premiumMessageRepository = new PremiumMessageRepository(
 const streamRepository = new StreamRepository(StreamModel);
 
 // Instantiate Services
-export const otpService = new OTPService(otpRepository);
+export const otpService = new OTPService(redisRepository);
 export const authService = new AuthService(
   userRepository,
-  otpRepository,
+  redisRepository,
   otpService
 );
 export const categoryService = new CategoryService(categoryRepository);
@@ -155,6 +156,10 @@ export const premiumChatService = new PremiumChatService(
   userRepository
 );
 export const streamService = new StreamService(streamRepository);
+export const aiChatService = new AiChatService(
+  courseRepository,
+  redisRepository
+);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -167,7 +172,8 @@ export const authController = new AuthController(
 export const categoryController = new CategoryController(categoryService);
 export const courseController = new CourseController(
   courseService,
-  notificationService
+  notificationService,
+  aiChatService
 );
 export const enrolledCourseController = new EnrolledCoursesController(
   enrolledCoursesService

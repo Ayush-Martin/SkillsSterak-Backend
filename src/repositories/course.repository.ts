@@ -41,6 +41,57 @@ class CourseRepository
     return data.isListed!;
   }
 
+  public async getCourseOutline(courseId: string): Promise<ICourse | null> {
+    const course = await this.Course.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(courseId) },
+      },
+      {
+        $lookup: {
+          from: "modules",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "moduleId",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 0,
+                      title: 1,
+                      type: 1,
+                    },
+                  },
+                ],
+                as: "lessons",
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                title: 1,
+                lessons: 1,
+              },
+            },
+          ],
+          as: "modules",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          title: 1,
+          modules: 1,
+        },
+      },
+    ]);
+
+    return course[0];
+  }
+
   public async getCourse(courseId: string): Promise<ICourse | null> {
     const data = await this.Course.aggregate([
       {
@@ -143,11 +194,20 @@ class CourseRepository
       },
       {
         $project: {
-          trainerId: 0,
-          categoryId: 0,
-          isListed: 0,
-          createdAt: 0,
-          updatedAt: 0,
+          _id: 1,
+          title: 1,
+          price: 1,
+          skillsCovered: 1,
+          requirements: 1,
+          difficulty: 1,
+          thumbnail: 1,
+          description: 1,
+          trainer: 1,
+          modules: 1,
+          category: 1,
+          noOfEnrolled: {
+            $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+          },
         },
       },
     ]);

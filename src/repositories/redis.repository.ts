@@ -1,7 +1,7 @@
-import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
+import { IRedisRepository } from "../interfaces/repositories/IRedis.repository";
 import { redisClient } from "../config/DB/redis";
 
-class OTPRepository implements IOTPRepository {
+class RedisRepository implements IRedisRepository {
   public async get(key: string): Promise<string | null> {
     return await redisClient.get(key);
   }
@@ -23,4 +23,4 @@ class OTPRepository implements IOTPRepository {
   }
 }
 
-export default OTPRepository;
+export default RedisRepository;

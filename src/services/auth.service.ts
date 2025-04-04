@@ -7,7 +7,7 @@ import {
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
-import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
+import { IOTPRepository } from "../interfaces/repositories/IRedis.repository";
 import { generateOTP } from "../utils/OTP";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";

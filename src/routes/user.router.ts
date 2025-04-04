@@ -32,6 +32,8 @@ router
   .get(courseController.getCourse)
   .post(accessTokenValidator, enrolledCourseController.enrollCourse);
 
+router.route("/courses/:courseId/aiChat").post(courseController.aiChat);
+
 router
   .route("/courses/:courseId/reviews")
   .post(accessTokenValidator, reviewController.addReview)

@@ -26,11 +26,13 @@ import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/index.validator";
 import { getObjectId } from "../utils/objectId";
 import NotificationService from "../services/notification.service";
+import { IAiChatService } from "../interfaces/services/IAiChat.service";
 
 class CourseController {
   constructor(
     private courseService: ICourseService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private aiChatService: IAiChatService
   ) {
     binder(this);
   }
@@ -57,6 +59,25 @@ class CourseController {
       res
         .status(StatusCodes.CREATED)
         .json(successResponse(COURSE_CREATED_SUCCESS_MESSAGE, course));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async aiChat(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      const { message, history } = req.body;
+
+      const result = await this.aiChatService.courseChatHandler(
+        courseId,
+        message,
+        history
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, result));
     } catch (err) {
       next(err);
     }

@@ -7,7 +7,7 @@ import UserModel from "../models/User.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/OTP.repository";
+import OTPRepository from "../repositories/redis.repository";
 
 //services
 import AuthService from "../services/auth.service";
@@ -19,7 +19,6 @@ import {
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 import OTPService from "../services/OTP.service";
 import { authService } from "../dependencyInjector";
-
 
 /**
  * Middleware to authenticate trainer users.

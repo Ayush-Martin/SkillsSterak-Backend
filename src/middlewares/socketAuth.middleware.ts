@@ -5,7 +5,7 @@ import {
 } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
 import UserModel from "../models/User.model";
-import OTPRepository from "../repositories/OTP.repository";
+import OTPRepository from "../repositories/redis.repository";
 import UserRepository from "../repositories/user.repository";
 import AuthService from "../services/auth.service";
 import errorCreator from "../utils/customError";

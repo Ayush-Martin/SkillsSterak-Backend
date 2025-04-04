@@ -55,6 +55,8 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   /** Gets course count. */
   getCourseCount(search: RegExp): Promise<number>;
 
+  getCourseOutline(courseId: string): Promise<ICourse | null>;
+
   /** Gets Admin all courses count. */
   getAdminCourseCount(search: RegExp): Promise<number>;
 

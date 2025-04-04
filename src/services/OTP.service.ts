@@ -3,14 +3,14 @@ import {
   OTP_EXPIRED_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
-import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
+import { IRedisRepository } from "../interfaces/repositories/IRedis.repository";
 import { IOTPSchema, IOTPService } from "../interfaces/services/IOTP.service";
 import errorCreator from "../utils/customError";
 import { sendMail } from "../utils/mailer";
 import { generateOTP } from "../utils/OTP";
 
 class OTPService implements IOTPService {
-  constructor(private OTPRepository: IOTPRepository) {}
+  constructor(private redisRepository: IRedisRepository) {}
 
   public async generateAndStoreOTP(
     email: string,
@@ -18,18 +18,18 @@ class OTPService implements IOTPService {
   ): Promise<string> {
     const OTP = generateOTP();
 
-    await this.OTPRepository.setWithExpiry(
+    await this.redisRepository.setWithExpiry(
       `otp:${email}`,
       300,
       JSON.stringify({ OTP, isVerified: false })
     );
-    await this.OTPRepository.set(`user:${email}`, JSON.stringify(data));
+    await this.redisRepository.set(`user:${email}`, JSON.stringify(data));
 
     return OTP;
   }
 
   public async verifyOTP(email: string, OTP: string): Promise<void> {
-    const OTPDataString = await this.OTPRepository.get(`otp:${email}`);
+    const OTPDataString = await this.redisRepository.get(`otp:${email}`);
 
     if (!OTPDataString) {
       return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
@@ -41,7 +41,7 @@ class OTPService implements IOTPService {
       return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
     }
 
-    await this.OTPRepository.setWithExpiry(
+    await this.redisRepository.setWithExpiry(
       `otp:${email}`,
       300,
       JSON.stringify({ ...OTPData, isVerified: true })
@@ -52,8 +52,8 @@ class OTPService implements IOTPService {
     email: string
   ): Promise<Record<string, any> | null> {
     console.log("get verifeid data");
-    const otpDataString = await this.OTPRepository.get(`otp:${email}`);
-    const storedDataString = await this.OTPRepository.get(`user:${email}`);
+    const otpDataString = await this.redisRepository.get(`otp:${email}`);
+    const storedDataString = await this.redisRepository.get(`user:${email}`);
     console.log(otpDataString, storedDataString);
     if (!otpDataString || !storedDataString) {
       return null;
@@ -65,14 +65,14 @@ class OTPService implements IOTPService {
       return null;
     }
 
-    await this.OTPRepository.del(email);
+    await this.redisRepository.del(email);
 
     return JSON.parse(storedDataString);
   }
 
   public async resendOTP(email: string): Promise<void> {
     const OTP = generateOTP();
-    await this.OTPRepository.setWithExpiry(
+    await this.redisRepository.setWithExpiry(
       `otp:${email}`,
       300,
       JSON.stringify({ OTP, isVerified: false })

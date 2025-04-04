@@ -9,7 +9,7 @@ import RefreshTokenModel from "../models/RefreshToken.model";
 
 //repositories
 import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/OTP.repository";
+import OTPRepository from "../repositories/redis.repository";
 import RefreshTokenRepository from "../repositories/RefreshToken.repository";
 
 //services
