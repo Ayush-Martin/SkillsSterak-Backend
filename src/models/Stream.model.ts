@@ -7,6 +7,7 @@ export interface IStream extends Document {
   description: string;
   thumbnail: string;
   isLive?: boolean;
+  path?: string;
 }
 
 const StreamSchema = new Schema<IStream>(
@@ -37,11 +38,13 @@ const StreamSchema = new Schema<IStream>(
       type: Boolean,
       default: false,
     },
+    path: {
+      type: String,
+      required: false,
+      default: "",
+    },
   },
   { timestamps: true }
 );
-
-StreamSchema.index({ roomId: 1 });
-StreamSchema.index({ hostId: 1 });
 
 export default model<IStream>("Stream", StreamSchema);

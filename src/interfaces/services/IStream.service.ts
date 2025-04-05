@@ -1,7 +1,7 @@
 import { IStream } from "../../models/Stream.model";
 
 export interface IStreamService {
-  viewStream(userId: string, roomId: string): Promise<string>;
+  viewStream(userId: string, streamId: string): Promise<string>;
   getStreams(
     search: string,
     page: number
@@ -16,7 +16,7 @@ export interface IStreamService {
     title: string,
     description: string,
     thumbnail: string
-  ): Promise<{ stream: IStream; token: string }>;
+  ): Promise<string>;
   //   getStream(roomId: string): Promise<any>;
   //   updateStream(roomId: string, stream: any): Promise<any>;
   //   deleteStream(roomId: string): Promise<any>;

@@ -112,6 +112,6 @@ router
 router.route("/chats/:chatId").get(chatController.getMessages);
 
 router.route("/streams").get(streamController.getStreams);
-router.route("/streams/:roomId").get(streamController.viewStream);
+router.route("/streams/:streamId").get(streamController.viewStream);
 
 export default router;

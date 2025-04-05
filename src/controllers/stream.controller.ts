@@ -11,18 +11,6 @@ class StreamController {
     binder(this);
   }
 
-  // public async trainerStreamToken(
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ) {
-
-  //   try {
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
-
   public async startStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { title, description } = req.body;
@@ -62,10 +50,10 @@ class StreamController {
 
   public async viewStream(req: Request, res: Response, next: NextFunction) {
     try {
-      const { roomId } = req.params;
+      const { streamId } = req.params;
       const userId = req.userId!;
 
-      const data = await this.streamService.viewStream(userId, roomId);
+      const data = await this.streamService.viewStream(userId, streamId);
 
       res
         .status(StatusCodes.OK)

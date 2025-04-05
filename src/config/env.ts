@@ -46,6 +46,11 @@ const envConfig = {
   ZEGO_APP_ID: Number(process.env.ZEGO_APP_ID!),
   ZEGO_SERVER_SECRET: process.env.ZEGO_SERVER_SECRET!,
   ZEGO_SERVER_URL: process.env.ZEGO_SERVER_URL!,
+
+  //LiveKit
+  LIVEKIT_URL: process.env.LIVEKIT_URL!,
+  LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY!,
+  LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET!,
 };
 
 export default envConfig;

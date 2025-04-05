@@ -7,8 +7,7 @@ import {
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
-import { IOTPRepository } from "../interfaces/repositories/IRedis.repository";
-import { generateOTP } from "../utils/OTP";
+import { IRedisRepository } from "../interfaces/repositories/IRedis.repository";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";
 import {
@@ -26,7 +25,7 @@ import { IOTPService } from "../interfaces/services/IOTP.service";
 class AuthService implements IAuthService {
   constructor(
     private userRepository: IUserRepository,
-    private OTPRepository: IOTPRepository,
+    private redisRepository: IRedisRepository,
     private OTPService: IOTPService
   ) {}
 
@@ -71,7 +70,7 @@ class AuthService implements IAuthService {
       password: registerData.password,
     });
 
-    await this.OTPRepository.del(email);
+    await this.redisRepository.del(email);
   }
 
   public async login(email: string, password: string): Promise<IUser | void> {

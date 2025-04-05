@@ -1,11 +1,12 @@
 import envConfig from "../config/env";
 import { RECORDS_PER_PAGE } from "../constants/general";
-import TrainerRequestController from "../controllers/trainerRequest.controller";
+import { StatusCodes } from "../constants/statusCodes";
 import { IStreamRepository } from "../interfaces/repositories/IStream.repository";
 import { IStreamService } from "../interfaces/services/IStream.service";
 import { IStream } from "../models/Stream.model";
+import errorCreator from "../utils/customError";
 import { getObjectId } from "../utils/objectId";
-import { generateToken04 } from "../utils/zegoCloud";
+import { AccessToken } from "livekit-server-sdk";
 
 const generateRoomId = (title: string) => {
   const date = new Date().getTime();
@@ -17,40 +18,12 @@ const generateRoomId = (title: string) => {
 class StreamService implements IStreamService {
   constructor(private streamRepository: IStreamRepository) {}
 
-  // public async getStreamToken(
-  //   userId: string,
-  //   roomId: string,
-  //   role: "publisher" | "viewer"
-  // ): Promise<string> {
-  //   return generateToken({
-  //     appId: envConfig.ZEGO_APP_ID,
-
-  //   });
-  // }
-
-  public async createStream(
-    hostId: string,
-    roomId: string,
-    title: string,
-    description: string,
-    thumbnail: string
-  ) {
-    return await this.streamRepository.create({
-      hostId: getObjectId(hostId),
-      roomId,
-      title,
-      isLive: true,
-      description,
-      thumbnail,
-    });
-  }
-
   public async startStream(
     hostId: string,
     title: string,
     description: string,
     thumbnail: string
-  ): Promise<{ stream: IStream; token: string }> {
+  ): Promise<string> {
     const roomId = generateRoomId(title);
 
     const stream = await this.streamRepository.create({
@@ -62,31 +35,57 @@ class StreamService implements IStreamService {
       isLive: true,
     });
 
-    console.log(hostId, typeof hostId);
-
-    const token = generateToken04(
-      envConfig.ZEGO_APP_ID,
-      hostId.toString(),
-      envConfig.ZEGO_SERVER_SECRET,
-      24 * 60 * 60
+    const at = new AccessToken(
+      envConfig.LIVEKIT_API_KEY,
+      envConfig.LIVEKIT_API_SECRET,
+      {
+        identity: hostId,
+        ttl: "10m",
+      }
     );
 
-    return { stream, token };
+    at.addGrant({
+      roomJoin: true,
+      room: stream.roomId,
+      canPublish: true,
+      canSubscribe: true,
+      roomAdmin: true,
+      roomCreate: true,
+    });
+
+    return await at.toJwt();
   }
 
   public async endStream(roomId: string): Promise<void> {
     await this.streamRepository.endStream(roomId);
   }
 
-  public async viewStream(userId: string, roomId: string): Promise<string> {
-    const token = generateToken04(
-      envConfig.ZEGO_APP_ID,
-      userId.toString(),
-      envConfig.ZEGO_SERVER_SECRET,
-      24 * 60 * 60
+  public async viewStream(userId: string, streamId: string): Promise<string> {
+    const stream = await this.streamRepository.findById(streamId);
+    if (!stream) {
+      errorCreator("Stream not found", StatusCodes.NOT_FOUND);
+      return "";
+    }
+
+    console.log(stream);
+
+    const at = new AccessToken(
+      envConfig.LIVEKIT_API_KEY,
+      envConfig.LIVEKIT_API_SECRET,
+      {
+        identity: userId,
+        ttl: "10m",
+      }
     );
 
-    return token;
+    at.addGrant({
+      roomJoin: true,
+      room: stream.roomId,
+      canPublish: false,
+      canSubscribe: true,
+    });
+
+    return await at.toJwt();
   }
 
   public async getStreams(
