@@ -14,7 +14,7 @@ import {
   USER_UN_BLOCKED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/index.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
 
 class UserController {
@@ -83,7 +83,7 @@ class UserController {
 
       await this.userService.sendTrainerRequest(userId);
       this.notificationService.sendTrainerRequestNotification(userId);
-      
+
       res
         .status(200)
         .json(successResponse(SEND_TRAINER_REQUEST_SUCCESS_MESSAGE));
@@ -94,10 +94,10 @@ class UserController {
 
   public async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { search, page } = paginatedGetDataValidator(req.query);
+      const { search, page, size } = paginatedGetDataValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.userService.getUsers(search, page);
+        await this.userService.getUsers(search, page, size);
 
       res.status(StatusCodes.OK).json(
         successResponse(

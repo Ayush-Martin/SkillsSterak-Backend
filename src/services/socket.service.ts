@@ -3,11 +3,13 @@ import { Socket } from "socket.io";
 import { SocketEvents } from "../constants/socketEvents";
 import { INotificationService } from "../interfaces/services/INotification.service";
 import { IPremiumChatService } from "../interfaces/services/IPremiumChat.service";
+import { IStreamService } from "../interfaces/services/IStream.service";
 
 class SocketService implements ISocketService {
   constructor(
     private notificationService: INotificationService,
-    private premiumChatService: IPremiumChatService
+    private premiumChatService: IPremiumChatService,
+    private streamService: IStreamService
   ) {}
 
   public async socketConnectionHandler(
@@ -22,9 +24,15 @@ class SocketService implements ISocketService {
     });
 
     socket.on(SocketEvents.NOTIFICATION_MARK_READ, async (notificationId) => {
-      console.log(notificationId);
       await this.notificationService.markAsRead(notificationId);
     });
+
+    socket.on(
+      "liveChat",
+      async ({ roomId, message }: { roomId: string; message: string }) => {
+        await this.streamService.liveChat(roomId, userId, message);
+      }
+    );
 
     socket.on(
       "new message",

@@ -19,6 +19,7 @@ class TransactionRepository
     return await this.Transaction.find({
       $or: [{ payerId: userId }, { receiverId: userId }],
     })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("payerId", "email _id role")
@@ -37,6 +38,7 @@ class TransactionRepository
     limit: number
   ): Promise<Array<ITransaction>> {
     return await this.Transaction.find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("payerId", "email _id role")

@@ -63,7 +63,6 @@ class ChatController {
       const userId = req.userId!;
       const { receiverId } = sendMediaValidator(req.body);
       const file = req.file!;
-      console.log(userId);
 
       await this.premiumChatService.addMessage(
         file.path,

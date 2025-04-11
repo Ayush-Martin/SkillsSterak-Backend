@@ -353,8 +353,11 @@ class CourseRepository
         status: 1,
       }
     )
+      .sort({ createdAt: -1 })
       .populate("trainerId", "_id email")
-      .populate("categoryId", "_id categoryName");
+      .populate("categoryId", "_id categoryName")
+      .skip(skip)
+      .limit(limit);
   }
 
   public async getTrainerCourses(

@@ -1,5 +1,5 @@
 export interface IOTPSchema {
-  OTP: string;
+  otp: string;
   isVerified: boolean;
 }
 
@@ -11,4 +11,5 @@ export interface IOTPService {
   verifyOTP(email: string, OTP: string): Promise<void>;
   resendOTP(email: string): Promise<void>;
   getVerifiedOTPData(email: string): Promise<Record<string, null> | null>;
+  deleteOTP(email: string): Promise<void>;
 }

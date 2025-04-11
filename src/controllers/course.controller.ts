@@ -23,7 +23,7 @@ import {
   UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/index.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { getObjectId } from "../utils/objectId";
 import NotificationService from "../services/notification.service";
 import { IAiChatService } from "../interfaces/services/IAiChat.service";
@@ -176,13 +176,14 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const { page, search } = paginatedGetDataValidator(req.query);
+      const { page, search, size } = paginatedGetDataValidator(req.query);
       const trainerId = req.userId!;
 
       const data = await this.courseService.getTrainerCourses(
         trainerId,
         search,
-        page
+        page,
+        size
       );
 
       res
@@ -199,9 +200,9 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const { page, search } = paginatedGetDataValidator(req.query);
+      const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.courseService.getAdminCourses(search, page);
+      const data = await this.courseService.getAdminCourses(search, page, size);
 
       res
         .status(StatusCodes.OK)
@@ -213,13 +214,13 @@ class CourseController {
 
   public async getCourses(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search, category, difficulty, price, limit, sort } =
+      const { page, search, category, difficulty, price, size, sort } =
         getCoursesValidator(req.query);
 
       const data = await this.courseService.getCourses(
         search,
         page,
-        limit,
+        size,
         category,
         difficulty,
         price,

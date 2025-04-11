@@ -2,15 +2,7 @@ import { NextFunction, Request, response, Response } from "express";
 import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 
-//models
-import UserModel from "../models/User.model";
-
-//repositories
-import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/redis.repository";
-
 //services
-import AuthService from "../services/auth.service";
 import {
   BLOCKED_ERROR_MESSAGE,
   INVALID_ACCESS_TOKEN_ERROR_MESSAGE,

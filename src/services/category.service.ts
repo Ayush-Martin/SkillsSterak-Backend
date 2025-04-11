@@ -1,4 +1,3 @@
-import { RECORDS_PER_PAGE } from "../constants/general";
 import {
   CATEGORY_EXIST_ERROR_MESSAGE,
   CATEGORY_NOT_FOUND_ERROR_MESSAGE,
@@ -63,24 +62,25 @@ class CategoryService implements ICategoryService {
 
   public async getCategories(
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     categories: Array<ICategory>;
     currentPage: number;
     totalPages: number;
   }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const categories = await this.categoryRepository.getCategories(
       searchRegex,
       skip,
-      RECORDS_PER_PAGE
+      size
     );
 
     const totalCategories = await this.categoryRepository.getCategoriesCount(
       searchRegex
     );
-    const totalPages = Math.ceil(totalCategories / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalCategories / size);
     return {
       categories,
       currentPage: page,

@@ -18,19 +18,22 @@ class TrainerService implements ITrainerService {
     return await this.trainerRepository.getTrainer(trainerId);
   }
 
-  public async getTrainerRequest(page: number): Promise<{
+  public async getTrainerRequest(
+    page: number,
+    size: number
+  ): Promise<{
     users: Array<IUser>;
     currentPage: number;
     totalPages: number;
   }> {
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const users = await this.trainerRequestRepository.getRequestedUsers(
       skip,
-      RECORDS_PER_PAGE
+      size
     );
     const totalUsers =
       await this.trainerRequestRepository.getRequestedUserCount();
-    const totalPages = Math.ceil(totalUsers / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalUsers / size);
 
     return {
       users: users,
@@ -56,26 +59,27 @@ class TrainerService implements ITrainerService {
   public async getStudentsWithEnrolledCourses(
     trainerId: string,
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     students: Array<IUser>;
     currentPage: number;
     totalPages: number;
   }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const students =
       await this.trainerRepository.getStudentsWithEnrolledCourses(
         trainerId,
         searchRegex,
         skip,
-        RECORDS_PER_PAGE
+        size
       );
     const totalStudents = await this.trainerRepository.getTotalStudents(
       trainerId,
       searchRegex
     );
-    const totalPages = Math.ceil(totalStudents / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalStudents / size);
     return {
       students,
       currentPage: page,

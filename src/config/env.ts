@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 config();
-console.log(process.env.ACCESS_TOKEN_EXPIRY_MIN);
 
 const envConfig = {
   //general
@@ -41,11 +40,6 @@ const envConfig = {
 
   //Gemini
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
-
-  //Zego cloud
-  ZEGO_APP_ID: Number(process.env.ZEGO_APP_ID!),
-  ZEGO_SERVER_SECRET: process.env.ZEGO_SERVER_SECRET!,
-  ZEGO_SERVER_URL: process.env.ZEGO_SERVER_URL!,
 
   //LiveKit
   LIVEKIT_URL: process.env.LIVEKIT_URL!,

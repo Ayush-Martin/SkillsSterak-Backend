@@ -23,7 +23,6 @@ import CourseRepository from "./repositories/course.repository";
 import EnrolledCoursesRepository from "./repositories/enrolledCourses.repository";
 import LessonRepository from "./repositories/Lesson.repository";
 import ModuleRepository from "./repositories/Module.repository";
-import RedisRepository from "./repositories/redis.repository";
 import RefreshTokenRepository from "./repositories/RefreshToken.repository";
 import ReplyRepository from "./repositories/reply.repository";
 import ReviewRepository from "./repositories/review.repository";
@@ -37,6 +36,8 @@ import NotificationRepository from "./repositories/notification.repository";
 import PremiumChatRepository from "./repositories/premiumChat.repository";
 import PremiumMessageRepository from "./repositories/premiumMessage.repository";
 import StreamRepository from "./repositories/Stream.repository";
+import OTPRepository from "./repositories/otp.repository";
+import AiChatRepository from "./repositories/aiChat.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -76,6 +77,7 @@ import WalletController from "./controllers/wallet.controller";
 import ChatController from "./controllers/chat.controller";
 import OTPController from "./controllers/OTP.controller";
 import StreamController from "./controllers/stream.controller";
+import LiveKitController from "./controllers/liveKit.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -85,7 +87,6 @@ const enrolledCoursesRepository = new EnrolledCoursesRepository(
 );
 const lessonRepository = new LessonRepository(LessonModel);
 const moduleRepository = new ModuleRepository(ModuleModel);
-const redisRepository = new RedisRepository();
 const refreshTokenRepository = new RefreshTokenRepository(RefreshTokenModel);
 const replyRepository = new ReplyRepository(ReplyModel);
 const reviewRepository = new ReviewRepository(ReviewModel);
@@ -103,14 +104,12 @@ const premiumMessageRepository = new PremiumMessageRepository(
   PremiumMessageModel
 );
 const streamRepository = new StreamRepository(StreamModel);
+const otpRepository = new OTPRepository();
+const aiChatRepository = new AiChatRepository();
 
 // Instantiate Services
-export const otpService = new OTPService(redisRepository);
-export const authService = new AuthService(
-  userRepository,
-  redisRepository,
-  otpService
-);
+export const otpService = new OTPService(otpRepository);
+export const authService = new AuthService(userRepository, otpService);
 export const categoryService = new CategoryService(categoryRepository);
 export const courseService = new CourseService(courseRepository);
 export const enrolledCoursesService = new EnrolledCoursesService(
@@ -155,10 +154,13 @@ export const premiumChatService = new PremiumChatService(
   premiumMessageRepository,
   userRepository
 );
-export const streamService = new StreamService(streamRepository);
+export const streamService = new StreamService(
+  streamRepository,
+  userRepository
+);
 export const aiChatService = new AiChatService(
   courseRepository,
-  redisRepository
+  aiChatRepository
 );
 
 // Instantiate Controllers
@@ -166,8 +168,7 @@ export const otpController = new OTPController(otpService);
 export const authController = new AuthController(
   authService,
   jwtService,
-  googleAuthService,
-  otpService
+  googleAuthService
 );
 export const categoryController = new CategoryController(categoryService);
 export const courseController = new CourseController(
@@ -199,3 +200,4 @@ export const userController = new UserController(
 export const walletController = new WalletController(walletService);
 export const chatController = new ChatController(premiumChatService);
 export const streamController = new StreamController(streamService);
+export const liveKitController = new LiveKitController();

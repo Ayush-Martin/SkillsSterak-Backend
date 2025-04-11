@@ -3,7 +3,7 @@ import {
   LessonDescriptionValidationRule,
   LessonTitleValidationRule,
   LessonTypeValidationRule,
-} from "../utils/validationRules";
+} from "./rules/course.validationRule";
 
 export const addLessonValidator = (data: any) => {
   const schema = z.object({

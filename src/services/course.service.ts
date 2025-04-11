@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { RECORDS_PER_PAGE } from "../constants/general";
 import {
   COURSE_NOT_FOUND_ERROR_MESSAGE,
   COURSE_TITLE_EXIST_ERROR_MESSAGE,
@@ -55,7 +54,7 @@ class CourseService implements ICourseService {
   public async getCourses(
     search: string,
     page: number,
-    limit: number,
+    size: number,
     category: string,
     difficulty: CourseDifficultyFilter,
     price: CoursePriceFilter,
@@ -111,11 +110,11 @@ class CourseService implements ICourseService {
     }
 
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * size;
     const courses = await this.courseRepository.getCourses(
       searchRegex,
       skip,
-      limit,
+      size,
       filter,
       sortQuery
     );
@@ -123,7 +122,7 @@ class CourseService implements ICourseService {
     const totalCourses = await this.courseRepository.getCourseCount(
       searchRegex
     );
-    const totalPages = Math.ceil(totalCourses / limit);
+    const totalPages = Math.ceil(totalCourses / size);
     return {
       courses,
       currentPage: page,
@@ -138,52 +137,55 @@ class CourseService implements ICourseService {
   public async getTrainerCourses(
     trainerId: string,
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;
     totalPages: number;
   }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const courses = await this.courseRepository.getTrainerCourses(
       trainerId,
       searchRegex,
       skip,
-      RECORDS_PER_PAGE
+      size
     );
 
     const totalCourses = await this.courseRepository.getTrainerCourseCount(
       trainerId,
       searchRegex
     );
-    const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalCourses / size);
     return {
       courses,
       currentPage: page,
       totalPages,
     };
   }
+
   public async getAdminCourses(
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     courses: Array<ICourse>;
     currentPage: number;
     totalPages: number;
   }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const courses = await this.courseRepository.getAdminCourses(
       searchRegex,
       skip,
-      RECORDS_PER_PAGE
+      size
     );
 
     const totalCourses = await this.courseRepository.getCourseCount(
       searchRegex
     );
-    const totalPages = Math.ceil(totalCourses / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalCourses / size);
     return {
       courses,
       currentPage: page,

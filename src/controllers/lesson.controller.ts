@@ -49,7 +49,6 @@ class LessonController {
         .status(StatusCodes.CREATED)
         .json(successResponse(LESSON_ADDED_SUCCESS_MESSAGE, data));
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }

@@ -73,7 +73,8 @@ router.get(
 
 router
   .route("/enrolledCourses/:courseId")
-  .get(enrolledCourseController.getEnrolledCourse);
+  .get(enrolledCourseController.getEnrolledCourse)
+  .delete(enrolledCourseController.cancelCoursePurchase);
 
 router
   .route("/enrolledCourses/:courseId/lessons/:lessonId")
@@ -111,6 +112,7 @@ router
 
 router.route("/chats/:chatId").get(chatController.getMessages);
 
+//stream
 router.route("/streams").get(streamController.getStreams);
 router.route("/streams/:streamId").get(streamController.viewStream);
 

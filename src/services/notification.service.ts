@@ -15,7 +15,6 @@ class NotificationService implements INotificationService {
   ) {}
 
   public async sendUserNotifications(userId: string): Promise<void> {
-    console.log(userId);
     const notifications = await this.notificationRepository.getAllNotifications(
       userId
     );
@@ -33,12 +32,12 @@ class NotificationService implements INotificationService {
   ): Promise<void> {
     const admin = await this.userRepository.getAdmin();
     const trainer = await this.userRepository.findById(trainerId);
-    console.log(admin?.id, "fdfd90asd9f0ad");
+
     const adminNotification = await this.notificationRepository.addNotification(
       admin?.id,
       `${trainer!.username} has added a new course: ${courseName}`
     );
-    console.log(adminNotification);
+
     io.to(admin?.id).emit(SocketEvents.NOTIFICATION_NEW, adminNotification);
   }
 
@@ -63,7 +62,6 @@ class NotificationService implements INotificationService {
         `course ${course?.title} approved by admin`
       );
 
-    console.log(userNotifications);
 
     userNotifications.forEach((notification) => {
       io.to(notification.userId.toString()).emit(

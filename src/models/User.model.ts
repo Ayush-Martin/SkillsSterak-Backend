@@ -6,7 +6,6 @@ export interface IUser extends Document {
   password?: string;
   profileImage?: string;
   about?: string;
-  areaOfInterest?: string[];
   role?: "user" | "trainer" | "admin";
   googleId?: string;
   isBlocked?: boolean;
@@ -38,10 +37,6 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false,
       default: "",
-    },
-    areaOfInterest: {
-      type: Array<String>,
-      required: false,
     },
     about: {
       type: String,

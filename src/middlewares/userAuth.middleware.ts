@@ -3,18 +3,6 @@ import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import jwt from "jsonwebtoken";
 
-//models
-import UserModel from "../models/User.model";
-import RefreshTokenModel from "../models/RefreshToken.model";
-
-//repositories
-import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/redis.repository";
-import RefreshTokenRepository from "../repositories/RefreshToken.repository";
-
-//services
-import AuthService from "../services/auth.service";
-import JWTService from "../services/jwt.service";
 import {
   BLOCKED_ERROR_MESSAGE,
   INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
@@ -22,7 +10,6 @@ import {
 } from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 import envConfig from "../config/env";
-import OTPService from "../services/OTP.service";
 import { authService, jwtService } from "../dependencyInjector";
 
 /**
@@ -76,9 +63,7 @@ export const refreshTokenValidator = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken as string | undefined;
-    console.log(refreshToken);
     if (!refreshToken) {
-      console.log("no refresh token");
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
         StatusCodes.UNAUTHORIZED
@@ -88,7 +73,6 @@ export const refreshTokenValidator = async (
 
     const validRefreshToken = await jwtService.getRefreshToken(refreshToken);
     if (!validRefreshToken) {
-      console.log("invalid refresh token ", validRefreshToken);
       req.cookies.remove();
       errorCreator(
         INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
@@ -104,7 +88,6 @@ export const refreshTokenValidator = async (
         try {
           if (err) {
             req.cookies.remove();
-            console.log("invalid refresh token ", validRefreshToken);
             errorCreator(
               INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
               StatusCodes.UNAUTHORIZED

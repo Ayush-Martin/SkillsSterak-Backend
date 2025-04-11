@@ -19,6 +19,14 @@ class WalletRepository
     );
   }
 
+  public async debitWallet(userId: string, amount: number): Promise<void> {
+    await this.Wallet.findOneAndUpdate(
+      { userId },
+      { $inc: { balance: -amount } },
+      { new: true }
+    );
+  }
+
   public async redeemWallet(userId: string): Promise<IWallet | null> {
     return await this.Wallet.findOneAndUpdate(
       { userId },

@@ -1,5 +1,4 @@
 import { Document, Schema, model } from "mongoose";
-import { boolean } from "zod";
 
 export interface ICategory extends Document {
   categoryName: string;

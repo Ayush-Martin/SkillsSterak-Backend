@@ -3,7 +3,6 @@ import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import {
-  COURSE_ACCESS_SUCCESS_MESSAGE,
   COURSE_ENROLLED_SUCCESS_MESSAGE,
   COURSE_ORDER_CREATED_SUCCESS_MESSAGE,
   GET_DATA_SUCCESS_MESSAGE,
@@ -11,10 +10,8 @@ import {
   LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import {
-  pageValidator,
-  razorpayCompletePurchaseValidator,
-} from "../validators/index.validator";
+import { pageValidator } from "../validators/pagination.validator";
+import { razorpayCompletePurchaseValidator } from "../validators/index.validator";
 import { getObjectId } from "../utils/objectId";
 
 class EnrolledCourses {
@@ -61,6 +58,23 @@ class EnrolledCourses {
     }
   }
 
+  public async cancelCoursePurchase(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const { courseId } = req.params;
+      await this.enrolledCoursesService.cancelCoursePurchase(userId, courseId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse("Course Purchase Cancelled", courseId));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async checkEnrolled(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -84,10 +98,14 @@ class EnrolledCourses {
   ) {
     try {
       const userId = req.userId!;
-      const { page } = pageValidator(req.query);
+      const { page, size } = pageValidator(req.query);
 
       const enrolledCourses =
-        await this.enrolledCoursesService.getEnrolledCourses(userId, page);
+        await this.enrolledCoursesService.getEnrolledCourses(
+          userId,
+          page,
+          size
+        );
 
       res
         .status(StatusCodes.OK)

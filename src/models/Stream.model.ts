@@ -7,7 +7,6 @@ export interface IStream extends Document {
   description: string;
   thumbnail: string;
   isLive?: boolean;
-  path?: string;
 }
 
 const StreamSchema = new Schema<IStream>(
@@ -37,11 +36,6 @@ const StreamSchema = new Schema<IStream>(
     isLive: {
       type: Boolean,
       default: false,
-    },
-    path: {
-      type: String,
-      required: false,
-      default: "",
     },
   },
   { timestamps: true }

@@ -17,6 +17,7 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  console.warn(`[Error] ${err.message}`);
   console.log(err);
   if (!(err instanceof z.ZodError)) {
     // Custom error

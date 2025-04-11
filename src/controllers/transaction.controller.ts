@@ -3,7 +3,7 @@ import { ITransactionService } from "../interfaces/services/ITransaction.service
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
-import { pageValidator } from "../validators/index.validator";
+import { pageValidator } from "../validators/pagination.validator";
 import binder from "../utils/binder";
 
 class TransactionController {
@@ -18,11 +18,12 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const { page } = pageValidator(req.query);
+      const { page, size } = pageValidator(req.query);
 
       const data = await this.transactionService.getUserTransactions(
         userId,
-        page
+        page,
+        size
       );
 
       res
@@ -39,9 +40,9 @@ class TransactionController {
     next: NextFunction
   ) {
     try {
-      const { page } = pageValidator(req.query);
+      const { page, size } = pageValidator(req.query);
 
-      const data = await this.transactionService.getTransactions(page);
+      const data = await this.transactionService.getTransactions(page, size);
 
       res
         .status(StatusCodes.OK)

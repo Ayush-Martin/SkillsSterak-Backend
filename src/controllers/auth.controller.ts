@@ -10,7 +10,6 @@ import {
   registerUserValidator,
   resetPasswordValidator,
 } from "../validators/auth.validator";
-import { OTPValidator } from "../validators/OTP.validator";
 import {
   COMPLETE_REGISTER_SUCCESS_MESSAGE,
   FORGET_PASSWORD_SUCCESS_MESSAGE,
@@ -20,19 +19,16 @@ import {
   RESET_PASSWORD_SUCCESS_MESSAGE,
   TOKEN_REFRESH_SUCCESS_MESSAGE,
   USER_NOT_FOUND_ERROR_MESSAGE,
-  VERIFY_OTP_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
 import envConfig from "../config/env";
-import { IOTPService } from "../interfaces/services/IOTP.service";
 
 class AuthController {
   constructor(
     public authService: IAuthService,
     public jwtService: IJWTService,
     private googleAuthService: IGoogleAuthService,
-    private OTPService: IOTPService
   ) {
     binder(this);
   }

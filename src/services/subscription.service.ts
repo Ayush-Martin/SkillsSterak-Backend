@@ -54,7 +54,6 @@ class SubscriptionService implements ISubscriptionService {
       payerId: getObjectId(userId),
       amount: 1000,
       type: "subscription",
-      transactionId: orderId,
     });
 
     await this.subscriptionRepository.create({

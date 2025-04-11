@@ -20,7 +20,6 @@ class NotificationRepository
   }
 
   public async markAsRead(notificationId: string): Promise<void> {
-    console.log(notificationId);
     await this.Notification.findByIdAndUpdate(notificationId, { read: true });
   }
 
@@ -33,7 +32,6 @@ class NotificationRepository
       message,
     }));
 
-    console.log(notifications);
 
     return await this.Notification.insertMany(notifications);
   }

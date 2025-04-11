@@ -1,10 +1,14 @@
 import { IStream } from "../../models/Stream.model";
 
 export interface IStreamService {
-  viewStream(userId: string, streamId: string): Promise<string>;
+  viewStream(
+    userId: string,
+    streamId: string
+  ): Promise<{ stream: IStream; token: string } | void>;
   getStreams(
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     liveStreams: IStream[];
     currentPage: number;
@@ -16,7 +20,8 @@ export interface IStreamService {
     title: string,
     description: string,
     thumbnail: string
-  ): Promise<string>;
+  ): Promise<{ stream: IStream; token: string }>;
+  liveChat(roomId: string, userId: string, message: string): Promise<void>;
   //   getStream(roomId: string): Promise<any>;
   //   updateStream(roomId: string, stream: any): Promise<any>;
   //   deleteStream(roomId: string): Promise<any>;

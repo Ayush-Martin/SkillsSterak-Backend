@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  PageValidationRule,
-  TrainerRequestStatusValidationRule,
-} from "../utils/validationRules";
+import { TrainerRequestStatusValidationRule } from "./rules/trainerRequest.validationRule";
 
 export const approveRejectRequestValidator = (data: any) => {
   const schema = z.object({

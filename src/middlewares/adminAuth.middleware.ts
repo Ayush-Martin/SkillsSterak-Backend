@@ -2,14 +2,6 @@ import { NextFunction, Request, response, Response } from "express";
 import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 
-//models
-import UserModel from "../models/User.model";
-
-//repositories
-import UserRepository from "../repositories/user.repository";
-import OTPRepository from "../repositories/redis.repository";
-import OTPService from "../services/OTP.service";
-
 //services
 import AuthService from "../services/auth.service";
 import {

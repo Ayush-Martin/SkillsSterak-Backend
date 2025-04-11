@@ -8,9 +8,10 @@ import { StatusCodes } from "../constants/statusCodes";
 import { Orders } from "razorpay/dist/types/orders";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
-import { RECORDS_PER_PAGE } from "../constants/general";
+import { COURSE_COMMISSION_RATE, RECORDS_PER_PAGE } from "../constants/general";
 import {
   COURSE_ACCESS_ERROR_MESSAGE,
+  COURSE_NOT_FOUND_ERROR_MESSAGE,
   ORDER_NOT_FOUND_ERROR_MESSAGE,
   ORDER_NOT_PAID_ERROR_MESSAGE,
 } from "../constants/responseMessages";
@@ -89,31 +90,95 @@ class EnrolledCourses implements IEnrolledCoursesService {
       courseId: getObjectId(courseId),
       amount: course.price,
       type: "payment",
-      transactionId: orderId,
     });
   }
 
   public async getEnrolledCourses(
     userId: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     enrolledCourses: Array<IEnrolledCourses>;
     currentPage: number;
     totalPages: number;
   }> {
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const enrolledCourses =
       await this.enrolledCoursesRepository.getEnrolledCourses(
         userId,
         skip,
-        RECORDS_PER_PAGE
+        size
       );
 
     const enrolledCoursesCount =
       await this.enrolledCoursesRepository.getEnrolledCoursesCount(userId);
 
-    const totalPages = Math.ceil(enrolledCoursesCount / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(enrolledCoursesCount / size);
     return { enrolledCourses, currentPage: page, totalPages };
+  }
+
+  public async cancelCoursePurchase(
+    userId: string,
+    courseId: string
+  ): Promise<void> {
+    const enrolledCourse =
+      await this.enrolledCoursesRepository.getEnrolledCourseByCourseId(
+        userId,
+        courseId
+      );
+
+    if (!enrolledCourse || !enrolledCourse.createdAt) {
+      return errorCreator(COURSE_ACCESS_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+    }
+
+    const course = await this.courseRepository.findById(
+      enrolledCourse.courseId.toString()
+    );
+
+    if (!course)
+      return errorCreator(
+        COURSE_NOT_FOUND_ERROR_MESSAGE,
+        StatusCodes.NOT_FOUND
+      );
+
+    if (course.price === 0 || String(course.trainerId) == String(userId)) {
+      return await this.enrolledCoursesRepository.deleteById(enrolledCourse.id);
+    }
+
+    console.log(
+      enrolledCourse.createdAt.getTime() + 24 * 60 * 60 * 1000 <
+        new Date().getTime(),
+      enrolledCourse.createdAt.getTime()
+    );
+
+    if (
+      new Date().getTime() >=
+      enrolledCourse.createdAt.getTime() + 24 * 60 * 60 * 1000
+    ) {
+      return errorCreator(
+        "refund not available after 24 hours",
+        StatusCodes.BAD_REQUEST
+      );
+    }
+
+    await this.enrolledCoursesRepository.deleteById(enrolledCourse.id);
+    await this.walletRepository.debitWallet(
+      userId,
+      course.price - course.price * COURSE_COMMISSION_RATE
+    );
+    await this.transactionRepository.create({
+      payerId: course?.trainerId,
+      courseId: getObjectId(courseId),
+      amount: course.price - course.price * COURSE_COMMISSION_RATE,
+      type: "refund",
+    });
+
+    await this.transactionRepository.create({
+      receiverId: getObjectId(userId),
+      courseId: getObjectId(courseId),
+      amount: course.price,
+      type: "refund",
+    });
   }
 
   public async getCompletedEnrolledCourses(

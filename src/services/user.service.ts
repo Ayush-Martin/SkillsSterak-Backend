@@ -4,7 +4,6 @@ import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
-import { RECORDS_PER_PAGE } from "../constants/general";
 import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
 import { getObjectId } from "../utils/objectId";
 
@@ -37,17 +36,14 @@ class UserService implements IUserService {
 
   public async getUsers(
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{ users: Array<IUser>; currentPage: number; totalPages: number }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
-    const users = await this.userRepository.getUsers(
-      searchRegex,
-      skip,
-      RECORDS_PER_PAGE
-    );
+    const skip = (page - 1) * size;
+    const users = await this.userRepository.getUsers(searchRegex, skip, size);
     const totalUsers = await this.userRepository.getUsersCount(searchRegex);
-    const totalPages = Math.ceil(totalUsers / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalUsers / size);
     return {
       users,
       currentPage: page,

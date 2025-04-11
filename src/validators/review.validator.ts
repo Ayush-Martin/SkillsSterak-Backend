@@ -3,7 +3,7 @@ import {
   ReplyValidationRule,
   ReviewContentValidationRule,
   ReviewRatingValidationRule,
-} from "../utils/validationRules";
+} from "./rules/review.validationRule";
 
 export const addReviewValidator = (data: any) => {
   const schema = z.object({

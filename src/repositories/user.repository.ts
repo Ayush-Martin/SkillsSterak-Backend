@@ -19,7 +19,7 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
   ): Promise<Array<IUser>> {
     return await this.User.find(
       { email: search, role: { $ne: "admin" } },
-      { username: 1, email: 1, isBlocked: 1, role: 1 }
+      { username: 1, email: 1, isBlocked: 1, role: 1, profileImage: 1 }
     )
       .skip(skip)
       .limit(limit);

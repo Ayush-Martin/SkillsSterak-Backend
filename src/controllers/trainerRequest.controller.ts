@@ -9,7 +9,7 @@ import {
   TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import { pageValidator } from "../validators/index.validator";
+import { pageValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
 
 class TrainerRequestController {
@@ -26,10 +26,10 @@ class TrainerRequestController {
     next: NextFunction
   ) {
     try {
-      const { page } = pageValidator(req.query);
+      const { page, size } = pageValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.trainerService.getTrainerRequest(page);
+        await this.trainerService.getTrainerRequest(page, size);
 
       res.status(StatusCodes.OK).json(
         successResponse(GET_DATA_SUCCESS_MESSAGE, {

@@ -14,7 +14,7 @@ import {
   GET_DATA_SUCCESS_MESSAGE,
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/index.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
 class CategoryController {
   constructor(private categoryService: ICategoryService) {
@@ -29,7 +29,7 @@ class CategoryController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(ADD_CATEGORY_SUCCESS_MESSAGE, { category }));
+        .json(successResponse(ADD_CATEGORY_SUCCESS_MESSAGE, category));
     } catch (err) {
       next(err);
     }
@@ -99,9 +99,9 @@ class CategoryController {
 
   public async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search } = paginatedGetDataValidator(req.query);
+      const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.categoryService.getCategories(search, page);
+      const data = await this.categoryService.getCategories(search, page, size);
 
       res
         .status(StatusCodes.OK)

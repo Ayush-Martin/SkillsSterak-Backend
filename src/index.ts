@@ -13,5 +13,5 @@ const server = http.createServer(app);
 export const io = setUpSocket(server);
 
 server.listen(envConfig.PORT, () => {
-  console.log(`Server is running on port ${envConfig.PORT}`);
+  console.info(`[Server] Running on port ${envConfig.PORT}`);
 });

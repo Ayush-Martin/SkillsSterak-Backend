@@ -7,15 +7,12 @@ import {
 import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
-import { IRedisRepository } from "../interfaces/repositories/IRedis.repository";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";
 import {
   BLOCKED_ERROR_MESSAGE,
   EMAIL_EXIST_ERROR_MESSAGE,
   INVALID_CREDENTIALS_ERROR_MESSAGE,
-  INVALID_OTP_ERROR_MESSAGE,
-  OTP_EXPIRED_ERROR_MESSAGE,
   OTP_NOT_VERIFIED_ERROR_MESSAGE,
   USER_BLOCKED_ERROR_MESSAGE,
   USER_NOT_FOUND_ERROR_MESSAGE,
@@ -25,7 +22,6 @@ import { IOTPService } from "../interfaces/services/IOTP.service";
 class AuthService implements IAuthService {
   constructor(
     private userRepository: IUserRepository,
-    private redisRepository: IRedisRepository,
     private OTPService: IOTPService
   ) {}
 
@@ -49,7 +45,6 @@ class AuthService implements IAuthService {
     });
 
     await sendMail(email, "OTP", OTP);
-    console.log("OTP", OTP);
   }
 
   public async completeRegister(email: string): Promise<void> {
@@ -70,7 +65,7 @@ class AuthService implements IAuthService {
       password: registerData.password,
     });
 
-    await this.redisRepository.del(email);
+    await this.OTPService.deleteOTP(email);
   }
 
   public async login(email: string, password: string): Promise<IUser | void> {
@@ -130,17 +125,14 @@ class AuthService implements IAuthService {
       return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
-    console.log("hello");
 
     const OTP = await this.OTPService.generateAndStoreOTP(email, {
       email,
       id: user.id,
     });
 
-    console.log(OTP);
 
     await sendMail(email, "OTP", OTP);
-    console.log("OTP", OTP);
   }
 
   public async resetPassword(email: string, password: string): Promise<void> {

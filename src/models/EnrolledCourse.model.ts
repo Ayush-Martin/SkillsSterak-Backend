@@ -4,6 +4,7 @@ export interface IEnrolledCourses extends Document {
   userId: ObjectId;
   courseId: ObjectId;
   completedLessons?: Array<ObjectId>;
+  createdAt?: Date;
 }
 
 const EnrolledCoursesSchema = new Schema<IEnrolledCourses>(

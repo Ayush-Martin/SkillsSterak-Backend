@@ -4,7 +4,7 @@ import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/index.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
 class TrainerController {
   constructor(private trainerService: ITrainerService) {
@@ -44,12 +44,13 @@ class TrainerController {
   ) {
     try {
       const trainerId = req.userId!;
-      const { page, search } = paginatedGetDataValidator(req.query);
+      const { page, search, size } = paginatedGetDataValidator(req.query);
 
       const data = await this.trainerService.getStudentsWithEnrolledCourses(
         trainerId,
         search,
-        page
+        page,
+        size
       );
 
       res

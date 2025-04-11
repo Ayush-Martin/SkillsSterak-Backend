@@ -1,10 +1,8 @@
 import { z } from "zod";
 import {
   AboutValidationRule,
-  PageValidationRule,
-  SearchValidationRule,
   UsernameValidationRule,
-} from "../utils/validationRules";
+} from "./rules/user.validationRule";
 
 export const updateProfileValidator = (user: any) => {
   const schema = z.object({

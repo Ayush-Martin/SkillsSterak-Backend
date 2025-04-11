@@ -1,5 +1,5 @@
 import { date, z } from "zod";
-import { ModuleTitleValidationRule } from "../utils/validationRules";
+import { ModuleTitleValidationRule } from "./rules/course.validationRule";
 
 export const addModuleValidator = (data: any) => {
   const schema = z.object({

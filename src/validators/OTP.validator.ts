@@ -1,8 +1,6 @@
 import { z } from "zod";
-import {
-  EmailValidationRule,
-  OTPValidationRule,
-} from "../utils/validationRules";
+import { EmailValidationRule } from "./rules/user.validationRule";
+import { OTPValidationRule } from "./rules/otp.validationRule";
 
 export const OTPValidator = (data: any) => {
   const schema = z.object({

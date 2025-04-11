@@ -4,7 +4,7 @@ import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/index.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
 class StreamController {
   constructor(private streamService: IStreamService) {
@@ -24,7 +24,6 @@ class StreamController {
         thumbnail.path
       );
 
-      console.log(data);
 
       res
         .status(StatusCodes.OK)
@@ -65,9 +64,9 @@ class StreamController {
 
   public async getStreams(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search } = paginatedGetDataValidator(req.query);
+      const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.streamService.getStreams(search, page);
+      const data = await this.streamService.getStreams(search, page, size);
 
       res
         .status(StatusCodes.OK)

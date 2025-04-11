@@ -1,12 +1,14 @@
+import { io } from "..";
 import envConfig from "../config/env";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { StatusCodes } from "../constants/statusCodes";
 import { IStreamRepository } from "../interfaces/repositories/IStream.repository";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { IStreamService } from "../interfaces/services/IStream.service";
 import { IStream } from "../models/Stream.model";
 import errorCreator from "../utils/customError";
 import { getObjectId } from "../utils/objectId";
-import { AccessToken } from "livekit-server-sdk";
+import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 
 const generateRoomId = (title: string) => {
   const date = new Date().getTime();
@@ -16,14 +18,17 @@ const generateRoomId = (title: string) => {
 };
 
 class StreamService implements IStreamService {
-  constructor(private streamRepository: IStreamRepository) {}
+  constructor(
+    private streamRepository: IStreamRepository,
+    private userRepository: IUserRepository
+  ) {}
 
   public async startStream(
     hostId: string,
     title: string,
     description: string,
     thumbnail: string
-  ): Promise<string> {
+  ): Promise<{ stream: IStream; token: string }> {
     const roomId = generateRoomId(title);
 
     const stream = await this.streamRepository.create({
@@ -33,6 +38,16 @@ class StreamService implements IStreamService {
       description,
       thumbnail,
       isLive: true,
+    });
+
+    const roomService = new RoomServiceClient(
+      envConfig.LIVEKIT_URL,
+      envConfig.LIVEKIT_API_KEY,
+      envConfig.LIVEKIT_API_SECRET
+    );
+
+    await roomService.createRoom({
+      name: roomId,
     });
 
     const at = new AccessToken(
@@ -53,21 +68,23 @@ class StreamService implements IStreamService {
       roomCreate: true,
     });
 
-    return await at.toJwt();
+    await this.streamRepository.initializeStreamRoom(stream.roomId, hostId);
+    return { stream: stream, token: await at.toJwt() };
   }
 
   public async endStream(roomId: string): Promise<void> {
     await this.streamRepository.endStream(roomId);
   }
 
-  public async viewStream(userId: string, streamId: string): Promise<string> {
+  public async viewStream(
+    userId: string,
+    streamId: string
+  ): Promise<{ stream: IStream; token: string } | void> {
     const stream = await this.streamRepository.findById(streamId);
     if (!stream) {
       errorCreator("Stream not found", StatusCodes.NOT_FOUND);
-      return "";
+      return;
     }
-
-    console.log(stream);
 
     const at = new AccessToken(
       envConfig.LIVEKIT_API_KEY,
@@ -85,34 +102,66 @@ class StreamService implements IStreamService {
       canSubscribe: true,
     });
 
-    return await at.toJwt();
+    await this.streamRepository.addUserToRoom(stream.roomId, userId);
+
+    return { stream: stream, token: await at.toJwt() };
   }
 
   public async getStreams(
     search: string,
-    page: number
+    page: number,
+    size: number
   ): Promise<{
     liveStreams: IStream[];
     currentPage: number;
     totalPages: number;
   }> {
     const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * RECORDS_PER_PAGE;
+    const skip = (page - 1) * size;
     const liveStreams = await this.streamRepository.getStreams(
       searchRegex,
       skip,
-      RECORDS_PER_PAGE
+      size
     );
 
     const totalStreams = await this.streamRepository.getStreamsCount(
       searchRegex
     );
-    const totalPages = Math.ceil(totalStreams / RECORDS_PER_PAGE);
+    const totalPages = Math.ceil(totalStreams / size);
     return {
       liveStreams,
       currentPage: page,
       totalPages,
     };
+  }
+
+  public async liveChat(
+    roomId: string,
+    userId: string,
+    message: string
+  ): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      errorCreator("User not found", StatusCodes.NOT_FOUND);
+      return;
+    }
+
+    const users = await this.streamRepository.getRoomUsers(roomId);
+
+    if (!users) {
+      errorCreator("Stream not found", StatusCodes.NOT_FOUND);
+      return;
+    }
+
+    const { username, profileImage, _id } = user;
+    io.to(users).emit("liveChat", {
+      user: {
+        username,
+        profileImage,
+        _id,
+      },
+      message,
+    });
   }
 }
 

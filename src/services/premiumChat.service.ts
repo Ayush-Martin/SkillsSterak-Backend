@@ -48,7 +48,6 @@ class PremiumChatService implements IPremiumChatService {
       message,
       messageType,
     });
-    console.log(senderId, receiverId, chatId, message);
     io.to([senderId, receiverId]).emit(
       SocketEvents.CHAT_NEW_MESSAGE,
       newMessage

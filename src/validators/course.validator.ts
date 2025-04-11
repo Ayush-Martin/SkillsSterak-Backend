@@ -9,10 +9,13 @@ import {
   CourseSkillsCoveredValidationRule,
   CourseSortValidationRule,
   CourseTitleValidationRule,
-  PageRecordLimitValidationRule,
+} from "./rules/course.validationRule";
+
+import {
+  PageRecordSizeValidationRule,
   PageValidationRule,
   SearchValidationRule,
-} from "../utils/validationRules";
+} from "./rules/pagination.validationRule";
 
 export const createCourseValidator = (data: any) => {
   const schema = z.object({
@@ -63,7 +66,7 @@ export const getCoursesValidator = (data: any) => {
     difficulty: CourseDifficultyValidationRule.or(z.enum(["all"])),
     category: z.string(),
     price: CoursePriceFilterValidationRule,
-    limit: PageRecordLimitValidationRule,
+    size: PageRecordSizeValidationRule,
     sort: CourseSortValidationRule,
   });
 

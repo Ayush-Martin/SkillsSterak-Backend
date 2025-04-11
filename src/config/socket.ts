@@ -4,26 +4,13 @@ import { SocketEvents } from "../constants/socketEvents";
 import envConfig from "./env";
 import { socketAuthMiddleware } from "../middlewares/socketAuth.middleware";
 
-//models
-import NotificationModel from "../models/Notification.model";
-import UserModel from "../models/User.model";
-import CourseModel from "../models/Course.model";
-import PremiumChatModel from "../models/PremiumChat.model";
-import PremiumMessageModel from "../models/PremiumMessage.model";
-
-//repositories
-import NotificationRepository from "../repositories/notification.repository";
-import UserRepository from "../repositories/user.repository";
-import TrainerRepository from "../repositories/trainer.repository";
-import CourseRepository from "../repositories/course.repository";
-import PremiumChatRepository from "../repositories/premiumChat.repository";
-import PremiumMessageRepository from "../repositories/premiumMessage.repository";
-
 //services
 import SocketService from "../services/socket.service";
-import NotificationService from "../services/notification.service";
-import PremiumChatService from "../services/premiumChat.service";
-import { notificationService, premiumChatService } from "../dependencyInjector";
+import {
+  notificationService,
+  premiumChatService,
+  streamService,
+} from "../dependencyInjector";
 
 const socketCorsConfig: Partial<ServerOptions> = {
   cors: {
@@ -34,11 +21,10 @@ const socketCorsConfig: Partial<ServerOptions> = {
   transports: ["websocket", "polling"],
 };
 
-
-
 const socketService = new SocketService(
   notificationService,
-  premiumChatService
+  premiumChatService,
+  streamService
 );
 
 const setUpSocket = (server: Server) => {

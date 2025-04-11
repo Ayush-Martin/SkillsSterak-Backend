@@ -33,56 +33,38 @@ class EnrolledCoursesRepository
           pipeline: [
             {
               $lookup: {
-                from: "categories",
-                localField: "categoryId",
-                foreignField: "_id",
+                from: "lessons",
+                let: { courseId: "$_id" },
                 pipeline: [
                   {
                     $match: {
-                      isListed: true,
+                      $expr: { $eq: ["$courseId", "$$courseId"] },
                     },
                   },
                   {
-                    $project: {
-                      _id: 1,
-                      categoryName: 1,
-                    },
+                    $count: "lessonCount",
                   },
                 ],
-                as: "category",
+                as: "lessonStats",
               },
             },
             {
-              $unwind: "$category",
-            },
-            {
-              $lookup: {
-                from: "modules",
-                localField: "_id",
-                foreignField: "courseId",
-                pipeline: [
-                  {
-                    $count: "moduleCount",
-                  },
-                ],
-                as: "moduleCount",
-              },
-            },
-            {
-              $unwind: {
-                path: "$moduleCount",
+              $addFields: {
+                lessonCount: {
+                  $ifNull: [
+                    { $arrayElemAt: ["$lessonStats.lessonCount", 0] },
+                    0,
+                  ],
+                },
               },
             },
             {
               $project: {
                 _id: 1,
-                trainerId: 1,
                 title: 1,
-                price: 1,
-                difficulty: 1,
                 thumbnail: 1,
                 category: 1,
-                moduleCount: "$moduleCount.moduleCount",
+                lessonCount: 1,
               },
             },
           ],
@@ -93,11 +75,41 @@ class EnrolledCoursesRepository
         $unwind: "$course",
       },
       {
+        $addFields: {
+          completedLessonsCount: {
+            $size: {
+              $ifNull: ["$completedLessons", []],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          completedPercentage: {
+            $cond: [
+              { $eq: ["$course.lessonCount", 0] },
+              0,
+              {
+                $multiply: [
+                  {
+                    $divide: ["$completedLessonsCount", "$course.lessonCount"],
+                  },
+                  100,
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
         $project: {
-          createdAt: 0,
           updatedAt: 0,
-          completedLessons: 0,
           __v: 0,
+          completedLessons: 0,
+          completedLessonsCount: 0,
+          "course.lessonCount": 0,
+          courseId: 0,
+          userId: 0,
         },
       },
       {
