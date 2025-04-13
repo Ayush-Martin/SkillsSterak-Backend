@@ -11,7 +11,6 @@ const app = express();
 app.use(cookieParser());
 app.use(cors);
 
-app.use("/live-kit", express.raw({ type: "application/webhook+json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -22,8 +22,8 @@ import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
 import upload from "../config/multer";
 
-router.get("/categories", categoryController.getAllCategories);
 
+router.get("/categories", categoryController.getAllCategories);
 //course
 router.get("/courses", courseController.getCourses);
 

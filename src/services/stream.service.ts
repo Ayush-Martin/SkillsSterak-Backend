@@ -40,16 +40,6 @@ class StreamService implements IStreamService {
       isLive: true,
     });
 
-    const roomService = new RoomServiceClient(
-      envConfig.LIVEKIT_URL,
-      envConfig.LIVEKIT_API_KEY,
-      envConfig.LIVEKIT_API_SECRET
-    );
-
-    await roomService.createRoom({
-      name: roomId,
-    });
-
     const at = new AccessToken(
       envConfig.LIVEKIT_API_KEY,
       envConfig.LIVEKIT_API_SECRET,
@@ -128,6 +118,8 @@ class StreamService implements IStreamService {
       searchRegex
     );
     const totalPages = Math.ceil(totalStreams / size);
+
+    console.log(totalStreams, size, totalPages);
     return {
       liveStreams,
       currentPage: page,

@@ -45,6 +45,10 @@ const envConfig = {
   LIVEKIT_URL: process.env.LIVEKIT_URL!,
   LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY!,
   LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET!,
+
+  //AWS
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
 };
 
 export default envConfig;

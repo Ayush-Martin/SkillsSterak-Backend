@@ -68,6 +68,7 @@ class CourseController {
     try {
       const { courseId } = req.params;
       const { message, history } = req.body;
+      console.log("corseId", courseId);
 
       const result = await this.aiChatService.courseChatHandler(
         courseId,
