@@ -22,6 +22,7 @@ class SubscriptionService implements ISubscriptionService {
   public async createSubscriptionOrder(
     userId: string
   ): Promise<Orders.RazorpayOrder> {
+    console.log("order");
     const order = await razorpay.orders.create({
       amount: 1000 * 100, // amount in paise
       currency: "INR",
@@ -30,6 +31,8 @@ class SubscriptionService implements ISubscriptionService {
         userId,
       },
     });
+
+    console.log(order);
 
     return order;
   }

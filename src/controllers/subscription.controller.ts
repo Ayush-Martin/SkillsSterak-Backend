@@ -19,6 +19,7 @@ class SubscriptionController {
     next: NextFunction
   ) {
     try {
+      console.log("subscription ");
       const userId = req.userId!;
       const order = await this.subscriptionService.createSubscriptionOrder(
         userId
