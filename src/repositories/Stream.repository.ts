@@ -12,14 +12,8 @@ class StreamRepository
     super(Stream);
   }
 
-  public async getStreams(
-    search: RegExp,
-    skip: number,
-    limit: number
-  ): Promise<IStream[]> {
-    return await this.Stream.find({ title: search, isLive: true })
-      .skip(skip)
-      .limit(limit);
+  public async getStreams(courseId: string): Promise<IStream[]> {
+    return await this.Stream.find({ courseId });
   }
 
   public async getStreamsCount(search: RegExp): Promise<number> {
@@ -29,7 +23,7 @@ class StreamRepository
   public async getRoomUsers(roomId: string): Promise<string[] | null> {
     const storedData = await redisClient.get(`stream:room:${roomId}`);
     if (!storedData) return null;
-    return JSON.parse(storedData);
+    return JSON.parse(storedData).users;
   }
 
   public async endStream(roomId: string): Promise<void> {
@@ -40,16 +34,48 @@ class StreamRepository
     roomId: string,
     hostId: string
   ): Promise<void> {
-    await redisClient.set(`stream:room:${roomId}`, JSON.stringify([hostId]));
+    await redisClient.set(
+      `stream:room:${roomId}`,
+      JSON.stringify({ users: [hostId], egressId: null })
+    );
+  }
+
+  public async startRecording(
+    roomId: string,
+    egressId: string,
+    recordedSrc: string,
+    liveSrc: string
+  ): Promise<void> {
+    const storedData = await redisClient.get(`stream:room:${roomId}`);
+    if (!storedData) return;
+    const data = JSON.parse(storedData);
+
+    await redisClient.set(
+      `stream:room:${roomId}`,
+      JSON.stringify({ ...data, egressId })
+    );
+
+    await this.Stream.updateOne(
+      { roomId },
+      { isLive: true, recordedSrc, liveSrc }
+    );
+  }
+
+  public async getEgressId(roomId: string): Promise<string | null> {
+    const storedData = await redisClient.get(`stream:room:${roomId}`);
+    if (!storedData) return null;
+    const { egressId } = JSON.parse(storedData);
+    return egressId;
   }
 
   public async addUserToRoom(roomId: string, userId: string): Promise<void> {
     const storedData = await redisClient.get(`stream:room:${roomId}`);
     if (!storedData) return;
+    const data = JSON.parse(storedData);
 
     await redisClient.set(
       `stream:room:${roomId}`,
-      JSON.stringify([...JSON.parse(storedData), userId])
+      JSON.stringify({ ...data, users: [...data.users, userId] })
     );
   }
 }

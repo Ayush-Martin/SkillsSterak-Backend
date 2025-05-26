@@ -13,17 +13,21 @@ class StreamController {
 
   public async startStream(req: Request, res: Response, next: NextFunction) {
     try {
-      const { title, description } = req.body;
+      const { title, description, isPublic } = req.body;
+      const { courseId } = req.params;
       const thumbnail = req.file!;
       const hostId = req.userId!;
+
+      // console.log(thumbnail, thumbnail.path);
 
       const data = await this.streamService.startStream(
         hostId,
         title,
         description,
-        thumbnail.path
+        thumbnail.path,
+        isPublic,
+        courseId
       );
-
 
       res
         .status(StatusCodes.OK)
@@ -64,9 +68,10 @@ class StreamController {
 
   public async getStreams(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, search, size } = paginatedGetDataValidator(req.query);
+      // const { page, search, size } = paginatedGetDataValidator(req.query);
+      const { courseId } = req.params;
 
-      const data = await this.streamService.getStreams(search, page, size);
+      const data = await this.streamService.getStreams(courseId);
 
       res
         .status(StatusCodes.OK)

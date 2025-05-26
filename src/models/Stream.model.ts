@@ -7,6 +7,10 @@ export interface IStream extends Document {
   description: string;
   thumbnail: string;
   isLive?: boolean;
+  isPublic: boolean;
+  recordedSrc?: string;
+  liveSrc?: string;
+  courseId: ObjectId;
 }
 
 const StreamSchema = new Schema<IStream>(
@@ -36,6 +40,23 @@ const StreamSchema = new Schema<IStream>(
     isLive: {
       type: Boolean,
       default: false,
+    },
+    recordedSrc: {
+      type: String,
+      default: "",
+    },
+    liveSrc: {
+      type: String,
+      default: "",
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+    courseId: {
+      type: Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
     },
   },
   { timestamps: true }

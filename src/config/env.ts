@@ -42,6 +42,8 @@ const envConfig = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
 
   //LiveKit
+
+  LIVEKIT_HOST: process.env.LIVEKIT_HOST!,
   LIVEKIT_URL: process.env.LIVEKIT_URL!,
   LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY!,
   LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET!,
@@ -49,6 +51,10 @@ const envConfig = {
   //AWS
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
+  AWS_REGION: process.env.AWS_REGION!,
+  AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME!,
+  AWS_ENDPOINT: process.env.AWS_ENDPOINT!,
+  AWS_BUCKET_URL: process.env.AWS_BUCKET_URL!,
 };
 
 export default envConfig;

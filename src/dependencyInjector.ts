@@ -77,6 +77,7 @@ import WalletController from "./controllers/wallet.controller";
 import ChatController from "./controllers/chat.controller";
 import OTPController from "./controllers/OTP.controller";
 import StreamController from "./controllers/stream.controller";
+import LiveKitWebhookController from "./controllers/liveKitWebhook.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -199,4 +200,6 @@ export const userController = new UserController(
 export const walletController = new WalletController(walletService);
 export const chatController = new ChatController(premiumChatService);
 export const streamController = new StreamController(streamService);
-
+export const liveKitWebhookController = new LiveKitWebhookController(
+  streamService
+);

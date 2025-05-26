@@ -68,6 +68,11 @@ router
   .put(lessonController.updateLessonDetails)
   .patch(upload.single("file"), lessonController.updateLessonFile);
 
+router
+  .route("/courses/:courseId/live")
+  .post(upload.single("thumbnail"), streamController.startStream)
+  .get(streamController.getStreams);
+
 //students
 router.get("/students", trainerController.getStudentsWithEnrolledCourses);
 

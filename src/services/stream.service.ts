@@ -1,5 +1,6 @@
 import { io } from "..";
 import envConfig from "../config/env";
+import { egressClient } from "../config/liveKit";
 import { RECORDS_PER_PAGE } from "../constants/general";
 import { StatusCodes } from "../constants/statusCodes";
 import { IStreamRepository } from "../interfaces/repositories/IStream.repository";
@@ -8,7 +9,11 @@ import { IStreamService } from "../interfaces/services/IStream.service";
 import { IStream } from "../models/Stream.model";
 import errorCreator from "../utils/customError";
 import { getObjectId } from "../utils/objectId";
-import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
+import {
+  AccessToken,
+  EncodingOptionsPreset,
+  SegmentedFileOutput,
+} from "livekit-server-sdk";
 
 const generateRoomId = (title: string) => {
   const date = new Date().getTime();
@@ -27,7 +32,9 @@ class StreamService implements IStreamService {
     hostId: string,
     title: string,
     description: string,
-    thumbnail: string
+    thumbnail: string,
+    isPublic: boolean,
+    courseId: string
   ): Promise<{ stream: IStream; token: string }> {
     const roomId = generateRoomId(title);
 
@@ -38,6 +45,8 @@ class StreamService implements IStreamService {
       description,
       thumbnail,
       isLive: true,
+      isPublic,
+      courseId: getObjectId(courseId),
     });
 
     const at = new AccessToken(
@@ -45,6 +54,7 @@ class StreamService implements IStreamService {
       envConfig.LIVEKIT_API_SECRET,
       {
         identity: hostId,
+        name: "host",
         ttl: "10m",
       }
     );
@@ -64,6 +74,14 @@ class StreamService implements IStreamService {
 
   public async endStream(roomId: string): Promise<void> {
     await this.streamRepository.endStream(roomId);
+    const egressId = await this.streamRepository.getEgressId(roomId);
+    console.log("egressId", egressId);
+    if (!egressId) {
+      errorCreator("Recording not found", StatusCodes.NOT_FOUND);
+      return;
+    }
+
+    await egressClient.stopEgress(egressId);
   }
 
   public async viewStream(
@@ -81,6 +99,7 @@ class StreamService implements IStreamService {
       envConfig.LIVEKIT_API_SECRET,
       {
         identity: userId,
+        name: "user",
         ttl: "10m",
       }
     );
@@ -97,34 +116,39 @@ class StreamService implements IStreamService {
     return { stream: stream, token: await at.toJwt() };
   }
 
-  public async getStreams(
-    search: string,
-    page: number,
-    size: number
-  ): Promise<{
-    liveStreams: IStream[];
-    currentPage: number;
-    totalPages: number;
-  }> {
-    const searchRegex = new RegExp(search, "i");
-    const skip = (page - 1) * size;
-    const liveStreams = await this.streamRepository.getStreams(
-      searchRegex,
-      skip,
-      size
-    );
+  // public async getStreams(
+  //   search: string,
+  //   page: number,
+  //   size: number
+  // ): Promise<{
+  //   liveStreams: IStream[];
+  //   currentPage: number;
+  //   totalPages: number;
+  // }> {
+  //   const searchRegex = new RegExp(search, "i");
+  //   const skip = (page - 1) * size;
+  //   const liveStreams = await this.streamRepository.getStreams(
+  //     searchRegex,
+  //     skip,
+  //     size
+  //   );
 
-    const totalStreams = await this.streamRepository.getStreamsCount(
-      searchRegex
-    );
-    const totalPages = Math.ceil(totalStreams / size);
+  //   const totalStreams = await this.streamRepository.getStreamsCount(
+  //     searchRegex
+  //   );
+  //   const totalPages = Math.ceil(totalStreams / size);
 
-    console.log(totalStreams, size, totalPages);
-    return {
-      liveStreams,
-      currentPage: page,
-      totalPages,
-    };
+  //   console.log(totalStreams, size, totalPages);
+  //   return {
+  //     liveStreams,
+  //     currentPage: page,
+  //     totalPages,
+  //   };
+  // }
+
+  public async getStreams(courseId: string): Promise<IStream[]> {
+    const streams = await this.streamRepository.getStreams(courseId);
+    return streams;
   }
 
   public async liveChat(
@@ -145,6 +169,8 @@ class StreamService implements IStreamService {
       return;
     }
 
+    console.log("users", users);
+
     const { username, profileImage, _id } = user;
     io.to(users).emit("liveChat", {
       user: {
@@ -155,6 +181,55 @@ class StreamService implements IStreamService {
       message,
     });
   }
+
+  public async startRecording(roomId: string): Promise<void> {
+    const folderName = `recordings/${roomId}`;
+    const playlistName = `${roomId}.m3u8`;
+    const livePlaylistName = `${roomId}-live.m3u8`;
+    const recordedSrc = `${envConfig.AWS_BUCKET_URL}/${folderName}/${roomId}.m3u8`;
+    const liveSrc = `${envConfig.AWS_BUCKET_URL}/${folderName}/${roomId}-live.m3u8`;
+
+    const outputs = {
+      segments: new SegmentedFileOutput({
+        filenamePrefix: `${folderName}/session`,
+        playlistName: playlistName,
+        livePlaylistName: livePlaylistName,
+        segmentDuration: 2,
+        output: {
+          case: "s3",
+          value: {
+            accessKey: envConfig.AWS_ACCESS_KEY_ID,
+            secret: envConfig.AWS_SECRET_ACCESS_KEY,
+            bucket: envConfig.AWS_BUCKET_NAME,
+            endpoint: envConfig.AWS_ENDPOINT,
+            region: envConfig.AWS_REGION,
+            forcePathStyle: true,
+          },
+        },
+      }),
+    };
+
+    const egressInfo = await egressClient.startRoomCompositeEgress(
+      roomId,
+      outputs,
+      {
+        layout: "grid",
+        encodingOptions: EncodingOptionsPreset.H264_720P_30,
+        audioOnly: false,
+      }
+    );
+
+    console.log("egressId", egressInfo.egressId);
+
+    await this.streamRepository.startRecording(
+      roomId,
+      egressInfo.egressId,
+      recordedSrc,
+      liveSrc
+    );
+  }
+
+  public async stopRecording(roomId: string): Promise<void> {}
 }
 
 export default StreamService;

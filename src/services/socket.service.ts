@@ -30,6 +30,7 @@ class SocketService implements ISocketService {
     socket.on(
       "liveChat",
       async ({ roomId, message }: { roomId: string; message: string }) => {
+        console.log("live chat", roomId, message);
         await this.streamService.liveChat(roomId, userId, message);
       }
     );
