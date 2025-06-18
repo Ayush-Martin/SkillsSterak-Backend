@@ -3,11 +3,14 @@ import { IStreamService } from "../interfaces/services/IStream.service";
 import binder from "../utils/binder";
 import { receiver } from "../config/liveKit";
 
+/** LiveKitWebhook controller: handles LiveKit webhook events */
 class LiveKitWebhookController {
+  /** Injects stream service */
   constructor(private streamService: IStreamService) {
     binder(this);
   }
 
+  /** Handle LiveKit webhook event */
   public async handleWebhook(
     req: Request,
     res: Response,
@@ -27,6 +30,8 @@ class LiveKitWebhookController {
 
       switch (event.event) {
         case "participant_joined":
+          console.log("⏳ Waiting 1s before starting recording...");
+          await new Promise((res) => setTimeout(res, 1000));
           await this.streamService.startRecording(event.room?.name!);
           break;
         case "participant_left":

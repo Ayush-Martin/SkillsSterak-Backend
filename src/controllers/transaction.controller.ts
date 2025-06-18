@@ -6,11 +6,14 @@ import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { pageValidator } from "../validators/pagination.validator";
 import binder from "../utils/binder";
 
+/** Transaction controller: manages user and admin transactions */
 class TransactionController {
+  /** Injects transaction service */
   constructor(private transactionService: ITransactionService) {
     binder(this);
   }
 
+  /** Get all transactions for a user */
   public async getUserTransactions(
     req: Request,
     res: Response,
@@ -34,6 +37,7 @@ class TransactionController {
     }
   }
 
+  /** Get all transactions (admin) */
   public async getTransactions(
     req: Request,
     res: Response,

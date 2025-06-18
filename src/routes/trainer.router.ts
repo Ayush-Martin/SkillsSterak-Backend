@@ -2,7 +2,6 @@ import { Router } from "express";
 
 const router = Router();
 import {
-  chatController,
   courseController,
   lessonController,
   moduleController,
@@ -79,7 +78,7 @@ router.get("/students", trainerController.getStudentsWithEnrolledCourses);
 //wallet
 router.route("/wallet").get(walletController.getWalletInfo);
 
-router.route("/chats").get(chatController.getTrainerChats);
+// router.route("/chats").get(chatController.getTrainerChats);
 
 //stream
 router

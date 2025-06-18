@@ -1,3 +1,6 @@
+/**
+ * HTTP status codes used throughout the application for standard responses.
+ */
 export enum StatusCodes {
   OK = 200,
   CREATED = 201,

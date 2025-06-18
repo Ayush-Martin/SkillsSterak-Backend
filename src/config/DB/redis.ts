@@ -6,8 +6,6 @@ redisClient.on("error", (err) => console.error("Redis Client Error", err));
 
 /**
  * Connects to the Redis database.
- * Logs a success message if the connection is successful.
- * Logs the error if the connection fails.
  */
 const connectToRedis = async (): Promise<void> => {
   try {

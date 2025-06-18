@@ -16,13 +16,15 @@ import {
   ORDER_NOT_PAID_ERROR_MESSAGE,
 } from "../constants/responseMessages";
 import { getObjectId } from "../utils/objectId";
+import { IChatRepository } from "../interfaces/repositories/IChat.repository";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
     private enrolledCoursesRepository: IEnrolledCoursesRepository,
     private courseRepository: ICourseRepository,
     private walletRepository: IWalletRepository,
-    private transactionRepository: ITransactionRepository
+    private transactionRepository: ITransactionRepository,
+    private chatRepository: IChatRepository
   ) {}
 
   public async enrollCourse(
@@ -37,6 +39,8 @@ class EnrolledCourses implements IEnrolledCoursesService {
         userId: getObjectId(userId),
         courseId: getObjectId(courseId),
       });
+
+      await this.chatRepository.addMemberToChat(courseId, userId);
 
       return null;
     }
@@ -54,7 +58,9 @@ class EnrolledCourses implements IEnrolledCoursesService {
     return order;
   }
 
-  public async completePurchase(orderId: string): Promise<void> {
+  public async completePurchase(
+    orderId: string
+  ): Promise<{ userId: string; courseId: string }> {
     const order = await razorpay.orders.fetch(orderId);
 
     const userId = order.notes?.userId as string | undefined;
@@ -91,6 +97,8 @@ class EnrolledCourses implements IEnrolledCoursesService {
       amount: course.price,
       type: "payment",
     });
+
+    return { userId, courseId };
   }
 
   public async getEnrolledCourses(

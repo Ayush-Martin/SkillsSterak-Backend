@@ -16,11 +16,14 @@ import {
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
+/** Category controller: manages category CRUD operations */
 class CategoryController {
+  /** Injects category service */
   constructor(private categoryService: ICategoryService) {
     binder(this);
   }
 
+  /** Add a new category */
   public async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryName } = addCategoryValidator(req.body);
@@ -35,6 +38,7 @@ class CategoryController {
     }
   }
 
+  /** Edit category name */
   public async editCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.params;
@@ -54,6 +58,7 @@ class CategoryController {
     }
   }
 
+  /** Toggle category listed/unlisted */
   public async listUnListCategory(
     req: Request,
     res: Response,
@@ -81,6 +86,7 @@ class CategoryController {
     }
   }
 
+  /** Get all categories */
   public async getAllCategories(
     req: Request,
     res: Response,
@@ -97,6 +103,7 @@ class CategoryController {
     }
   }
 
+  /** Get paginated categories with search */
   public async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);

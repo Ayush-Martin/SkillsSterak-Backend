@@ -13,12 +13,19 @@ import binder from "../utils/binder";
 import { pageValidator } from "../validators/pagination.validator";
 import { razorpayCompletePurchaseValidator } from "../validators/index.validator";
 import { getObjectId } from "../utils/objectId";
+import { IChatService } from "../interfaces/services/IChat.service";
 
+/** EnrolledCourses controller: manages course enrollment and progress */
 class EnrolledCourses {
-  constructor(private enrolledCoursesService: IEnrolledCoursesService) {
+  /** Injects enrolled courses and chat services */
+  constructor(
+    private enrolledCoursesService: IEnrolledCoursesService,
+    private chatService: IChatService
+  ) {
     binder(this);
   }
 
+  /** Enroll a user in a course */
   public async enrollCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -42,6 +49,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Complete course purchase and join chat */
   public async completePurchase(
     req: Request,
     res: Response,
@@ -49,7 +57,9 @@ class EnrolledCourses {
   ) {
     try {
       const { orderId } = razorpayCompletePurchaseValidator(req.body);
-      await this.enrolledCoursesService.completePurchase(orderId);
+      const { courseId, userId } =
+        await this.enrolledCoursesService.completePurchase(orderId);
+      await this.chatService.joinChat(userId, courseId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(COURSE_ENROLLED_SUCCESS_MESSAGE));
@@ -58,6 +68,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Cancel a course purchase */
   public async cancelCoursePurchase(
     req: Request,
     res: Response,
@@ -75,6 +86,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Check if user is enrolled in a course */
   public async checkEnrolled(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -91,6 +103,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Get all enrolled courses for a user */
   public async getEnrolledCourses(
     req: Request,
     res: Response,
@@ -115,6 +128,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Get all completed enrolled courses for a user */
   public async getCompletedEnrolledCourses(
     req: Request,
     res: Response,
@@ -138,6 +152,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Get a specific enrolled course for a user */
   public async getEnrolledCourse(
     req: Request,
     res: Response,
@@ -158,6 +173,7 @@ class EnrolledCourses {
     }
   }
 
+  /** Mark lesson as complete or incomplete */
   public async completeUnCompleteLesson(
     req: Request,
     res: Response,

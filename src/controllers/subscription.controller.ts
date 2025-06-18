@@ -8,11 +8,14 @@ import {
 import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
 
+/** Subscription controller: manages user subscriptions */
 class SubscriptionController {
+  /** Injects subscription service */
   constructor(private subscriptionService: ISubscriptionService) {
     binder(this);
   }
 
+  /** Create a new subscription order */
   public async createSubscriptionOrder(
     req: Request,
     res: Response,
@@ -30,6 +33,7 @@ class SubscriptionController {
     }
   }
 
+  /** Complete a subscription payment */
   public async completeSubscription(
     req: Request,
     res: Response,
@@ -46,6 +50,7 @@ class SubscriptionController {
     }
   }
 
+  /** Get subscription details for a user */
   public async getSubscriptionDetail(
     req: Request,
     res: Response,

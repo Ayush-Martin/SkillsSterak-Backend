@@ -27,16 +27,21 @@ import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { getObjectId } from "../utils/objectId";
 import NotificationService from "../services/notification.service";
 import { IAiChatService } from "../interfaces/services/IAiChat.service";
+import { IChatService } from "../interfaces/services/IChat.service";
 
+/** Course controller: manages course creation, updates, and queries */
 class CourseController {
+  /** Injects course, notification, AI chat, and chat services */
   constructor(
     private courseService: ICourseService,
     private notificationService: NotificationService,
-    private aiChatService: IAiChatService
+    private aiChatService: IAiChatService,
+    private chatService: IChatService
   ) {
     binder(this);
   }
 
+  /** Create a new course */
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const trainerId = getObjectId(req.userId!);
@@ -64,6 +69,7 @@ class CourseController {
     }
   }
 
+  /** AI chat for course */
   public async aiChat(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -84,6 +90,7 @@ class CourseController {
     }
   }
 
+  /** Get a single course by ID */
   public async getCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -98,6 +105,7 @@ class CourseController {
     }
   }
 
+  /** Toggle course listed/unlisted */
   public async listUnListCourse(
     req: Request,
     res: Response,
@@ -122,6 +130,7 @@ class CourseController {
     }
   }
 
+  /** Approve or reject a course */
   public async approveRejectCourse(
     req: Request,
     res: Response,
@@ -134,9 +143,20 @@ class CourseController {
 
       await this.courseService.approveRejectCourse(courseId, status);
 
-      status == "approved"
-        ? this.notificationService.sendCourseApprovedNotification(courseId)
-        : this.notificationService.sendCourseRejectedNotification(courseId);
+      if (status === "approved") {
+        this.notificationService.sendCourseApprovedNotification(courseId);
+        const course = await this.courseService.findById(courseId);
+        await this.chatService.createGroupChat(
+          courseId,
+          course?.trainerId as unknown as string
+        );
+      } else {
+        this.notificationService.sendCourseRejectedNotification(courseId);
+      }
+
+      // status == "approved"
+      //   ? this.notificationService.sendCourseApprovedNotification(courseId)
+      //   : this.notificationService.sendCourseRejectedNotification(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -153,6 +173,7 @@ class CourseController {
     }
   }
 
+  /** Get a trainer's course by ID */
   public async getTrainerCourse(
     req: Request,
     res: Response,
@@ -171,6 +192,7 @@ class CourseController {
     }
   }
 
+  /** Get all courses for a trainer */
   public async getTrainerCourses(
     req: Request,
     res: Response,
@@ -195,6 +217,7 @@ class CourseController {
     }
   }
 
+  /** Get all courses for admin */
   public async getAdminCourses(
     req: Request,
     res: Response,
@@ -213,6 +236,7 @@ class CourseController {
     }
   }
 
+  /** Get all courses with filters */
   public async getCourses(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, search, category, difficulty, price, size, sort } =
@@ -236,6 +260,7 @@ class CourseController {
     }
   }
 
+  /** Change course thumbnail */
   public async changeCourseThumbnail(
     req: Request,
     res: Response,
@@ -262,6 +287,7 @@ class CourseController {
     }
   }
 
+  /** Update course basic details */
   public async updateCourseBasicDetails(
     req: Request,
     res: Response,
@@ -281,6 +307,7 @@ class CourseController {
     }
   }
 
+  /** Update course requirements */
   public async updateCourseRequirements(
     req: Request,
     res: Response,
@@ -300,6 +327,7 @@ class CourseController {
     }
   }
 
+  /** Update course skills covered */
   public async updateCourseSkillsCovered(
     req: Request,
     res: Response,

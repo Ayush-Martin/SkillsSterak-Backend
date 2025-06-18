@@ -14,10 +14,13 @@ import {
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 
+/** Review controller: manages course reviews and replies */
 class ReviewController {
+  /** Injects review service */
   constructor(private reviewService: IReviewService) {
     binder(this);
   }
+  /** Add a review to a course */
   public async addReview(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
@@ -38,6 +41,7 @@ class ReviewController {
     }
   }
 
+  /** Get all reviews for a course */
   public async getReviews(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -52,6 +56,7 @@ class ReviewController {
     }
   }
 
+  /** Add a reply to a review */
   public async addReply(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;
@@ -72,6 +77,7 @@ class ReviewController {
     }
   }
 
+  /** Get all replies for a review */
   public async getReplies(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;
@@ -86,6 +92,7 @@ class ReviewController {
     }
   }
 
+  /** Delete a review by ID */
   public async deleteReview(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;

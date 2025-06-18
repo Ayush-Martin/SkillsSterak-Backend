@@ -12,7 +12,9 @@ import binder from "../utils/binder";
 import { pageValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
 
+/** TrainerRequest controller: manages trainer request approvals and queries */
 class TrainerRequestController {
+  /** Injects trainer and notification services */
   constructor(
     private trainerService: ITrainerService,
     private notificationService: INotificationService
@@ -20,6 +22,7 @@ class TrainerRequestController {
     binder(this);
   }
 
+  /** Get all trainer requests with pagination */
   public async getTrainerRequests(
     req: Request,
     res: Response,
@@ -43,6 +46,7 @@ class TrainerRequestController {
     }
   }
 
+  /** Approve or reject a trainer request */
   public async approveRejectRequests(
     req: Request,
     res: Response,

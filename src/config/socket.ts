@@ -7,8 +7,9 @@ import { socketAuthMiddleware } from "../middlewares/socketAuth.middleware";
 //services
 import SocketService from "../services/socket.service";
 import {
+  chatService,
+  messageService,
   notificationService,
-  premiumChatService,
   streamService,
 } from "../dependencyInjector";
 
@@ -23,10 +24,11 @@ const socketCorsConfig: Partial<ServerOptions> = {
 
 const socketService = new SocketService(
   notificationService,
-  premiumChatService,
-  streamService
+  streamService,
+  chatService
 );
 
+/** Set up socket.io server */
 const setUpSocket = (server: Server) => {
   const io = new SocketServer(server, socketCorsConfig);
   io.use(socketAuthMiddleware);
@@ -35,7 +37,7 @@ const setUpSocket = (server: Server) => {
     try {
       await socketService.socketConnectionHandler(socket, socket.data.userId);
     } catch (err) {
-      socket.emit("error", err);
+      socket.emit(SocketEvents.CONNECTION_ERROR, err);
     }
   });
 

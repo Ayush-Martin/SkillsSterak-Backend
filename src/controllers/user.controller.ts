@@ -17,7 +17,9 @@ import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
 
+/** User controller: manages user profile, requests, and admin actions */
 class UserController {
+  /** Injects user and notification services */
   constructor(
     private userService: IUserService,
     private notificationService: INotificationService
@@ -25,6 +27,7 @@ class UserController {
     binder(this);
   }
 
+  /** Change user's profile image */
   public async changeProfileImage(
     req: Request,
     res: Response,
@@ -53,6 +56,7 @@ class UserController {
     }
   }
 
+  /** Update user's profile details */
   public async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, about } = updateProfileValidator(req.body);
@@ -73,6 +77,7 @@ class UserController {
     }
   }
 
+  /** Send a request to become a trainer */
   public async sendTrainerRequest(
     req: Request,
     res: Response,
@@ -92,6 +97,7 @@ class UserController {
     }
   }
 
+  /** Get all users with pagination and search */
   public async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const { search, page, size } = paginatedGetDataValidator(req.query);
@@ -115,6 +121,7 @@ class UserController {
     }
   }
 
+  /** Block or unblock a user by admin */
   public async blockUnblockUser(
     req: Request,
     res: Response,

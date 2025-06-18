@@ -4,10 +4,10 @@ const router = Router();
 
 import {
   categoryController,
-  chatController,
   courseController,
   enrolledCourseController,
   lessonController,
+  chatController,
   reviewController,
   streamController,
   subscriptionController,
@@ -21,7 +21,6 @@ import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
 import upload from "../config/multer";
-
 
 router.get("/categories", categoryController.getAllCategories);
 //course
@@ -105,12 +104,16 @@ router.get(
 );
 
 //chats
-router
-  .route("/chats")
-  .get(subscriptionValidator, chatController.getUserChats)
-  .post(upload.single("file"), chatController.sendMedia);
+router.route("/chats").get(chatController.getChats);
+// .get(subscriptionValidator, chatController.getUserChats)
 
-router.route("/chats/:chatId").get(chatController.getMessages);
+router.route("/chats/new/:trainerId").get(chatController.chat);
+
+router
+  .route("/chats/:chatId")
+  .get(chatController.getChatMessages)
+  .post(upload.single("file"), chatController.sendMedia);
+// .get(chatController.getMessages);
 
 //stream
 router.route("/streams").get(streamController.getStreams);

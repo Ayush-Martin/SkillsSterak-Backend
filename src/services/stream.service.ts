@@ -2,6 +2,7 @@ import { io } from "..";
 import envConfig from "../config/env";
 import { egressClient } from "../config/liveKit";
 import { RECORDS_PER_PAGE } from "../constants/general";
+import { SocketEvents } from "../constants/socketEvents";
 import { StatusCodes } from "../constants/statusCodes";
 import { IStreamRepository } from "../interfaces/repositories/IStream.repository";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
@@ -172,7 +173,7 @@ class StreamService implements IStreamService {
     console.log("users", users);
 
     const { username, profileImage, _id } = user;
-    io.to(users).emit("liveChat", {
+    io.to(users).emit(SocketEvents.LIVE_CHAT_NEW_MESSAGE, {
       user: {
         username,
         profileImage,

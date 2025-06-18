@@ -15,11 +15,14 @@ import {
 import binder from "../utils/binder";
 import { getObjectId } from "../utils/objectId";
 
+/** Module controller: manages module creation, updates, and queries */
 class ModuleController {
+  /** Injects module service */
   constructor(private moduleService: IModuleService) {
     binder(this);
   }
 
+  /** Add a new module to a course */
   public async addModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -38,6 +41,7 @@ class ModuleController {
     }
   }
 
+  /** Get all modules for a course */
   public async getModules(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -52,6 +56,7 @@ class ModuleController {
     }
   }
 
+  /** Get a single module by ID */
   public async getModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -66,6 +71,7 @@ class ModuleController {
     }
   }
 
+  /** Delete a module by ID */
   public async deleteModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -80,6 +86,7 @@ class ModuleController {
     }
   }
 
+  /** Update module title */
   public async updateTitle(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;

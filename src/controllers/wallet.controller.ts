@@ -5,11 +5,14 @@ import { successResponse } from "../utils/responseCreators";
 import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import binder from "../utils/binder";
 
+/** Wallet controller: manages user wallet info */
 class WalletController {
+  /** Injects wallet service */
   constructor(private walletService: IWalletService) {
     binder(this);
   }
 
+  /** Get wallet info for a user */
   public async getWalletInfo(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;

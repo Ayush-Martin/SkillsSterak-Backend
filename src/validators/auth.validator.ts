@@ -15,6 +15,14 @@ export const registerUserValidator = (user: any) => {
   return schema.parse(user);
 };
 
+export const completeRegisterValidator = (data: any) => {
+  const schema = z.object({
+    email: EmailValidationRule,
+  });
+
+  return schema.parse(data);
+};
+
 export const loginUserValidator = (data: any) => {
   const schema = z.object({
     email: EmailValidationRule,

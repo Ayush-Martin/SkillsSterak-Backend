@@ -1,12 +1,15 @@
 import { config } from "dotenv";
 config();
 
+/** Environment configuration */
 const envConfig = {
   //general
   PORT: process.env.PORT || 5000,
   FRONTEND_PORT: process.env.FRONTEND_PORT || 4000,
   FRONTEND_DOMAIN: process.env.FRONTEND_DOMAIN || "http://localhost:4000",
   APP_NAME: process.env.APP_NAME || "SkillsStreak",
+  NODE_ENV:
+    (process.env.NODE_ENV as "development" | "production") || "development",
 
   //mongoDb
   MONGO_URI: process.env.MONGO_URI!,
@@ -42,7 +45,6 @@ const envConfig = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
 
   //LiveKit
-
   LIVEKIT_HOST: process.env.LIVEKIT_HOST!,
   LIVEKIT_URL: process.env.LIVEKIT_URL!,
   LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY!,

@@ -4,6 +4,7 @@ export interface ChatHistory {
 }
 
 export interface IAiChatService {
+  /** Retrieves course outline data by course ID */
   courseChatHandler(
     courseId: string,
     message: string,

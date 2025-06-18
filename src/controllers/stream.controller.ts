@@ -6,11 +6,14 @@ import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
+/** Stream controller: manages live stream operations */
 class StreamController {
+  /** Injects stream service */
   constructor(private streamService: IStreamService) {
     binder(this);
   }
 
+  /** Start a new live stream */
   public async startStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { title, description, isPublic } = req.body;
@@ -29,6 +32,7 @@ class StreamController {
         courseId
       );
 
+      console.log("stream dfdfdfdf");
       res
         .status(StatusCodes.OK)
         .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
@@ -37,6 +41,7 @@ class StreamController {
     }
   }
 
+  /** End a live stream */
   public async endStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { roomId } = req.params;
@@ -51,6 +56,7 @@ class StreamController {
     }
   }
 
+  /** View a live stream */
   public async viewStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { streamId } = req.params;
@@ -66,6 +72,7 @@ class StreamController {
     }
   }
 
+  /** Get all streams for a course */
   public async getStreams(req: Request, res: Response, next: NextFunction) {
     try {
       // const { page, search, size } = paginatedGetDataValidator(req.query);

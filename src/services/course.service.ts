@@ -206,6 +206,10 @@ class CourseService implements ICourseService {
   ): Promise<void> {
     await this.courseRepository.updateById(courseId, course);
   }
+
+  public async findById(courseId: string): Promise<ICourse | null> {
+    return await this.courseRepository.findById(courseId);
+  }
 }
 
 export default CourseService;

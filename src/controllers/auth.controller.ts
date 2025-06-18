@@ -5,6 +5,7 @@ import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import {
+  completeRegisterValidator,
   forgetPasswordValidator,
   loginUserValidator,
   registerUserValidator,
@@ -22,17 +23,21 @@ import {
 } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
-import envConfig from "../config/env";
+import { RefreshTokenCookieOptions } from "../config/cookie";
+import { REFRESH_TOKEN_COOKIE_NAME } from "../constants/general";
 
+/** Auth controller: manages user authentication and tokens */
 class AuthController {
+  /** Injects authentication, JWT, and Google services */
   constructor(
     public authService: IAuthService,
     public jwtService: IJWTService,
-    private googleAuthService: IGoogleAuthService,
+    private googleAuthService: IGoogleAuthService
   ) {
     binder(this);
   }
 
+  /** Register a new user */
   public async register(
     req: Request,
     res: Response,
@@ -51,13 +56,14 @@ class AuthController {
     }
   }
 
+  /** Complete registration after verification */
   public async completeRegister(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email } = req.query as { email: string };
+      const { email } = completeRegisterValidator(req.query);
 
       await this.authService.completeRegister(email);
 
@@ -69,6 +75,7 @@ class AuthController {
     }
   }
 
+  /** Login user and return tokens */
   public async login(
     req: Request,
     res: Response,
@@ -84,12 +91,11 @@ class AuthController {
       );
 
       res
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
-        })
+        .cookie(
+          REFRESH_TOKEN_COOKIE_NAME,
+          refreshToken,
+          RefreshTokenCookieOptions
+        )
         .status(StatusCodes.OK)
         .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
     } catch (err) {
@@ -97,14 +103,11 @@ class AuthController {
     }
   }
 
+  /** Logout user and clear refresh token */
   public async logout(req: Request, res: Response, next: NextFunction) {
     try {
       res
-        .clearCookie("refreshToken", {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-        })
+        .clearCookie(REFRESH_TOKEN_COOKIE_NAME, RefreshTokenCookieOptions)
         .status(StatusCodes.OK)
         .json(successResponse(LOGOUT_SUCCESS_MESSAGE));
     } catch (err) {
@@ -112,6 +115,7 @@ class AuthController {
     }
   }
 
+  /** Google OAuth login or register */
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
@@ -124,12 +128,11 @@ class AuthController {
       );
 
       res
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
-        })
+        .cookie(
+          REFRESH_TOKEN_COOKIE_NAME,
+          refreshToken,
+          RefreshTokenCookieOptions
+        )
         .status(StatusCodes.OK)
         .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
     } catch (err) {
@@ -137,6 +140,7 @@ class AuthController {
     }
   }
 
+  /** Start password reset and clear refresh token */
   public async forgetPassword(
     req: Request,
     res: Response,
@@ -148,11 +152,7 @@ class AuthController {
       await this.authService.forgetPassword(email);
 
       res
-        .clearCookie("refreshToken", {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-        })
+        .clearCookie(REFRESH_TOKEN_COOKIE_NAME, RefreshTokenCookieOptions)
         .status(StatusCodes.CREATED)
         .json(successResponse(FORGET_PASSWORD_SUCCESS_MESSAGE));
     } catch (err) {
@@ -160,6 +160,7 @@ class AuthController {
     }
   }
 
+  /** Reset user password */
   public async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { password, email } = resetPasswordValidator(req.body);
@@ -174,6 +175,7 @@ class AuthController {
     }
   }
 
+  /** Refresh and return new tokens */
   public async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.userId!;
@@ -188,12 +190,11 @@ class AuthController {
       );
 
       res
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: envConfig.REFRESH_TOKEN_EXPIRY_DAY * 24 * 60 * 60 * 1000,
-        })
+        .cookie(
+          REFRESH_TOKEN_COOKIE_NAME,
+          refreshToken,
+          RefreshTokenCookieOptions
+        )
         .status(StatusCodes.OK)
         .json(successResponse(TOKEN_REFRESH_SUCCESS_MESSAGE, accessToken));
     } catch (err) {

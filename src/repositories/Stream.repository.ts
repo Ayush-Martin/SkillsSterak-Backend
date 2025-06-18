@@ -46,6 +46,7 @@ class StreamRepository
     recordedSrc: string,
     liveSrc: string
   ): Promise<void> {
+    console.log(recordedSrc, liveSrc);
     const storedData = await redisClient.get(`stream:room:${roomId}`);
     if (!storedData) return;
     const data = JSON.parse(storedData);

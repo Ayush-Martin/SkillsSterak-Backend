@@ -4,9 +4,7 @@ import envConfig from "../env";
 const MONGO_URI = envConfig.MONGO_URI;
 
 /**
- * Connects to the MongoDB database using the MONGO_URI environment variable.
- * If the connection is successful, logs a success message to the console.
- * If the connection fails, logs the error to the console.
+ * Connects to the MongoDB database
  */
 const connectToMongoDB = async (): Promise<void> => {
   try {

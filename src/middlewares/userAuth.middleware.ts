@@ -24,6 +24,7 @@ export const accessTokenValidator = async (
     const token = extractTokenFromHeader(req.get("authorization"));
 
     if (!token) {
+      console.log(req.url);
       return errorCreator(
         INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
         StatusCodes.UNAUTHORIZED

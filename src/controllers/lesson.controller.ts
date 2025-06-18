@@ -18,11 +18,14 @@ import errorCreator from "../utils/customError";
 import binder from "../utils/binder";
 import { getObjectId } from "../utils/objectId";
 
+/** Lesson controller: manages lesson creation, updates, and queries */
 class LessonController {
+  /** Injects lesson service */
   constructor(private lessonService: ILessonService) {
     binder(this);
   }
 
+  /** Add a new lesson to a module */
   public async addLesson(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, moduleId } = req.params;
@@ -53,6 +56,7 @@ class LessonController {
     }
   }
 
+  /** Get all lessons for a module */
   public async getLessons(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -67,6 +71,7 @@ class LessonController {
     }
   }
 
+  /** Delete a lesson by ID */
   public async deleteLesson(req: Request, res: Response, next: NextFunction) {
     try {
       const { lessonId } = req.params;
@@ -81,6 +86,7 @@ class LessonController {
     }
   }
 
+  /** Get a single lesson by ID */
   public async getLesson(req: Request, res: Response, next: NextFunction) {
     try {
       const { lessonId } = req.params;
@@ -95,6 +101,7 @@ class LessonController {
     }
   }
 
+  /** Update lesson title and description */
   public async updateLessonDetails(
     req: Request,
     res: Response,
@@ -117,6 +124,7 @@ class LessonController {
     }
   }
 
+  /** Update lesson file (video/pdf) */
   public async updateLessonFile(
     req: Request,
     res: Response,

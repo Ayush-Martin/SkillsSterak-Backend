@@ -13,9 +13,8 @@ import TransactionModel from "./models/Transaction.model";
 import UserModel from "./models/User.model";
 import WalletModel from "./models/Wallet.model";
 import NotificationModel from "./models/Notification.model";
-import PremiumChatModel from "./models/PremiumChat.model";
-import PremiumMessageModel from "./models/PremiumMessage.model";
 import StreamModel from "./models/Stream.model";
+import ChatModel from "./models/Chat.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -33,11 +32,11 @@ import TransactionRepository from "./repositories/transaction.repository";
 import UserRepository from "./repositories/user.repository";
 import WalletRepository from "./repositories/wallet.repository";
 import NotificationRepository from "./repositories/notification.repository";
-import PremiumChatRepository from "./repositories/premiumChat.repository";
-import PremiumMessageRepository from "./repositories/premiumMessage.repository";
 import StreamRepository from "./repositories/Stream.repository";
 import OTPRepository from "./repositories/otp.repository";
 import AiChatRepository from "./repositories/aiChat.repository";
+import ChatRepository from "./repositories/chat.repository";
+import MessageRepository from "./repositories/message.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -55,10 +54,11 @@ import UserService from "./services/user.service";
 import WalletService from "./services/wallet.service";
 import GoogleAuthService from "./services/googleAuth.service";
 import NotificationService from "./services/notification.service";
-import PremiumChatService from "./services/premiumChat.service";
 import OTPService from "./services/OTP.service";
 import StreamService from "./services/stream.service";
 import AiChatService from "./services/aiChat.service";
+import ChatService from "./services/chat.service";
+import MessageService from "./services/message.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -74,11 +74,12 @@ import TrainerRequestController from "./controllers/trainerRequest.controller";
 import TransactionController from "./controllers/transaction.controller";
 import UserController from "./controllers/user.controller";
 import WalletController from "./controllers/wallet.controller";
-import ChatController from "./controllers/chat.controller";
 import OTPController from "./controllers/OTP.controller";
 import StreamController from "./controllers/stream.controller";
 import LiveKitWebhookController from "./controllers/liveKitWebhook.controller";
+import ChatController from "./controllers/chat.controller";
 
+import MessageModel from "./models/Message.model";
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
 const courseRepository = new CourseRepository(CourseModel);
@@ -99,13 +100,11 @@ const transactionRepository = new TransactionRepository(TransactionModel);
 const userRepository = new UserRepository(UserModel);
 const walletRepository = new WalletRepository(WalletModel);
 const notificationRepository = new NotificationRepository(NotificationModel);
-const premiumChatRepository = new PremiumChatRepository(PremiumChatModel);
-const premiumMessageRepository = new PremiumMessageRepository(
-  PremiumMessageModel
-);
 const streamRepository = new StreamRepository(StreamModel);
 const otpRepository = new OTPRepository();
 const aiChatRepository = new AiChatRepository();
+const chatRepository = new ChatRepository(ChatModel);
+const messageRepository = new MessageRepository(MessageModel);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -116,7 +115,8 @@ export const enrolledCoursesService = new EnrolledCoursesService(
   enrolledCoursesRepository,
   courseRepository,
   walletRepository,
-  transactionRepository
+  transactionRepository,
+  chatRepository
 );
 export const jwtService = new JWTService(refreshTokenRepository);
 export const lessonService = new LessonService(lessonRepository);
@@ -149,11 +149,6 @@ export const notificationService = new NotificationService(
   trainerRepository,
   courseRepository
 );
-export const premiumChatService = new PremiumChatService(
-  premiumChatRepository,
-  premiumMessageRepository,
-  userRepository
-);
 export const streamService = new StreamService(
   streamRepository,
   userRepository
@@ -161,6 +156,15 @@ export const streamService = new StreamService(
 export const aiChatService = new AiChatService(
   courseRepository,
   aiChatRepository
+);
+export const chatService = new ChatService(
+  chatRepository,
+  messageRepository,
+  userRepository
+);
+export const messageService = new MessageService(
+  messageRepository,
+  chatRepository
 );
 
 // Instantiate Controllers
@@ -174,10 +178,12 @@ export const categoryController = new CategoryController(categoryService);
 export const courseController = new CourseController(
   courseService,
   notificationService,
-  aiChatService
+  aiChatService,
+  chatService
 );
 export const enrolledCourseController = new EnrolledCoursesController(
-  enrolledCoursesService
+  enrolledCoursesService,
+  chatService
 );
 export const lessonController = new LessonController(lessonService);
 export const moduleController = new ModuleController(moduleService);
@@ -198,8 +204,8 @@ export const userController = new UserController(
   notificationService
 );
 export const walletController = new WalletController(walletService);
-export const chatController = new ChatController(premiumChatService);
 export const streamController = new StreamController(streamService);
 export const liveKitWebhookController = new LiveKitWebhookController(
   streamService
 );
+export const chatController = new ChatController(chatService);

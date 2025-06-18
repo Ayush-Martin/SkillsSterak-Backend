@@ -7,7 +7,7 @@ export const receiver = new WebhookReceiver(
 );
 
 export const egressClient = new EgressClient(
-  "https://skillsstreak-hqejrm1a.livekit.cloud",
+  envConfig.LIVEKIT_HOST,
   envConfig.LIVEKIT_API_KEY,
   envConfig.LIVEKIT_API_SECRET
 );

@@ -6,11 +6,14 @@ import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
+/** Trainer controller: manages trainer and student operations */
 class TrainerController {
+  /** Injects trainer service */
   constructor(private trainerService: ITrainerService) {
     binder(this);
   }
 
+  /** Get all trainers */
   public async getAllTrainers(req: Request, res: Response, next: NextFunction) {
     try {
       const trainers = await this.trainerService.getAllTrainers();
@@ -23,6 +26,7 @@ class TrainerController {
     }
   }
 
+  /** Get a single trainer by ID */
   public async getTrainer(req: Request, res: Response, next: NextFunction) {
     try {
       const { trainerId } = req.params;
@@ -37,6 +41,7 @@ class TrainerController {
     }
   }
 
+  /** Get students with their enrolled courses for a trainer */
   public async getStudentsWithEnrolledCourses(
     req: Request,
     res: Response,
