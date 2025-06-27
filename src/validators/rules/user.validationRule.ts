@@ -28,3 +28,22 @@ export const UsernameValidationRule = z
 export const AboutValidationRule = z
   .string()
   .max(20, { message: "About must be 20 characters or less" });
+
+export const BioValidationRule = z
+  .string()
+  .max(20, { message: "Bio must be 20 characters or less" });
+
+export const PlaceValidationRule = z.string();
+
+export const PositionValidationRule = z.string();
+
+export const CompanyValidationRule = z.string();
+
+export const SocialLinksValidationRule = z.object({
+  github: z.string().url({ message: "Enter a valid GitHub URL" }).optional(),
+  linkedin: z
+    .string()
+    .url({ message: "Enter a valid LinkedIn URL" })
+    .optional(),
+  website: z.string().url({ message: "Enter a valid Website URL" }).optional(),
+});

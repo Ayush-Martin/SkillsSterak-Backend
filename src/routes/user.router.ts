@@ -14,6 +14,7 @@ import {
   trainerController,
   transactionController,
   userController,
+  notebookController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -79,6 +80,16 @@ router
   .route("/enrolledCourses/:courseId/lessons/:lessonId")
   .get(lessonController.getLesson)
   .patch(enrolledCourseController.completeUnCompleteLesson);
+
+router
+  .route("/enrolledCourses/:courseId/notebooks")
+  .get(notebookController.getCourseNotebooks)
+  .post(notebookController.addNotebook);
+
+router
+  .route("/enrolledCourses/:courseId/notebooks/:notebookId")
+  .put(notebookController.updateNotebook)
+  .delete(notebookController.deleteNotebook);
 
 //profile
 router

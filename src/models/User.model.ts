@@ -5,7 +5,15 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   profileImage?: string;
-  about?: string;
+  bio?: string;
+  place?: string;
+  company?: string;
+  position?: string;
+  socialLinks: {
+    github?: string;
+    linkedin?: string;
+    website?: string;
+  };
   role?: "user" | "trainer" | "admin";
   googleId?: string;
   isBlocked?: boolean;
@@ -38,10 +46,45 @@ const UserSchema: Schema<IUser> = new Schema(
       required: false,
       default: "",
     },
-    about: {
+    bio: {
       type: String,
       required: false,
       default: "",
+    },
+    place: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    company: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    position: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    socialLinks: {
+      type: {
+        github: {
+          type: String,
+          required: false,
+          default: "",
+        },
+        linkedin: {
+          type: String,
+          required: false,
+          default: "",
+        },
+        website: {
+          type: String,
+          required: false,
+          default: "",
+        },
+      },
+      default: {},
     },
     role: {
       type: "string",

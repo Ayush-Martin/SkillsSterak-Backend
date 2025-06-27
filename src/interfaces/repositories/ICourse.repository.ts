@@ -53,7 +53,14 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   ): Promise<Array<ICourse>>;
 
   /** Get the total count of courses matching a search */
-  getCourseCount(search: RegExp): Promise<number>;
+  getCourseCount(
+    search: RegExp,
+    filter: {
+      categoryId?: mongoose.Types.ObjectId;
+      difficulty?: "beginner" | "intermediate" | "advance";
+      price?: { $eq: 0 } | { $ne: 0 };
+    }
+  ): Promise<number>;
 
   /** Get the outline of a course by ID */
   getCourseOutline(courseId: string): Promise<ICourse | null>;

@@ -325,7 +325,37 @@ class CourseRepository
         },
       },
       {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $group: {
+                _id: "$courseId",
+                averageRating: { $avg: "$rating" },
+              },
+            },
+          ],
+          as: "reviews_summary",
+        },
+      },
+      {
+        $unwind: {
+          path: "$reviews_summary",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $ifNull: ["$reviews_summary.averageRating", 0],
+          },
+        },
+      },
+      {
         $project: {
+          averageRating: 1,
           _id: 1,
           trainerId: 1,
           title: 1,
@@ -404,11 +434,19 @@ class CourseRepository
       .populate("categoryId");
   }
 
-  public async getCourseCount(search: RegExp): Promise<number> {
+  public async getCourseCount(
+    search: RegExp,
+    filter: {
+      categoryId?: mongoose.Types.ObjectId;
+      difficulty?: "beginner" | "intermediate" | "advance";
+      price?: { $eq: 0 } | { $ne: 0 };
+    }
+  ): Promise<number> {
     return await this.Course.countDocuments({
       title: search,
       isListed: true,
       status: "approved",
+      ...filter,
     });
   }
 

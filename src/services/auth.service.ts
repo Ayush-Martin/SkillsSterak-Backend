@@ -63,6 +63,7 @@ class AuthService implements IAuthService {
       username: registerData.username,
       email: email,
       password: registerData.password,
+      socialLinks: {},
     });
 
     await this.OTPService.deleteOTP(email);
@@ -125,12 +126,10 @@ class AuthService implements IAuthService {
       return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
 
-
     const OTP = await this.OTPService.generateAndStoreOTP(email, {
       email,
       id: user.id,
     });
-
 
     await sendMail(email, "OTP", OTP);
   }

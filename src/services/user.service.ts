@@ -15,16 +15,13 @@ class UserService implements IUserService {
 
   public async updateProfile(
     userId: string,
-    { username, about }: { username: string; about: string }
+    updatedData: Partial<IUser>
   ): Promise<void | IUser | null> {
     const oldUserData = await this.userRepository.findById(userId);
     if (!oldUserData) {
       return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
     }
-    return await this.userRepository.updateUser(userId, {
-      username,
-      about,
-    });
+    return await this.userRepository.updateUser(userId, updatedData);
   }
 
   public async updateProfileImage(

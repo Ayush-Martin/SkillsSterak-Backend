@@ -16,7 +16,6 @@ export interface IStreamService {
     title: string,
     description: string,
     thumbnail: string,
-    isPublic: boolean,
     courseId: string
   ): Promise<{ stream: IStream; token: string }>;
   /** Sends a live chat message in a stream room. */

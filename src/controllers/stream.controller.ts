@@ -16,7 +16,7 @@ class StreamController {
   /** Start a new live stream */
   public async startStream(req: Request, res: Response, next: NextFunction) {
     try {
-      const { title, description, isPublic } = req.body;
+      const { title, description } = req.body;
       const { courseId } = req.params;
       const thumbnail = req.file!;
       const hostId = req.userId!;
@@ -28,7 +28,6 @@ class StreamController {
         title,
         description,
         thumbnail.path,
-        isPublic,
         courseId
       );
 

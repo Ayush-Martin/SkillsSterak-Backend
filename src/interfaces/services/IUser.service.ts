@@ -4,7 +4,7 @@ export interface IUserService {
   /** Updates the profile information for a user. */
   updateProfile(
     userId: string,
-    { username, about }: { username: string; about: string }
+    updatedData: Partial<IUser>
   ): Promise<void | IUser | null>;
 
   /** Updates the profile image for a user. */

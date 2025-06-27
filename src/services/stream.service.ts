@@ -34,7 +34,6 @@ class StreamService implements IStreamService {
     title: string,
     description: string,
     thumbnail: string,
-    isPublic: boolean,
     courseId: string
   ): Promise<{ stream: IStream; token: string }> {
     const roomId = generateRoomId(title);
@@ -46,7 +45,6 @@ class StreamService implements IStreamService {
       description,
       thumbnail,
       isLive: true,
-      isPublic,
       courseId: getObjectId(courseId),
     });
 
@@ -117,36 +115,6 @@ class StreamService implements IStreamService {
     return { stream: stream, token: await at.toJwt() };
   }
 
-  // public async getStreams(
-  //   search: string,
-  //   page: number,
-  //   size: number
-  // ): Promise<{
-  //   liveStreams: IStream[];
-  //   currentPage: number;
-  //   totalPages: number;
-  // }> {
-  //   const searchRegex = new RegExp(search, "i");
-  //   const skip = (page - 1) * size;
-  //   const liveStreams = await this.streamRepository.getStreams(
-  //     searchRegex,
-  //     skip,
-  //     size
-  //   );
-
-  //   const totalStreams = await this.streamRepository.getStreamsCount(
-  //     searchRegex
-  //   );
-  //   const totalPages = Math.ceil(totalStreams / size);
-
-  //   console.log(totalStreams, size, totalPages);
-  //   return {
-  //     liveStreams,
-  //     currentPage: page,
-  //     totalPages,
-  //   };
-  // }
-
   public async getStreams(courseId: string): Promise<IStream[]> {
     const streams = await this.streamRepository.getStreams(courseId);
     return streams;
@@ -215,7 +183,7 @@ class StreamService implements IStreamService {
       outputs,
       {
         layout: "grid",
-        encodingOptions: EncodingOptionsPreset.H264_720P_30,
+        encodingOptions: EncodingOptionsPreset.H264_1080P_30,
         audioOnly: false,
       }
     );

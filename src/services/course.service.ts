@@ -120,7 +120,8 @@ class CourseService implements ICourseService {
     );
 
     const totalCourses = await this.courseRepository.getCourseCount(
-      searchRegex
+      searchRegex,
+      filter
     );
     const totalPages = Math.ceil(totalCourses / size);
     return {
@@ -183,7 +184,8 @@ class CourseService implements ICourseService {
     );
 
     const totalCourses = await this.courseRepository.getCourseCount(
-      searchRegex
+      searchRegex,
+      {}
     );
     const totalPages = Math.ceil(totalCourses / size);
     return {

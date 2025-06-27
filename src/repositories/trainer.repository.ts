@@ -107,8 +107,39 @@ class TrainerRepository
               },
             },
             {
+              $lookup: {
+                from: "reviews",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $group: {
+                      _id: "$courseId",
+                      averageRating: { $avg: "$rating" },
+                    },
+                  },
+                ],
+                as: "reviews_summary",
+              },
+            },
+            {
+              $unwind: {
+                path: "$reviews_summary",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $addFields: {
+                averageRating: {
+                  $ifNull: ["$reviews_summary.averageRating", 0],
+                },
+              },
+            },
+
+            {
               $project: {
                 _id: 1,
+                averageRating: 1,
                 trainerId: 1,
                 title: 1,
                 price: 1,
@@ -134,6 +165,11 @@ class TrainerRepository
           email: 1,
           profileImage: 1,
           about: 1,
+          bio: 1,
+          company: 1,
+          position: 1,
+          socialLinks: 1,
+          place: 1,
         },
       },
     ]);
