@@ -9,8 +9,11 @@ import { IChatService } from "../interfaces/services/IChat.service";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
 import { IWishlistService } from "../interfaces/services/IWishlist.service";
 
+/**
+ * Handles third-party webhook events (LiveKit, Stripe) for real-time updates and automation.
+ * All methods are bound for safe Express routing.
+ */
 class WebHookController {
-  /** Injects stream service */
   constructor(
     private streamService: IStreamService,
     private enrolledCourseService: IEnrolledCoursesService,
@@ -18,10 +21,13 @@ class WebHookController {
     private subscriptionService: ISubscriptionService,
     private wishlistService: IWishlistService
   ) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Handle LiveKit webhook event */
+  /**
+   * Handles LiveKit webhook events for stream lifecycle automation (e.g., auto-recording, cleanup).
+   */
   public async liveKit(
     req: Request,
     res: Response,
@@ -59,6 +65,10 @@ class WebHookController {
     }
   }
 
+  /**
+   * Handles Stripe webhook events for purchase, subscription, and payment status updates.
+   * Ensures user/course state is updated in response to payment events.
+   */
   public async stripe(req: Request, res: Response, next: NextFunction) {
     try {
       const sig = req.get("stripe-signature")!;

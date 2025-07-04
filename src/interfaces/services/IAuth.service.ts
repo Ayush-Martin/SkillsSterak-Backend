@@ -27,12 +27,21 @@ export interface IAuthService {
     username: string
   ): Promise<IUser | void>;
 
-  /** Send OTP to user for forget password */
+  /**
+   * Sends a one-time password (OTP) to the user for password recovery.
+   * Supports secure account recovery and user verification flows.
+   */
   forgetPassword(email: string): Promise<void>;
 
-  /** Reset password for a user */
+  /**
+   * Resets the password for a user after verification.
+   * Enables secure password changes and account restoration.
+   */
   resetPassword(email: string, password: string): Promise<void>;
 
-  /** Get a user by ID */
+  /**
+   * Retrieves a user by their unique ID.
+   * Supports authentication, profile access, and validation flows.
+   */
   getUserById(userId: string): Promise<IUser | null>;
 }

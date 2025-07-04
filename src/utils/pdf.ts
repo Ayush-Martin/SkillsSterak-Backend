@@ -1,6 +1,12 @@
 import { TDocumentDefinitions } from "pdfmake/interfaces";
 import pdfMake from "../config/pdfMake";
 
+/**
+ * Generates a PDF report for admin revenue analytics.
+ * - Summarizes total, commission, and subscription revenue for a given date range.
+ * - Includes a detailed transaction table for transparency and auditing.
+ * - Used for admin financial reporting and export features.
+ */
 export const generateAdminRevenuePdf = (
   totalRevenue: number,
   commissionRevenue: number,
@@ -16,7 +22,7 @@ export const generateAdminRevenuePdf = (
 
   const content: TDocumentDefinitions["content"] = [];
 
-  // Title
+  // Add report title
   content.push({
     text: "Admin Revenue Report",
     style: "header",
@@ -24,7 +30,7 @@ export const generateAdminRevenuePdf = (
     margin: [0, 0, 0, 4],
   });
 
-  // Date Range
+  // Add date range if provided
   if (dateRange) {
     content.push({
       text: dateRange,
@@ -34,7 +40,7 @@ export const generateAdminRevenuePdf = (
     });
   }
 
-  // Summary Cards using tables
+  // Add summary cards for revenue breakdown
   const summaryCards = [
     {
       title: "Total Revenue",
@@ -79,7 +85,7 @@ export const generateAdminRevenuePdf = (
     margin: [0, 0, 0, 20],
   });
 
-  // Transactions Table
+  // Add transactions table
   const tableBody = [
     [
       { text: "S.No", style: "tableHeader" },
@@ -100,6 +106,7 @@ export const generateAdminRevenuePdf = (
     margin: [0, 0, 0, 10],
   });
 
+  // Define document structure and styles
   const docDefinition = {
     content,
     styles: {
@@ -146,6 +153,12 @@ export const generateAdminRevenuePdf = (
   return pdfMake.createPdfKitDocument(docDefinition as any);
 };
 
+/**
+ * Generates a PDF report for trainer revenue analytics.
+ * - Summarizes total revenue for a given date range.
+ * - Includes a detailed transaction table with payer and course information.
+ * - Used for trainer financial reporting and export features.
+ */
 export const generateTrainerRevenuePdf = (
   totalRevenue: number,
   transactions: Array<{ payer: string; course: string; amount: string }>,
@@ -159,7 +172,7 @@ export const generateTrainerRevenuePdf = (
 
   const content: TDocumentDefinitions["content"] = [];
 
-  // Title
+  // Add report title
   content.push({
     text: "Trainer Revenue Report",
     style: "header",
@@ -167,7 +180,7 @@ export const generateTrainerRevenuePdf = (
     margin: [0, 0, 0, 4],
   });
 
-  // Date Range
+  // Add date range if provided
   if (dateRange) {
     content.push({
       text: dateRange,
@@ -177,7 +190,7 @@ export const generateTrainerRevenuePdf = (
     });
   }
 
-  // Summary Cards using tables
+  // Add summary card for total revenue
   const summaryCards = [
     {
       title: "Total Revenue",
@@ -214,7 +227,7 @@ export const generateTrainerRevenuePdf = (
     margin: [0, 0, 0, 20],
   });
 
-  // Transactions Table
+  // Add transactions table
   const tableBody = [
     [
       { text: "S.No", style: "tableHeader" },
@@ -240,6 +253,7 @@ export const generateTrainerRevenuePdf = (
     margin: [0, 0, 0, 10],
   });
 
+  // Define document structure and styles
   const docDefinition = {
     content,
     styles: {

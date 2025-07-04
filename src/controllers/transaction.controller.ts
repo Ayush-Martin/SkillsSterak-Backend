@@ -2,20 +2,30 @@ import { StatusCodes } from "./../constants/statusCodes";
 import { Request, Response, NextFunction } from "express";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { pageValidator } from "../validators/pagination.validator";
 import binder from "../utils/binder";
-import { IFilterType } from "../types/revenueType";
 import { Buffer } from "exceljs";
+import { GeneralMessage } from "../constants/responseMessages";
+import {
+  exportAdminRevenueValidator,
+  exportTrainerRevenueValidator,
+  getAdminRevenueValidator,
+  getTrainerRevenueValidator,
+} from "../validators/transaction.validator";
 
-/** Transaction controller: manages user and admin transactions */
+/**
+ * Handles user and admin transaction queries, revenue exports, and analytics.
+ * All methods are bound for safe Express routing.
+ */
 class TransactionController {
-  /** Injects transaction service */
   constructor(private transactionService: ITransactionService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Get all transactions for a user */
+  /**
+   * Returns all transactions for the authenticated user, paginated.
+   */
   public async getUserTransactions(
     req: Request,
     res: Response,
@@ -33,13 +43,15 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all transactions (admin) */
+  /**
+   * Returns all transactions for admin, paginated.
+   */
   public async getTransactions(
     req: Request,
     res: Response,
@@ -52,24 +64,23 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Returns admin revenue data with filters for analytics and reporting.
+   */
   public async getAdminRevenue(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { page, size } = pageValidator(req.query);
-      const { filterType, startDate, endDate } = req.query as {
-        filterType: IFilterType;
-        startDate: string;
-        endDate: string;
-      };
+      const { page, size, filterType, startDate, endDate } =
+        getAdminRevenueValidator(req.query);
 
       const data = await this.transactionService.getAdminRevenue(
         page,
@@ -83,12 +94,15 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Returns trainer revenue data with filters for analytics and reporting.
+   */
   public async getTrainerRevenue(
     req: Request,
     res: Response,
@@ -96,12 +110,8 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const { page, size } = pageValidator(req.query);
-      const { filterType, startDate, endDate } = req.query as {
-        filterType: IFilterType;
-        startDate: string;
-        endDate: string;
-      };
+      const { page, size, filterType, startDate, endDate } =
+        getTrainerRevenueValidator(req.query);
 
       const data = await this.transactionService.getTrainerRevenue(
         userId,
@@ -114,24 +124,23 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Exports admin revenue data as PDF or Excel, supporting financial reporting.
+   */
   public async exportAdminRevenue(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { filterType, startDate, endDate, exportType } = req.query as {
-        filterType: IFilterType;
-        startDate: string;
-        endDate: string;
-        exportType: "pdf" | "excel";
-      };
+      const { filterType, startDate, endDate, exportType } =
+        exportAdminRevenueValidator(req.query);
 
       const exportData = await this.transactionService.exportAdminRevenue(
         filterType,
@@ -169,6 +178,9 @@ class TransactionController {
     }
   }
 
+  /**
+   * Exports trainer revenue data as PDF or Excel, supporting financial reporting for trainers.
+   */
   public async exportTrainerRevenue(
     req: Request,
     res: Response,
@@ -176,12 +188,8 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const { filterType, startDate, endDate, exportType } = req.query as {
-        filterType: IFilterType;
-        startDate: string;
-        endDate: string;
-        exportType: "pdf" | "excel";
-      };
+      const { filterType, startDate, endDate, exportType } =
+        exportTrainerRevenueValidator(req.query);
 
       const exportData = await this.transactionService.exportTrainerRevenue(
         userId,
@@ -218,6 +226,9 @@ class TransactionController {
     }
   }
 
+  /**
+   * Returns admin revenue graph data for dashboard visualizations.
+   */
   public async getAdminRevenueGraphData(
     req: Request,
     res: Response,
@@ -228,12 +239,15 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Returns trainer revenue graph data for dashboard visualizations.
+   */
   public async getTrainerRevenueGraphData(
     req: Request,
     res: Response,
@@ -247,7 +261,7 @@ class TransactionController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

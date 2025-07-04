@@ -1,5 +1,5 @@
 import geminiModel from "../config/gemini";
-import { COURSE_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
+import { CourseMessage } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
 import { IAiChatRepository } from "../interfaces/repositories/IAiChat.repository";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
@@ -39,7 +39,7 @@ class AiChatService implements IAiChatService {
     }
 
     if (!courseOutlineData) {
-      errorCreator(COURSE_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+      errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
       return null;
     }
 

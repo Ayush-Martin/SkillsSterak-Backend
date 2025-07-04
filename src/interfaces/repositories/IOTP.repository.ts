@@ -1,20 +1,47 @@
 import { IOTPSchema } from "../services/IOTP.service";
 
+/**
+ * Repository interface for OTP (One-Time Password) data operations.
+ * Supports secure authentication, verification, and OTP lifecycle management.
+ */
 export interface IOTPRepository {
-  /** Store OTP and associated data for a user */
+  /**
+   * Stores OTP and any associated data for a user.
+   * Enables multi-step verification and secure data binding.
+   */
   storeOTPData(
     email: string,
     otp: string,
     data: Record<string, any>
   ): Promise<void>;
-  /** Update the OTP for a user */
+
+  /**
+   * Updates the OTP value for a user.
+   * Supports OTP regeneration and re-sending scenarios.
+   */
   updateOTP(email: string, otp: string): Promise<void>;
-  /** Get the OTP for a user */
+
+  /**
+   * Retrieves the OTP record for a user.
+   * Used for validation and expiration checks during authentication.
+   */
   getOTP(email: string): Promise<IOTPSchema | null>;
-  /** Get associated OTP data for a user */
+
+  /**
+   * Retrieves any data associated with a user's OTP.
+   * Supports context-aware verification and custom flows.
+   */
   getOTPData(email: string): Promise<Record<string, any> | null>;
-  /** Mark a user's OTP as verified */
+
+  /**
+   * Marks a user's OTP as verified.
+   * Enables single-use enforcement and audit trails.
+   */
   markVerified(email: string): Promise<void>;
-  /** Delete the OTP for a user */
+
+  /**
+   * Deletes the OTP record for a user.
+   * Supports cleanup after verification or expiration.
+   */
   deleteOTP(email: string): Promise<void>;
 }

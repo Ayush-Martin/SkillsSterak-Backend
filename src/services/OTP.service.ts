@@ -1,7 +1,5 @@
-import {
-  INVALID_OTP_ERROR_MESSAGE,
-  OTP_EXPIRED_ERROR_MESSAGE,
-} from "../constants/responseMessages";
+
+import { AuthMessage } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
 import { IOTPRepository } from "../interfaces/repositories/IOTP.repository";
 import { IOTPService } from "../interfaces/services/IOTP.service";
@@ -27,11 +25,11 @@ class OTPService implements IOTPService {
     const data = await this.OTPRepository.getOTP(email);
 
     if (!data) {
-      return errorCreator(OTP_EXPIRED_ERROR_MESSAGE, StatusCodes.GONE);
+      return errorCreator(AuthMessage.InvalidOtp, StatusCodes.GONE);
     }
 
     if (OTP !== data.otp) {
-      return errorCreator(INVALID_OTP_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
+      return errorCreator(AuthMessage.InvalidOtp, StatusCodes.UNAUTHORIZED);
     }
 
     await this.OTPRepository.markVerified(email);

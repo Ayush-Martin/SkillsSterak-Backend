@@ -9,15 +9,8 @@ import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
 import { comparePassword, hashPassword } from "../utils/password";
 import { sendMail } from "../utils/mailer";
-import {
-  BLOCKED_ERROR_MESSAGE,
-  EMAIL_EXIST_ERROR_MESSAGE,
-  INVALID_CREDENTIALS_ERROR_MESSAGE,
-  OTP_NOT_VERIFIED_ERROR_MESSAGE,
-  USER_BLOCKED_ERROR_MESSAGE,
-  USER_NOT_FOUND_ERROR_MESSAGE,
-} from "../constants/responseMessages";
 import { IOTPService } from "../interfaces/services/IOTP.service";
+import { AuthMessage, UserMessage } from "../constants/responseMessages";
 
 class AuthService implements IAuthService {
   constructor(
@@ -33,7 +26,7 @@ class AuthService implements IAuthService {
     const userExist = await this.userRepository.getUserByEmail(email);
 
     if (userExist) {
-      return errorCreator(EMAIL_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
+      return errorCreator(AuthMessage.EmailExists, StatusCodes.CONFLICT);
     }
 
     const hashedPassword = hashPassword(password);
@@ -51,10 +44,7 @@ class AuthService implements IAuthService {
     const storedData = await this.OTPService.getVerifiedOTPData(email);
 
     if (!storedData) {
-      return errorCreator(
-        OTP_NOT_VERIFIED_ERROR_MESSAGE,
-        StatusCodes.UNAUTHORIZED
-      );
+      return errorCreator(AuthMessage.OtpNotVerified, StatusCodes.UNAUTHORIZED);
     }
 
     const registerData = storedData as any as IOTPRegisterSchema;
@@ -73,12 +63,12 @@ class AuthService implements IAuthService {
     const user = await this.userRepository.getUserByEmail(email);
 
     if (!user) {
-      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
 
     if (!user.password) {
       return errorCreator(
-        INVALID_CREDENTIALS_ERROR_MESSAGE,
+        AuthMessage.InvalidCredentials,
         StatusCodes.UNAUTHORIZED
       );
     }
@@ -86,12 +76,12 @@ class AuthService implements IAuthService {
     const isPasswordValid = comparePassword(password, user.password!);
 
     if (!isPasswordValid) {
-      errorCreator(INVALID_CREDENTIALS_ERROR_MESSAGE, StatusCodes.UNAUTHORIZED);
+      errorCreator(AuthMessage.InvalidCredentials, StatusCodes.UNAUTHORIZED);
       return;
     }
 
     if (user.isBlocked) {
-      return errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
+      return errorCreator(AuthMessage.UserBlocked, StatusCodes.FORBIDDEN);
     }
 
     return user;
@@ -113,7 +103,7 @@ class AuthService implements IAuthService {
     }
 
     if (user.isBlocked) {
-      errorCreator(USER_BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
+      errorCreator(AuthMessage.UserBlocked, StatusCodes.FORBIDDEN);
     }
 
     return user;
@@ -123,7 +113,7 @@ class AuthService implements IAuthService {
     const user = await this.userRepository.getUserByEmail(email);
 
     if (!user) {
-      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
 
     const OTP = await this.OTPService.generateAndStoreOTP(email, {
@@ -137,10 +127,7 @@ class AuthService implements IAuthService {
   public async resetPassword(email: string, password: string): Promise<void> {
     const data = await this.OTPService.getVerifiedOTPData(email);
     if (!data) {
-      return errorCreator(
-        OTP_NOT_VERIFIED_ERROR_MESSAGE,
-        StatusCodes.UNAUTHORIZED
-      );
+      return errorCreator(AuthMessage.OtpNotVerified, StatusCodes.UNAUTHORIZED);
     }
 
     const { id } = data as any as IOTPResetPasswordSchema;

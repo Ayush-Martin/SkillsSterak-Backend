@@ -2,15 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import SubscriptionModel from "../models/Subscription.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
-import {
-  SUBSCRIPTION_EXPIRED_ERROR_MESSAGE,
-  USER_NOT_SUBSCRIBED_ERROR_MESSAGE,
-} from "../constants/responseMessages";
+import { SubscriptionMessage } from "../constants/responseMessages";
 
 /**
- * Subscription Validator Middleware
- * This middleware is responsible for verifying if a user has an active subscription
- * before allowing them to access certain routes.
+ * Ensures that only users with an active subscription can access protected routes.
+ * - Checks for a valid subscription record for the current user.
+ * - Blocks access if the user is not subscribed or if the subscription has expired.
+ * - Forwards errors to the error handler for consistent API responses.
  */
 export const subscriptionValidator = async (
   req: Request,
@@ -18,26 +16,32 @@ export const subscriptionValidator = async (
   next: NextFunction
 ) => {
   try {
+    // Retrieve user ID from request (set by authentication middleware)
     const userId = req.userId!;
 
+    // Look up the user's subscription in the database
     const userSubscription = await SubscriptionModel.findOne({ userId });
 
+    // Block access if the user does not have a subscription
     if (!userSubscription) {
       return errorCreator(
-        USER_NOT_SUBSCRIBED_ERROR_MESSAGE,
+        SubscriptionMessage.NotSubscribed,
         StatusCodes.FORBIDDEN
       );
     }
 
+    // Block access if the subscription has expired
     if (Date.now() > userSubscription.endDate.getTime()) {
       return errorCreator(
-        SUBSCRIPTION_EXPIRED_ERROR_MESSAGE,
+        SubscriptionMessage.SubscriptionExpired,
         StatusCodes.FORBIDDEN
       );
     }
 
+    // Allow access if subscription is valid
     next();
   } catch (err) {
+    // Forward errors to the error handler middleware
     next(err);
   }
 };

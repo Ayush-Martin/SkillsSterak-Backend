@@ -22,6 +22,7 @@ export enum AuthMessage {
   NoAccess = "You have no access",
 
   // Success messages
+  OTPResent = "OTP resent",
   RegisterOtpSent = "OTP sent to your email, verify to complete registration",
   UserRegistered = "New user created",
   UserLoggedIn = "Login successful",
@@ -152,4 +153,42 @@ export enum ChatMessage {
   //Success messages
   MediaSent = "Media Sent",
   NewChat = "New chat created",
+}
+
+/**
+ * Notebook management response messages
+ */
+export enum NotebookMessage {
+  //Success messages
+  NotebookAdded = "Note book added",
+  NotebookDeleted = "Note book deleted",
+  NotebookUpdated = "Note book updated",
+}
+
+/**
+ * Wallet management response messages
+ */
+export enum WalletMessage {
+  //Success messages
+  Redeemed = "Redeemed",
+  NoStripeAccount = "Stripe account not setup for user",
+  NoEnoughBalance = "Cannot redeem not enough ballance",
+}
+
+/**
+ * Wishlist management response messages
+ */
+export enum WishlistMessage {
+  //Success messages
+  courseAdded = "Course added to wishlist",
+  courseRemoved = "Course removed to wishlist",
+}
+
+/**
+ * Live Stream management response messages
+ */
+export enum LiveStreamMessage {
+  //Success messages
+  RecordingNotFound = "Recording not found",
+  StreamNotFound = "Stream not found",
 }

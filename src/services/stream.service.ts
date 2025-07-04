@@ -1,7 +1,7 @@
 import { io } from "..";
 import envConfig from "../config/env";
 import { egressClient } from "../config/liveKit";
-import { RECORDS_PER_PAGE } from "../constants/general";
+import { LiveStreamMessage, UserMessage } from "../constants/responseMessages";
 import { SocketEvents } from "../constants/socketEvents";
 import { StatusCodes } from "../constants/statusCodes";
 import { IStreamRepository } from "../interfaces/repositories/IStream.repository";
@@ -74,9 +74,8 @@ class StreamService implements IStreamService {
   public async endStream(roomId: string): Promise<void> {
     await this.streamRepository.endStream(roomId);
     const egressId = await this.streamRepository.getEgressId(roomId);
-    console.log("egressId", egressId);
     if (!egressId) {
-      errorCreator("Recording not found", StatusCodes.NOT_FOUND);
+      errorCreator(LiveStreamMessage.RecordingNotFound, StatusCodes.NOT_FOUND);
       return;
     }
 
@@ -89,7 +88,7 @@ class StreamService implements IStreamService {
   ): Promise<{ stream: IStream; token: string } | void> {
     const stream = await this.streamRepository.findById(streamId);
     if (!stream) {
-      errorCreator("Stream not found", StatusCodes.NOT_FOUND);
+      errorCreator(LiveStreamMessage.StreamNotFound, StatusCodes.NOT_FOUND);
       return;
     }
 
@@ -127,18 +126,16 @@ class StreamService implements IStreamService {
   ): Promise<void> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      errorCreator("User not found", StatusCodes.NOT_FOUND);
+      errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
       return;
     }
 
     const users = await this.streamRepository.getRoomUsers(roomId);
 
     if (!users) {
-      errorCreator("Stream not found", StatusCodes.NOT_FOUND);
+      errorCreator(LiveStreamMessage.StreamNotFound, StatusCodes.NOT_FOUND);
       return;
     }
-
-    console.log("users", users);
 
     const { username, profileImage, _id } = user;
     io.to(users).emit(SocketEvents.LIVE_CHAT_NEW_MESSAGE, {
@@ -188,8 +185,6 @@ class StreamService implements IStreamService {
       }
     );
 
-    console.log("egressId", egressInfo.egressId);
-
     await this.streamRepository.startRecording(
       roomId,
       egressInfo.egressId,
@@ -198,7 +193,6 @@ class StreamService implements IStreamService {
     );
   }
 
-  public async stopRecording(roomId: string): Promise<void> {}
 }
 
 export default StreamService;

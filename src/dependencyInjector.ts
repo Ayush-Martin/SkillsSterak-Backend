@@ -1,3 +1,10 @@
+/**
+ * Central dependency injection and wiring for all models, repositories, services, and controllers.
+ * - Ensures a single source of truth for instantiating and sharing dependencies across the application.
+ * - Promotes modularity, testability, and maintainability by decoupling implementation details.
+ * - Used as the main entry point for accessing business logic and data access layers throughout the backend.
+ */
+
 //models
 import CategoryModel from "./models/Category.model";
 import CourseModel from "./models/Course.model";
@@ -62,7 +69,6 @@ import OTPService from "./services/OTP.service";
 import StreamService from "./services/stream.service";
 import AiChatService from "./services/aiChat.service";
 import ChatService from "./services/chat.service";
-import MessageService from "./services/message.service";
 import NotebookService from "./services/notebook.service";
 import WishlistService from "./services/wishlist.service";
 
@@ -82,7 +88,6 @@ import UserController from "./controllers/user.controller";
 import WalletController from "./controllers/wallet.controller";
 import OTPController from "./controllers/OTP.controller";
 import StreamController from "./controllers/stream.controller";
-import LiveKitWebhookController from "./controllers/liveKitWebhook.controller";
 import ChatController from "./controllers/chat.controller";
 import NotebookController from "./controllers/notebook.controller";
 import WebHookController from "./controllers/webhook.controller";
@@ -176,10 +181,6 @@ export const chatService = new ChatService(
   messageRepository,
   userRepository
 );
-export const messageService = new MessageService(
-  messageRepository,
-  chatRepository
-);
 export const notebookService = new NotebookService(noteBookRepository);
 export const wishlistService = new WishlistService(wishlistRepository);
 
@@ -221,9 +222,6 @@ export const userController = new UserController(
 );
 export const walletController = new WalletController(walletService);
 export const streamController = new StreamController(streamService);
-export const liveKitWebhookController = new LiveKitWebhookController(
-  streamService
-);
 export const chatController = new ChatController(chatService);
 export const notebookController = new NotebookController(notebookService);
 export const webhookController = new WebHookController(

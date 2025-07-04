@@ -1,5 +1,11 @@
 import { ICourse } from "../models/Course.model";
 
+/**
+ * Generates a prompt for the AI tutor based on course data and user question.
+ * - Embeds course structure and user query to provide context-aware, accurate answers.
+ * - Instructs the AI to avoid Markdown and keep responses concise for a better user experience.
+ * - Used to power course-specific AI chat features.
+ */
 export const generatePrompt = (
   title: string,
   data: ICourse,

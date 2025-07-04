@@ -22,7 +22,6 @@ import {
 //middlewares
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
-import { subscriptionValidator } from "../middlewares/subscriptionValidator.middleware";
 import upload from "../config/multer";
 
 router.get("/categories", categoryController.getAllCategories);
@@ -80,8 +79,7 @@ router.get(
 
 router
   .route("/enrolledCourses/:courseId")
-  .get(enrolledCourseController.getEnrolledCourse)
-  .delete(enrolledCourseController.cancelCoursePurchase);
+  .get(enrolledCourseController.getEnrolledCourse);
 
 router
   .route("/enrolledCourses/:courseId/lessons/:lessonId")

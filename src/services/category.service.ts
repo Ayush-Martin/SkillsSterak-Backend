@@ -1,12 +1,10 @@
-import {
-  CATEGORY_EXIST_ERROR_MESSAGE,
-  CATEGORY_NOT_FOUND_ERROR_MESSAGE,
-} from "../constants/responseMessages";
+
 import { ICategoryRepository } from "../interfaces/repositories/ICategory.repository";
 import { ICategoryService } from "../interfaces/services/ICategory.service";
 import { ICategory } from "../models/Category.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
+import { CategoryMessage } from "../constants/responseMessages";
 
 class CategoryService implements ICategoryService {
   constructor(private categoryRepository: ICategoryRepository) {}
@@ -17,7 +15,7 @@ class CategoryService implements ICategoryService {
     );
 
     if (categoryExist) {
-      errorCreator(CATEGORY_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
+      errorCreator(CategoryMessage.CategoryExists, StatusCodes.CONFLICT);
     }
 
     return await this.categoryRepository.create({ categoryName });
@@ -32,7 +30,7 @@ class CategoryService implements ICategoryService {
     );
 
     if (categoryExist && categoryExist.id != categoryId) {
-      errorCreator(CATEGORY_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
+      errorCreator(CategoryMessage.CategoryExists, StatusCodes.CONFLICT);
     }
 
     const category = await this.categoryRepository.updateById(categoryId, {
@@ -48,7 +46,7 @@ class CategoryService implements ICategoryService {
     );
 
     if (isListed === null) {
-      errorCreator(CATEGORY_NOT_FOUND_ERROR_MESSAGE, StatusCodes.BAD_REQUEST);
+      errorCreator(CategoryMessage.CategoryNotFound, StatusCodes.BAD_REQUEST);
     }
 
     await this.categoryRepository.changeListStatus(categoryId, !isListed);

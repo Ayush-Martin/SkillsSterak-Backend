@@ -58,26 +58,6 @@ class SocketService implements ISocketService {
         await this.chatService.reactMessage(userId, messageId, chatId, emoji);
       }
     );
-
-    // socket.on(
-    //   "new message",
-    //   async ({
-    //     message,
-    //     receiverId,
-    //     chatId,
-    //   }: {
-    //     message: string;
-    //     receiverId: string;
-    //     chatId: string | null;
-    //   }) => {
-    //     await this.premiumChatService.addMessage(
-    //       message,
-    //       userId,
-    //       receiverId,
-    //       chatId
-    //     );
-    //   }
-    // );
   }
 }
 

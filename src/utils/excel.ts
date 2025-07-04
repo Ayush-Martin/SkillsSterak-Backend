@@ -1,5 +1,11 @@
 import ExcelJS from "exceljs";
 
+/**
+ * Generates an Excel report for admin revenue analytics.
+ * - Summarizes total, subscription, and commission revenue for a given date range.
+ * - Includes a detailed transaction table for transparency and auditing.
+ * - Used for admin financial reporting and export features.
+ */
 export const generateAdminRevenueExcel = async (
   totalRevenue: number,
   commissionRevenue: number,
@@ -11,13 +17,13 @@ export const generateAdminRevenueExcel = async (
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Admin Revenue");
 
-  // Format date range label
+  // Format date range label for the report
   const dateRangeLabel =
     fromDate && toDate
       ? `From: ${fromDate.toDateString()} To: ${toDate.toDateString()}`
       : "All Time";
 
-  // Summary section
+  // Add summary section to the sheet
   sheet.addRow(["Admin Revenue Report"]);
   sheet.addRow([dateRangeLabel]);
   sheet.addRow([]);
@@ -26,7 +32,7 @@ export const generateAdminRevenueExcel = async (
   sheet.addRow(["Commission Revenue", commissionRevenue]);
   sheet.addRow([]);
 
-  // Header
+  // Add header row for transaction details
   const headerRow = sheet.addRow(["Payer", "Type", "Amount"]);
   headerRow.eachCell((cell) => {
     cell.font = { bold: true };
@@ -43,21 +49,27 @@ export const generateAdminRevenueExcel = async (
     };
   });
 
-  // Data rows
+  // Add each transaction as a row
   transactions.forEach((tx) => {
     sheet.addRow([tx.payer, tx.type, tx.amount]);
   });
 
-  // Adjust column widths
+  // Adjust column widths for readability
   sheet.columns.forEach((col) => {
     col.width = 25;
   });
 
-  // Return buffer
+  // Return the Excel file as a buffer
   const buffer = await workbook.xlsx.writeBuffer();
   return buffer;
 };
 
+/**
+ * Generates an Excel report for trainer revenue analytics.
+ * - Summarizes total revenue for a given date range.
+ * - Includes a detailed transaction table with payer and course information.
+ * - Used for trainer financial reporting and export features.
+ */
 export const generateTrainerRevenueExcel = async (
   totalRevenue: number,
   transactions: Array<{ payer: string; course: string; amount: string }>,
@@ -67,20 +79,20 @@ export const generateTrainerRevenueExcel = async (
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Trainer Revenue");
 
-  // Format date range label
+  // Format date range label for the report
   const dateRangeLabel =
     fromDate && toDate
       ? `From: ${fromDate.toDateString()} To: ${toDate.toDateString()}`
       : "All Time";
 
-  // Summary section
+  // Add summary section to the sheet
   sheet.addRow(["Admin Revenue Report"]);
   sheet.addRow([dateRangeLabel]);
   sheet.addRow([]);
   sheet.addRow(["Total Revenue", totalRevenue]);
   sheet.addRow([]);
 
-  // Header
+  // Add header row for transaction details
   const headerRow = sheet.addRow(["Payer", "Amount", "Course"]);
   headerRow.eachCell((cell) => {
     cell.font = { bold: true };
@@ -97,17 +109,17 @@ export const generateTrainerRevenueExcel = async (
     };
   });
 
-  // Data rows
+  // Add each transaction as a row
   transactions.forEach((tx) => {
     sheet.addRow([tx.payer, tx.amount, tx.course]);
   });
 
-  // Adjust column widths
+  // Adjust column widths for readability
   sheet.columns.forEach((col) => {
     col.width = 25;
   });
 
-  // Return buffer
+  // Return the Excel file as a buffer
   const buffer = await workbook.xlsx.writeBuffer();
   return buffer;
 };

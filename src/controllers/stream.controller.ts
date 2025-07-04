@@ -1,27 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 import { IStreamService } from "../interfaces/services/IStream.service";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
-import { paginatedGetDataValidator } from "../validators/pagination.validator";
+import { GeneralMessage } from "../constants/responseMessages";
 
-/** Stream controller: manages live stream operations */
+/**
+ * Handles live stream operations for courses, including start, end, view, and retrieval.
+ * All methods are bound for safe Express routing.
+ */
 class StreamController {
-  /** Injects stream service */
   constructor(private streamService: IStreamService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Start a new live stream */
+  /**
+   * Starts a new live stream for a course, requiring a thumbnail and host.
+   */
   public async startStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { title, description } = req.body;
       const { courseId } = req.params;
       const thumbnail = req.file!;
       const hostId = req.userId!;
-
-      // console.log(thumbnail, thumbnail.path);
 
       const data = await this.streamService.startStream(
         hostId,
@@ -31,16 +33,17 @@ class StreamController {
         courseId
       );
 
-      console.log("stream dfdfdfdf");
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** End a live stream */
+  /**
+   * Ends a live stream by room ID, supporting stream lifecycle management.
+   */
   public async endStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { roomId } = req.params;
@@ -49,13 +52,15 @@ class StreamController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE));
+        .json(successResponse(GeneralMessage.DataReturned));
     } catch (err) {
       next(err);
     }
   }
 
-  /** View a live stream */
+  /**
+   * Allows a user to view a live stream, returning stream data and access token.
+   */
   public async viewStream(req: Request, res: Response, next: NextFunction) {
     try {
       const { streamId } = req.params;
@@ -65,23 +70,24 @@ class StreamController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all streams for a course */
+  /**
+   * Retrieves all streams for a course, enabling stream listings and history.
+   */
   public async getStreams(req: Request, res: Response, next: NextFunction) {
     try {
-      // const { page, search, size } = paginatedGetDataValidator(req.query);
       const { courseId } = req.params;
 
       const data = await this.streamService.getStreams(courseId);
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

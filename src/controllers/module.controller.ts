@@ -6,23 +6,23 @@ import {
 } from "../validators/module.validator";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import {
-  GET_DATA_SUCCESS_MESSAGE,
-  MODULE_ADDED_SUCCESS_MESSAGE,
-  MODULE_DELETED_SUCCESS_MESSAGE,
-  MODULE_TITLE_CHANGED_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { getObjectId } from "../utils/objectId";
+import { GeneralMessage, ModuleMessage } from "../constants/responseMessages";
 
-/** Module controller: manages module creation, updates, and queries */
+/**
+ * Handles module creation, updates, and retrieval for courses.
+ * All methods are bound for safe Express routing.
+ */
 class ModuleController {
-  /** Injects module service */
   constructor(private moduleService: IModuleService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Add a new module to a course */
+  /**
+   * Adds a new module to a course, supporting course content structuring.
+   */
   public async addModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -35,13 +35,15 @@ class ModuleController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(MODULE_ADDED_SUCCESS_MESSAGE, module));
+        .json(successResponse(ModuleMessage.ModuleAdded, module));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all modules for a course */
+  /**
+   * Retrieves all modules for a course, enabling module navigation and display.
+   */
   public async getModules(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -50,13 +52,15 @@ class ModuleController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, modules));
+        .json(successResponse(GeneralMessage.DataReturned, modules));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get a single module by ID */
+  /**
+   * Retrieves a single module by its ID for detail or preview views.
+   */
   public async getModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -65,13 +69,15 @@ class ModuleController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, module));
+        .json(successResponse(GeneralMessage.DataReturned, module));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Delete a module by ID */
+  /**
+   * Deletes a module by its ID. Used for admin or trainer content management.
+   */
   public async deleteModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -80,13 +86,15 @@ class ModuleController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(MODULE_DELETED_SUCCESS_MESSAGE));
+        .json(successResponse(ModuleMessage.ModuleDeleted));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Update module title */
+  /**
+   * Updates the title of a module, supporting content corrections and improvements.
+   */
   public async updateTitle(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
@@ -96,7 +104,7 @@ class ModuleController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(MODULE_TITLE_CHANGED_SUCCESS_MESSAGE));
+        .json(successResponse(ModuleMessage.ModuleTitleChanged));
     } catch (err) {
       next(err);
     }

@@ -4,17 +4,31 @@ export interface IOTPSchema {
 }
 
 export interface IOTPService {
-  /** Generates and stores an OTP for the given email and data. */
+  /**
+   * Generates a new OTP and stores it with associated data for the given email. Used for secure user verification flows.
+   */
   generateAndStoreOTP(
     email: string,
     data: Record<string, any>
   ): Promise<string>;
-  /** Verifies the OTP for the given email. */
+
+  /**
+   * Validates the provided OTP for the given email. Used to confirm user identity during registration, login, or sensitive actions.
+   */
   verifyOTP(email: string, OTP: string): Promise<void>;
-  /** Resends an OTP to the given email. */
+
+  /**
+   * Issues a new OTP to the given email. Used to support users who did not receive or lost their original OTP.
+   */
   resendOTP(email: string): Promise<void>;
-  /** Retrieves verified OTP data for the given email. */
+
+  /**
+   * Retrieves data associated with a verified OTP for the given email. Used to complete verification-dependent workflows.
+   */
   getVerifiedOTPData(email: string): Promise<Record<string, null> | null>;
-  /** Deletes the OTP for the given email. */
+
+  /**
+   * Removes the OTP record for the given email. Used for cleanup after verification or expiration.
+   */
   deleteOTP(email: string): Promise<void>;
 }

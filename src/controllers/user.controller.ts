@@ -4,30 +4,31 @@ import { IUserService } from "../interfaces/services/IUser.service";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import {
-  CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE,
-  GET_DATA_SUCCESS_MESSAGE,
-  NO_PROFILE_IMAGE_ERROR_MESSAGE,
-  SEND_TRAINER_REQUEST_SUCCESS_MESSAGE,
-  UPDATE_PROFILE_SUCCESS_MESSAGE,
-  USER_BLOCKED_SUCCESS_MESSAGE,
-  USER_UN_BLOCKED_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
+import {
+  GeneralMessage,
+  TrainerRequestMessage,
+  UserMessage,
+} from "../constants/responseMessages";
 
-/** User controller: manages user profile, requests, and admin actions */
+/**
+ * Handles user profile management, trainer requests, and admin user actions.
+ * All methods are bound for safe Express routing.
+ */
 class UserController {
-  /** Injects user and notification services */
   constructor(
     private userService: IUserService,
     private notificationService: INotificationService
   ) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Change user's profile image */
+  /**
+   * Updates the user's profile image. Returns an error if no image is provided to prevent incomplete profiles.
+   */
   public async changeProfileImage(
     req: Request,
     res: Response,
@@ -39,7 +40,7 @@ class UserController {
 
       if (!profileImage) {
         return errorCreator(
-          NO_PROFILE_IMAGE_ERROR_MESSAGE,
+          UserMessage.NoProfileImage,
           StatusCodes.BAD_REQUEST
         );
       }
@@ -47,7 +48,7 @@ class UserController {
       await this.userService.updateProfileImage(userID, profileImage.path);
 
       res.status(StatusCodes.OK).json(
-        successResponse(CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE, {
+        successResponse(UserMessage.ProfileImageUpdated, {
           profileImage: profileImage.path,
         })
       );
@@ -56,7 +57,9 @@ class UserController {
     }
   }
 
-  /** Update user's profile details */
+  /**
+   * Updates the user's profile details, supporting richer user information and personalization.
+   */
   public async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, bio, company, place, position, socialLinks } =
@@ -73,7 +76,7 @@ class UserController {
       });
 
       res.status(StatusCodes.OK).json(
-        successResponse(UPDATE_PROFILE_SUCCESS_MESSAGE, {
+        successResponse(UserMessage.ProfileUpdated, {
           username,
           bio,
           company,
@@ -87,7 +90,9 @@ class UserController {
     }
   }
 
-  /** Send a request to become a trainer */
+  /**
+   * Sends a request for the user to become a trainer and notifies admins for approval.
+   */
   public async sendTrainerRequest(
     req: Request,
     res: Response,
@@ -101,13 +106,15 @@ class UserController {
 
       res
         .status(200)
-        .json(successResponse(SEND_TRAINER_REQUEST_SUCCESS_MESSAGE));
+        .json(successResponse(TrainerRequestMessage.TrainerRequestSent));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all users with pagination and search */
+  /**
+   * Retrieves all users with pagination and search, supporting admin user management.
+   */
   public async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const { search, page, size } = paginatedGetDataValidator(req.query);
@@ -117,7 +124,7 @@ class UserController {
 
       res.status(StatusCodes.OK).json(
         successResponse(
-          GET_DATA_SUCCESS_MESSAGE,
+          GeneralMessage.DataReturned,
 
           {
             users,
@@ -131,7 +138,9 @@ class UserController {
     }
   }
 
-  /** Block or unblock a user by admin */
+  /**
+   * Blocks or unblocks a user by admin action, supporting moderation and access control.
+   */
   public async blockUnblockUser(
     req: Request,
     res: Response,
@@ -142,9 +151,7 @@ class UserController {
       const blockStatus = await this.userService.blockUnblockUser(userId);
       res.status(StatusCodes.OK).json(
         successResponse(
-          blockStatus
-            ? USER_BLOCKED_SUCCESS_MESSAGE
-            : USER_UN_BLOCKED_SUCCESS_MESSAGE,
+          blockStatus ? UserMessage.UserBlocked : UserMessage.UserUnblocked,
           {
             userId,
             blockStatus,
@@ -156,13 +163,16 @@ class UserController {
     }
   }
 
+  /**
+   * Returns the total count of users for admin analytics and dashboard metrics.
+   */
   public async getUsersCount(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await this.userService.getAdminUsersCount();
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

@@ -12,17 +12,22 @@ import {
   LessonMessage,
 } from "../constants/responseMessages";
 
-/** EnrolledCourses controller: manages course enrollment and progress */
+/**
+ * Handles course enrollment, progress tracking, and lesson completion for users.
+ * Delegates business logic to the enrolled courses service.
+ */
 class EnrolledCourses {
-  /** Injects enrolled courses and chat services */
   constructor(
     private enrolledCoursesService: IEnrolledCoursesService,
     private chatService: IChatService
   ) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Enroll a user in a course */
+  /**
+   * Enrolls the authenticated user in a course and returns the order or enrollment result.
+   */
   public async enrollCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -46,7 +51,9 @@ class EnrolledCourses {
     }
   }
 
-  /** Check if user is enrolled in a course */
+  /**
+   * Checks if the user is enrolled in a specific course.
+   */
   public async checkEnrolled(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -63,7 +70,9 @@ class EnrolledCourses {
     }
   }
 
-  /** Get all enrolled courses for a user */
+  /**
+   * Returns all courses the user is enrolled in, paginated.
+   */
   public async getEnrolledCourses(
     req: Request,
     res: Response,
@@ -88,7 +97,9 @@ class EnrolledCourses {
     }
   }
 
-  /** Get all completed enrolled courses for a user */
+  /**
+   * Returns all completed courses for the user, paginated.
+   */
   public async getCompletedEnrolledCourses(
     req: Request,
     res: Response,
@@ -112,7 +123,9 @@ class EnrolledCourses {
     }
   }
 
-  /** Get a specific enrolled course for a user */
+  /**
+   * Retrieves a specific enrolled course for the user.
+   */
   public async getEnrolledCourse(
     req: Request,
     res: Response,
@@ -133,7 +146,9 @@ class EnrolledCourses {
     }
   }
 
-  /** Mark lesson as complete or incomplete */
+  /**
+   * Marks a lesson as complete or incomplete for the user in a course.
+   */
   public async completeUnCompleteLesson(
     req: Request,
     res: Response,
@@ -166,6 +181,9 @@ class EnrolledCourses {
     }
   }
 
+  /**
+   * Returns the user's overall course completion progress (for dashboards, etc).
+   */
   public async getCompletionProgress(
     req: Request,
     res: Response,

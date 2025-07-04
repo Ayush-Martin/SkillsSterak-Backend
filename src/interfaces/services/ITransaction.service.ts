@@ -3,7 +3,9 @@ import { ITransaction } from "../../models/Transaction.model";
 import { IFilterType } from "../../types/revenueType";
 
 export interface ITransactionService {
-  /** Retrieves a paginated list of transactions for a user. */
+  /**
+   * Returns a paginated list of transactions for a user. Used for user dashboards, purchase history, and receipts.
+   */
   getUserTransactions(
     userId: string,
     page: number,
@@ -14,7 +16,9 @@ export interface ITransactionService {
     totalPages: number;
   }>;
 
-  /** Retrieves a paginated list of all transactions. */
+  /**
+   * Returns a paginated list of all transactions in the system. Used for admin financial oversight and reporting.
+   */
   getTransactions(
     page: number,
     size: number
@@ -24,6 +28,9 @@ export interface ITransactionService {
     totalPages: number;
   }>;
 
+  /**
+   * Returns paginated revenue data for the admin, filtered by type and date range. Used for analytics and financial reporting.
+   */
   getAdminRevenue(
     page: number,
     size: number,
@@ -36,6 +43,9 @@ export interface ITransactionService {
     totalPages: number;
   }>;
 
+  /**
+   * Returns paginated revenue data for a trainer, filtered by type and date range. Used for trainer analytics and earnings tracking.
+   */
   getTrainerRevenue(
     trainerId: string,
     page: number,
@@ -49,6 +59,9 @@ export interface ITransactionService {
     totalPages: number;
   }>;
 
+  /**
+   * Exports admin revenue data as a PDF or Excel file. Used for financial records, audits, and sharing reports.
+   */
   exportAdminRevenue(
     filterType: IFilterType,
     startDate: string,
@@ -56,6 +69,9 @@ export interface ITransactionService {
     exportType: "pdf" | "excel"
   ): Promise<PDFKit.PDFDocument | Buffer>;
 
+  /**
+   * Exports trainer revenue data as a PDF or Excel file. Used for trainer records, tax purposes, and analytics.
+   */
   exportTrainerRevenue(
     trainerId: string,
     filterType: IFilterType,
@@ -64,6 +80,13 @@ export interface ITransactionService {
     exportType: "pdf" | "excel"
   ): Promise<PDFKit.PDFDocument | Buffer>;
 
+  /**
+   * Returns revenue data for admin in a format suitable for graphing. Used for dashboard visualizations and trend analysis.
+   */
   getAdminRevenueGraphData(): Promise<ITransaction>;
+
+  /**
+   * Returns revenue data for a trainer in a format suitable for graphing. Used for trainer dashboards and performance tracking.
+   */
   getTrainerRevenueGraphData(trainerId: string): Promise<ITransaction>;
 }

@@ -18,12 +18,20 @@ export interface ITransactionRepository extends IBaseRepository<ITransaction> {
   /** Get total transaction count */
   getTransactionCount(): Promise<number>;
 
+  /**
+   * Retrieves admin revenue transactions with optional filtering and pagination.
+   * Supports financial reporting and dashboard analytics for platform administrators.
+   */
   getAdminRevenue(
     filter: Record<string, any>,
     skip?: number,
     limit?: number
   ): Promise<ITransaction>;
 
+  /**
+   * Retrieves trainer revenue transactions with optional filtering and pagination.
+   * Enables trainers to track their earnings and financial performance.
+   */
   getTrainerRevenue(
     trainerId: string,
     filter: Record<string, any>,

@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-import {
-  COURSE_NOT_FOUND_ERROR_MESSAGE,
-  COURSE_TITLE_EXIST_ERROR_MESSAGE,
-} from "../constants/responseMessages";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import { ICourse } from "../models/Course.model";
@@ -13,6 +9,7 @@ import {
   CoursePriceFilter,
   CourseSort,
 } from "../types/courseTypes";
+import { CourseMessage } from "../constants/responseMessages";
 
 class CourseService implements ICourseService {
   constructor(private courseRepository: ICourseRepository) {}
@@ -22,7 +19,7 @@ class CourseService implements ICourseService {
     const courseExist = await this.courseRepository.findCourseByTitle(title!);
 
     if (courseExist) {
-      errorCreator(COURSE_TITLE_EXIST_ERROR_MESSAGE, StatusCodes.CONFLICT);
+      errorCreator(CourseMessage.CourseExists, StatusCodes.CONFLICT);
     }
 
     return await this.courseRepository.create(course);
@@ -37,7 +34,7 @@ class CourseService implements ICourseService {
       courseId
     );
     if (isListed == null) {
-      errorCreator(COURSE_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+      errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
     }
 
     await this.courseRepository.changeListStatus(courseId, !isListed);

@@ -4,6 +4,6 @@
  */
 export const getNextMonth = (): Date => {
   const date = new Date();
-  date.setMonth(date.getMonth() + 1); // Add three months to the current month.
+  date.setMonth(date.getMonth() + 1);
   return date;
 };

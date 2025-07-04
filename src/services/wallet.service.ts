@@ -8,7 +8,7 @@ import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
 import stripe from "../config/stripe";
 import envConfig from "../config/env";
-import { IWallet } from "../models/Wallet.model";
+import { WalletMessage } from "../constants/responseMessages";
 
 class WalletService implements IWalletService {
   constructor(
@@ -86,14 +86,14 @@ class WalletService implements IWalletService {
 
     if (!user.stripeAccountId) {
       throw errorCreator(
-        "Stripe account not setup for user",
+        WalletMessage.NoStripeAccount,
         StatusCodes.BAD_REQUEST
       );
     }
 
     if (wallet?.balance <= 0) {
       throw errorCreator(
-        "Cannot redeem, balance is 0",
+        WalletMessage.NoEnoughBalance,
         StatusCodes.BAD_REQUEST
       );
     }

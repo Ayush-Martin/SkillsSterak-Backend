@@ -1,4 +1,4 @@
-import { RECORDS_PER_PAGE } from "../constants/general";
+
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";

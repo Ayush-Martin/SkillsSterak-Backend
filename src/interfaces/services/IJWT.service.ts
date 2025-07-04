@@ -1,17 +1,25 @@
 import { IUser } from "../../models/User.model";
 
 export interface IJWTService {
-  /** Create access and refresh tokens for a user */
+  /**
+   * Issues new access and refresh tokens for a user. Used after login or registration to enable secure, stateless authentication.
+   */
   createTokens(
     user: IUser
   ): Promise<{ accessToken: string; refreshToken: string }>;
 
-  /** Retrieve a new refresh token */
+  /**
+   * Generates a new refresh token from an existing one. Used to maintain user sessions without requiring re-authentication.
+   */
   getRefreshToken(token: string): Promise<string>;
 
-  /** Create a new access token for a user */
+  /**
+   * Issues a new access token for a user. Used to refresh short-lived access without re-login.
+   */
   createAccessToken(user: IUser): Promise<string>;
 
-  /** Delete a refresh token */
+  /**
+   * Revokes a refresh token, ending the user's session. Used for logout and security enforcement.
+   */
   deleteRefreshToken(token: string): Promise<void>;
 }

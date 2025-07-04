@@ -5,11 +5,10 @@ import { StatusCodes } from "../constants/statusCodes";
 import { z } from "zod";
 
 /**
- * The error handler middleware.
- * @param {ICustomError | z.ZodError} err The error to be handled.
- * @param {Request} req The Express request object.
- * @param {Response} res The Express response object.
- * @param {NextFunction} next The Express next function.
+ * Centralized error handler for Express routes and middleware.
+ * - Logs all errors for debugging and monitoring.
+ * - Handles custom errors and Zod validation errors differently for clear client feedback.
+ * - Ensures consistent error response structure and status codes across the API.
  */
 const errorHandler = (
   err: ICustomError | z.ZodError,
@@ -17,17 +16,19 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  // Log error details for diagnostics
   console.warn(`[Error] ${err.message}`);
   console.log(err);
+
+  // Handle custom errors (not Zod validation errors)
   if (!(err instanceof z.ZodError)) {
-    // Custom error
     res
       .status(Number(err.status) || StatusCodes.INTERNAL_SERVER_ERROR)
       .json(errorResponse(err.message));
     return;
   }
 
-  //If validation layer error or zod error
+  // Handle Zod validation errors with detailed feedback
   const zodErrors = err.errors.map((e) => e.message).join(", ");
   res
     .status(StatusCodes.BAD_REQUEST)

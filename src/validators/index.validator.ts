@@ -17,10 +17,3 @@ export const paginatedGetDataValidator = (data: any) => {
   return schema.parse(data);
 };
 
-export const razorpayCompletePurchaseValidator = (data: any) => {
-  const schema = z.object({
-    orderId: z.string(),
-  });
-
-  return schema.parse(data);
-};

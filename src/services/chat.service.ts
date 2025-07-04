@@ -20,9 +20,7 @@ class ChatService implements IChatService {
     courseId: string,
     trainerId: string
   ): Promise<void> {
-    console.log("dfdfb-----df", trainerId);
-
-    const chat = await this.chatRepository.create({
+    await this.chatRepository.create({
       chatType: "group",
       courseId: getObjectId(courseId),
       adminId: getObjectId(trainerId),

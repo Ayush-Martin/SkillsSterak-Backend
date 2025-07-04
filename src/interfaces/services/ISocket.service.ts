@@ -1,6 +1,8 @@
 import { Socket } from "socket.io";
 
 export interface ISocketService {
-  /** Handles socket connection for a user. */
+  /**
+   * Initializes and manages a user's socket connection. Used to enable real-time features and maintain user presence.
+   */
   socketConnectionHandler(socket: Socket, userId: string): Promise<void>;
 }

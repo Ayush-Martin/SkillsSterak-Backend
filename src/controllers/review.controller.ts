@@ -6,21 +6,21 @@ import {
 } from "../validators/review.validator";
 import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
-import {
-  GET_DATA_SUCCESS_MESSAGE,
-  REPLY_ADDED_SUCCESS_MESSAGE,
-  REVIEW_ADDED_SUCCESS_MESSAGE,
-  REVIEW_DELETE_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { GeneralMessage, ReviewMessage } from "../constants/responseMessages";
 
-/** Review controller: manages course reviews and replies */
+/**
+ * Handles course reviews and replies, enabling user feedback and discussion.
+ * All methods are bound for safe Express routing.
+ */
 class ReviewController {
-  /** Injects review service */
   constructor(private reviewService: IReviewService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
-  /** Add a review to a course */
+  /**
+   * Adds a review to a course, supporting user feedback and ratings.
+   */
   public async addReview(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
@@ -35,13 +35,15 @@ class ReviewController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(REVIEW_ADDED_SUCCESS_MESSAGE, review));
+        .json(successResponse(ReviewMessage.ReviewAdded, review));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all reviews for a course */
+  /**
+   * Retrieves all reviews for a course, enabling review display and aggregation.
+   */
   public async getReviews(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -50,13 +52,15 @@ class ReviewController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, reviews));
+        .json(successResponse(GeneralMessage.DataReturned, reviews));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Add a reply to a review */
+  /**
+   * Adds a reply to a review, supporting threaded discussions and clarifications.
+   */
   public async addReply(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;
@@ -71,13 +75,15 @@ class ReviewController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(REPLY_ADDED_SUCCESS_MESSAGE, reply));
+        .json(successResponse(ReviewMessage.ReplyAdded, reply));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all replies for a review */
+  /**
+   * Retrieves all replies for a review, enabling nested feedback and conversation.
+   */
   public async getReplies(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;
@@ -86,13 +92,15 @@ class ReviewController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, replies));
+        .json(successResponse(GeneralMessage.DataReturned, replies));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Delete a review by ID */
+  /**
+   * Deletes a review by its ID. Used for moderation or user content management.
+   */
   public async deleteReview(req: Request, res: Response, next: NextFunction) {
     try {
       const { reviewId } = req.params;
@@ -101,7 +109,7 @@ class ReviewController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(REVIEW_DELETE_SUCCESS_MESSAGE));
+        .json(successResponse(ReviewMessage.ReviewDeleted));
     } catch (err) {
       next(err);
     }

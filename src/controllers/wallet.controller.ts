@@ -2,17 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import { IWalletService } from "../interfaces/services/IWallet.service";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import binder from "../utils/binder";
+import { GeneralMessage, WalletMessage } from "../constants/responseMessages";
 
-/** Wallet controller: manages user wallet info */
+/**
+ * Handles user wallet information, Stripe account setup, and redemption actions.
+ * All methods are bound for safe Express routing.
+ */
 class WalletController {
-  /** Injects wallet service */
   constructor(private walletService: IWalletService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Get wallet info for a user */
+  /**
+   * Retrieves wallet information for the authenticated user, supporting balance and payout views.
+   */
   public async getWalletInfo(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
@@ -21,12 +26,15 @@ class WalletController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Sets up a Stripe account for the user, enabling payouts and financial operations.
+   */
   public async setUpStripeAccount(
     req: Request,
     res: Response,
@@ -39,21 +47,22 @@ class WalletController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Redeems the user's wallet balance, supporting withdrawal or payout actions.
+   */
   public async redeem(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
 
-      const data = await this.walletService.redeem(userId);
+      await this.walletService.redeem(userId);
 
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse("amount has been redeemed"));
+      res.status(StatusCodes.OK).json(successResponse(WalletMessage.Redeemed));
     } catch (err) {
       next(err);
     }

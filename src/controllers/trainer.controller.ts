@@ -2,31 +2,38 @@ import { Request, Response, NextFunction } from "express";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import { GET_DATA_SUCCESS_MESSAGE } from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
+import { GeneralMessage } from "../constants/responseMessages";
 
-/** Trainer controller: manages trainer and student operations */
+/**
+ * Handles trainer and student operations, including trainer listing and student analytics.
+ * All methods are bound for safe Express routing.
+ */
 class TrainerController {
-  /** Injects trainer service */
   constructor(private trainerService: ITrainerService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Get all trainers */
+  /**
+   * Retrieves all trainers for admin or user selection.
+   */
   public async getAllTrainers(req: Request, res: Response, next: NextFunction) {
     try {
       const trainers = await this.trainerService.getAllTrainers();
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, trainers));
+        .json(successResponse(GeneralMessage.DataReturned, trainers));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get a single trainer by ID */
+  /**
+   * Retrieves a single trainer by ID for profile or detail views.
+   */
   public async getTrainer(req: Request, res: Response, next: NextFunction) {
     try {
       const { trainerId } = req.params;
@@ -35,13 +42,15 @@ class TrainerController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, trainer));
+        .json(successResponse(GeneralMessage.DataReturned, trainer));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get students with their enrolled courses for a trainer */
+  /**
+   * Returns students with their enrolled courses for the authenticated trainer, supporting analytics and dashboard features.
+   */
   public async getStudentsWithEnrolledCourses(
     req: Request,
     res: Response,
@@ -60,12 +69,15 @@ class TrainerController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
+  /**
+   * Returns the total count of students for the authenticated trainer, supporting analytics and reporting.
+   */
   public async getStudentsCount(
     req: Request,
     res: Response,
@@ -77,7 +89,7 @@ class TrainerController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

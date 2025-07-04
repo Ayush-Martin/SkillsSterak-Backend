@@ -3,14 +3,10 @@ import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import jwt from "jsonwebtoken";
 
-import {
-  BLOCKED_ERROR_MESSAGE,
-  INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
-  INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
-} from "../constants/responseMessages";
 import { extractTokenFromHeader, verifyToken } from "../utils/JWT";
 import envConfig from "../config/env";
 import { authService, jwtService } from "../dependencyInjector";
+import { AuthMessage } from "../constants/responseMessages";
 
 /**
  * Middleware to verify the access token sent in the Authorization header.
@@ -24,9 +20,8 @@ export const accessTokenValidator = async (
     const token = extractTokenFromHeader(req.get("authorization"));
 
     if (!token) {
-      console.log(req.url);
       return errorCreator(
-        INVALID_ACCESS_TOKEN_ERROR_MESSAGE,
+        AuthMessage.InvalidAccessToken,
         StatusCodes.UNAUTHORIZED
       );
     }
@@ -42,7 +37,7 @@ export const accessTokenValidator = async (
     }
 
     if (userData?.isBlocked) {
-      errorCreator(BLOCKED_ERROR_MESSAGE, StatusCodes.FORBIDDEN);
+      errorCreator(AuthMessage.UserBlocked, StatusCodes.FORBIDDEN);
     }
 
     req.userId = String(userData?._id);
@@ -65,39 +60,37 @@ export const refreshTokenValidator = async (
   try {
     const refreshToken = req.cookies.refreshToken as string | undefined;
     if (!refreshToken) {
-      errorCreator(
-        INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
-        StatusCodes.UNAUTHORIZED
-      );
+      errorCreator(AuthMessage.InvalidAccessToken, StatusCodes.UNAUTHORIZED);
       return;
     }
 
     const validRefreshToken = await jwtService.getRefreshToken(refreshToken);
     if (!validRefreshToken) {
       req.cookies.remove();
-      errorCreator(
-        INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
-        StatusCodes.UNAUTHORIZED
-      );
+      errorCreator(AuthMessage.InvalidAccessToken, StatusCodes.UNAUTHORIZED);
       return;
     }
 
+    // Verify the refresh token using JWT and handle the result asynchronously
     jwt.verify(
       refreshToken,
       envConfig.REFRESH_TOKEN_SECRET,
       async (err, payload) => {
         try {
+          // If verification fails, clear cookies and block access
           if (err) {
             req.cookies.remove();
             errorCreator(
-              INVALID_REFRESH_TOKEN_ERROR_MESSAGE,
+              AuthMessage.InvalidRefreshToken,
               StatusCodes.UNAUTHORIZED
             );
           } else {
+            // If valid, attach user ID to request and proceed
             req.userId = payload?.sub as string;
             next();
           }
         } catch (err) {
+          // Forward any errors to the error handler
           next(err);
         }
       }

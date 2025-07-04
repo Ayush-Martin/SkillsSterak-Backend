@@ -18,30 +18,48 @@ export interface IEnrolledCoursesRepository
     userId: string,
     courseId: string
   ): Promise<IEnrolledCourses | null>;
-  /** Check if the user is enrolled in the course */
+  /**
+   * Checks if the user is enrolled in a specific course.
+   * Supports access control and prevents duplicate enrollments.
+   */
   checkEnrolled(
     userId: string,
     courseId: string
   ): Promise<IEnrolledCourses | null>;
-  /** Get completed enrolled courses of the user */
+
+  /**
+   * Retrieves the user's completed enrolled courses with pagination.
+   * Enables progress tracking and certificate eligibility checks.
+   */
   getComptedEnrolledCourses(
     userId: string,
     skip: number,
     limit: number
   ): Promise<Array<IEnrolledCourses>>;
-  /** Add a lesson as completed in the user's enrolled course */
+
+  /**
+   * Marks a lesson as completed for the user's enrolled course.
+   * Used to update progress and unlock subsequent content.
+   */
   addLessonComplete(
     userId: string,
     courseId: string,
     lessonId: string
   ): Promise<IEnrolledCourses | null>;
 
-  /** Remove a lesson from completed lessons in the user's enrolled course */
+  /**
+   * Removes a lesson from the user's completed lessons.
+   * Supports progress correction and user-driven adjustments.
+   */
   removeLessonComplete(
     userId: string,
     courseId: string,
     lessonId: string
   ): Promise<IEnrolledCourses | null>;
 
+  /**
+   * Retrieves the user's overall course progress.
+   * Used for dashboards, analytics, and personalized recommendations.
+   */
   getProgress(userId: string): Promise<IEnrolledCourses>;
 }

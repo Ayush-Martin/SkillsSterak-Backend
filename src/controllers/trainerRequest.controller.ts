@@ -3,26 +3,30 @@ import { ITrainerService } from "../interfaces/services/ITrainer.service";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
 import { approveRejectRequestValidator } from "../validators/trainerRequest.validator";
-import {
-  GET_DATA_SUCCESS_MESSAGE,
-  TRAINER_REQUEST_APPROVED_SUCCESS_MESSAGE,
-  TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { pageValidator } from "../validators/pagination.validator";
 import { INotificationService } from "../interfaces/services/INotification.service";
+import {
+  GeneralMessage,
+  TrainerRequestMessage,
+} from "../constants/responseMessages";
 
-/** TrainerRequest controller: manages trainer request approvals and queries */
+/**
+ * Handles trainer request approvals and queries, supporting admin workflows and notifications.
+ * All methods are bound for safe Express routing.
+ */
 class TrainerRequestController {
-  /** Injects trainer and notification services */
   constructor(
     private trainerService: ITrainerService,
     private notificationService: INotificationService
   ) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Get all trainer requests with pagination */
+  /**
+   * Retrieves all trainer requests with pagination, supporting admin review and approval flows.
+   */
   public async getTrainerRequests(
     req: Request,
     res: Response,
@@ -35,7 +39,7 @@ class TrainerRequestController {
         await this.trainerService.getTrainerRequest(page, size);
 
       res.status(StatusCodes.OK).json(
-        successResponse(GET_DATA_SUCCESS_MESSAGE, {
+        successResponse(GeneralMessage.DataReturned, {
           users,
           currentPage,
           totalPages,
@@ -46,7 +50,10 @@ class TrainerRequestController {
     }
   }
 
-  /** Approve or reject a trainer request */
+  /**
+   * Approves or rejects a trainer request and sends the appropriate notification.
+   * Used for admin moderation of trainer applications.
+   */
   public async approveRejectRequests(
     req: Request,
     res: Response,
@@ -67,8 +74,8 @@ class TrainerRequestController {
       .json(
         successResponse(
           status == "approved"
-            ? TRAINER_REQUEST_APPROVED_SUCCESS_MESSAGE
-            : TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE,
+            ? TrainerRequestMessage.RequestApproved
+            : TrainerRequestMessage.RequestRejected,
           { userId, status }
         )
       );

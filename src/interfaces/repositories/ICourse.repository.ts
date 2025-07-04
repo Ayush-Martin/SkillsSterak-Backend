@@ -52,7 +52,10 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
     limit: number
   ): Promise<Array<ICourse>>;
 
-  /** Get the total count of courses matching a search */
+  /**
+   * Returns the total number of courses matching a search and filter.
+   * Supports pagination and analytics for course listings.
+   */
   getCourseCount(
     search: RegExp,
     filter: {
@@ -62,18 +65,39 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
     }
   ): Promise<number>;
 
-  /** Get the outline of a course by ID */
+  /**
+   * Retrieves the outline (structure) of a course by its ID.
+   * Used for displaying course content and supporting AI-driven features.
+   */
   getCourseOutline(courseId: string): Promise<ICourse | null>;
 
-  /** Get the total count of admin courses matching a search */
+  /**
+   * Returns the total number of admin-created courses matching a search.
+   * Enables admin analytics and dashboard statistics.
+   */
   getAdminCourseCount(search: RegExp): Promise<number>;
 
-  /** Get the total count of trainer courses matching a search */
+  /**
+   * Returns the total number of courses for a trainer matching a search.
+   * Supports trainer dashboards and reporting features.
+   */
   getTrainerCourseCount(trainerId: string, search: RegExp): Promise<number>;
 
-  /** Change the thumbnail of a course */
+  /**
+   * Updates the thumbnail image for a course.
+   * Allows trainers and admins to refresh course visuals.
+   */
   changeThumbnail(courseId: string, thumbnail: string): Promise<ICourse | null>;
 
+  /**
+   * Retrieves the top 5 courses for admin analytics or featured listings.
+   * Used for highlighting popular or high-performing courses on the platform.
+   */
   getAdminTop5Courses(): Promise<Array<ICourse>>;
+
+  /**
+   * Retrieves the top 5 courses for a specific trainer.
+   * Supports trainer dashboards and recognition features.
+   */
   getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
 }

@@ -4,8 +4,8 @@ import { IUser } from "../models/User.model";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
-import { USER_NOT_FOUND_ERROR_MESSAGE } from "../constants/responseMessages";
 import { getObjectId } from "../utils/objectId";
+import { UserMessage } from "../constants/responseMessages";
 
 class UserService implements IUserService {
   constructor(
@@ -19,7 +19,7 @@ class UserService implements IUserService {
   ): Promise<void | IUser | null> {
     const oldUserData = await this.userRepository.findById(userId);
     if (!oldUserData) {
-      return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
     return await this.userRepository.updateUser(userId, updatedData);
   }
@@ -52,7 +52,7 @@ class UserService implements IUserService {
     const blockStatus = await this.userRepository.getUserBlockStatus(userId);
     if (!blockStatus) {
       return errorCreator(
-        USER_NOT_FOUND_ERROR_MESSAGE,
+        UserMessage.UserNotFound,
         StatusCodes.BAD_REQUEST
       );
     }

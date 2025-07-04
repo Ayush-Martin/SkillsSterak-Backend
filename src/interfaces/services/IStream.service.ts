@@ -1,16 +1,27 @@
 import { IStream } from "../../models/Stream.model";
 
 export interface IStreamService {
-  /** Allows a user to view a stream and returns stream info and token. */
+  /**
+   * Grants a user access to view a stream, returning stream details and an access token. Used to enforce access control and enable secure viewing.
+   */
   viewStream(
     userId: string,
     streamId: string
   ): Promise<{ stream: IStream; token: string } | void>;
-  /** Retrieves all streams for a course. */
+
+  /**
+   * Retrieves all streams associated with a course. Used to display available live or recorded sessions for a course.
+   */
   getStreams(courseId: string): Promise<IStream[]>;
-  /** Ends a stream by room ID. */
+
+  /**
+   * Ends a live stream by its room identifier. Used to manage stream lifecycle and free up resources.
+   */
   endStream(roomId: string): Promise<void>;
-  /** Starts a new stream and returns stream info and token. */
+
+  /**
+   * Starts a new live stream, returning stream details and an access token. Used by hosts to initiate live sessions.
+   */
   startStream(
     hostId: string,
     title: string,
@@ -18,10 +29,14 @@ export interface IStreamService {
     thumbnail: string,
     courseId: string
   ): Promise<{ stream: IStream; token: string }>;
-  /** Sends a live chat message in a stream room. */
+
+  /**
+   * Sends a live chat message in a stream room. Used to enable real-time interaction between viewers and hosts.
+   */
   liveChat(roomId: string, userId: string, message: string): Promise<void>;
-  /** Starts recording a stream. */
+
+  /**
+   * Initiates recording of a live stream. Used to archive sessions for later viewing or compliance.
+   */
   startRecording(roomId: string): Promise<void>;
-  /** Stops recording a stream. */
-  stopRecording(roomId: string): Promise<void>;
 }
