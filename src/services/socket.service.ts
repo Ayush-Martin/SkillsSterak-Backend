@@ -1,9 +1,11 @@
+import { IMessageService } from "./../interfaces/services/IMessage.service";
 import { ISocketService } from "../interfaces/services/ISocket.service";
 import { Socket } from "socket.io";
 import { SocketEvents } from "../constants/socketEvents";
 import { INotificationService } from "../interfaces/services/INotification.service";
 import { IStreamService } from "../interfaces/services/IStream.service";
 import { IChatService } from "../interfaces/services/IChat.service";
+import { messageReactions } from "../types/messageTypes";
 
 class SocketService implements ISocketService {
   constructor(
@@ -39,6 +41,21 @@ class SocketService implements ISocketService {
       SocketEvents.CHAT_MESSAGE_SEND,
       async ({ chatId, message }: { chatId: string; message: string }) => {
         await this.chatService.addNewMessage(userId, chatId, message, "text");
+      }
+    );
+
+    socket.on(
+      SocketEvents.CHAT_MESSAGE_REACTION_SEND,
+      async ({
+        messageId,
+        chatId,
+        emoji,
+      }: {
+        messageId: string;
+        chatId: string;
+        emoji: messageReactions;
+      }) => {
+        await this.chatService.reactMessage(userId, messageId, chatId, emoji);
       }
     );
 

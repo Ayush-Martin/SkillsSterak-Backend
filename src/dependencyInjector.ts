@@ -16,6 +16,7 @@ import NotificationModel from "./models/Notification.model";
 import StreamModel from "./models/Stream.model";
 import ChatModel from "./models/Chat.model";
 import NoteBookModel from "./models/Notebook.model";
+import WishlistModel from "./models/Wishlist.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -39,6 +40,7 @@ import AiChatRepository from "./repositories/aiChat.repository";
 import ChatRepository from "./repositories/chat.repository";
 import MessageRepository from "./repositories/message.repository";
 import NotebookRepository from "./repositories/Notebook.repository";
+import WishlistRepository from "./repositories/wishlist.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -62,6 +64,7 @@ import AiChatService from "./services/aiChat.service";
 import ChatService from "./services/chat.service";
 import MessageService from "./services/message.service";
 import NotebookService from "./services/notebook.service";
+import WishlistService from "./services/wishlist.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -82,6 +85,8 @@ import StreamController from "./controllers/stream.controller";
 import LiveKitWebhookController from "./controllers/liveKitWebhook.controller";
 import ChatController from "./controllers/chat.controller";
 import NotebookController from "./controllers/notebook.controller";
+import WebHookController from "./controllers/webhook.controller";
+import WishlistController from "./controllers/wishlist.controller";
 
 import MessageModel from "./models/Message.model";
 // Instantiate Repositories
@@ -110,6 +115,7 @@ const aiChatRepository = new AiChatRepository();
 const chatRepository = new ChatRepository(ChatModel);
 const messageRepository = new MessageRepository(MessageModel);
 const noteBookRepository = new NotebookRepository(NoteBookModel);
+const wishlistRepository = new WishlistRepository(WishlistModel);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -121,7 +127,8 @@ export const enrolledCoursesService = new EnrolledCoursesService(
   courseRepository,
   walletRepository,
   transactionRepository,
-  chatRepository
+  chatRepository,
+  userRepository
 );
 export const jwtService = new JWTService(refreshTokenRepository);
 export const lessonService = new LessonService(lessonRepository);
@@ -132,7 +139,8 @@ export const reviewService = new ReviewService(
 );
 export const subscriptionService = new SubscriptionService(
   subscriptionRepository,
-  transactionRepository
+  transactionRepository,
+  userRepository
 );
 export const trainerService = new TrainerService(
   trainerRepository,
@@ -145,7 +153,8 @@ export const userService = new UserService(
 );
 export const walletService = new WalletService(
   walletRepository,
-  transactionRepository
+  transactionRepository,
+  userRepository
 );
 export const googleAuthService = new GoogleAuthService();
 export const notificationService = new NotificationService(
@@ -172,6 +181,7 @@ export const messageService = new MessageService(
   chatRepository
 );
 export const notebookService = new NotebookService(noteBookRepository);
+export const wishlistService = new WishlistService(wishlistRepository);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -216,3 +226,11 @@ export const liveKitWebhookController = new LiveKitWebhookController(
 );
 export const chatController = new ChatController(chatService);
 export const notebookController = new NotebookController(notebookService);
+export const webhookController = new WebHookController(
+  streamService,
+  enrolledCoursesService,
+  chatService,
+  subscriptionService,
+  wishlistService
+);
+export const wishlistController = new WishlistController(wishlistService);

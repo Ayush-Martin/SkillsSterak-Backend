@@ -16,7 +16,9 @@ export enum SocketEvents {
   // Chat events
   CHAT_JOIN = "chat:new",
   CHAT_MESSAGE_SEND = "chat:newMessage_get",
+  CHAT_MESSAGE_REACTION_SEND = "chat:newMessageReaction_get",
   CHAT_MESSAGE_BROADCAST = "chat:newMessage_emit",
+  CHAT_MESSAGE_REACTION_BROADCAST = "chat:newMessageReaction_emit",
   CHAT_LAST_MESSAGE = "chat:lastMessage",
 
   // LiveChat events

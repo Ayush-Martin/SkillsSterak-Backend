@@ -10,6 +10,10 @@ cloudinary.config({
   api_secret: envConfig.CLOUDINARY_API_SECRET,
 });
 
+/**
+ * Cloudinary storage configuration for multer, dynamically sets folder and resource type
+ * based on file mimetype (image, video, or PDF document).
+ */
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
@@ -47,4 +51,3 @@ const upload = multer({ storage });
 
 /** multer middleware to handle file upload */
 export default upload;
-

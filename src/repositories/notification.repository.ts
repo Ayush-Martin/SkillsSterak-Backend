@@ -32,7 +32,6 @@ class NotificationRepository
       message,
     }));
 
-
     return await this.Notification.insertMany(notifications);
   }
 

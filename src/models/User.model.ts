@@ -18,6 +18,7 @@ export interface IUser extends Document {
   googleId?: string;
   isBlocked?: boolean;
   isPremium?: boolean;
+  stripeAccountId?: string;
 }
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -101,6 +102,11 @@ const UserSchema: Schema<IUser> = new Schema(
       type: Boolean,
       required: false,
       default: false,
+    },
+    stripeAccountId: {
+      type: String,
+      required: false,
+      default: "",
     },
   },
   { timestamps: true }

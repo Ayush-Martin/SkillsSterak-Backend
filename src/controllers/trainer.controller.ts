@@ -65,6 +65,23 @@ class TrainerController {
       next(err);
     }
   }
+
+  public async getStudentsCount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const data = await this.trainerService.getStudentsCount(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default TrainerController;

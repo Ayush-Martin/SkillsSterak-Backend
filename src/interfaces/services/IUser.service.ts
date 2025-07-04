@@ -22,4 +22,6 @@ export interface IUserService {
 
   /** Sends a trainer request for a user. */
   sendTrainerRequest(userId: string): Promise<void>;
+
+  getAdminUsersCount(): Promise<number>;
 }

@@ -7,6 +7,7 @@ import {
   moduleController,
   streamController,
   trainerController,
+  transactionController,
   walletController,
 } from "../dependencyInjector";
 
@@ -22,6 +23,9 @@ router
   .route("/courses")
   .get(courseController.getTrainerCourses)
   .post(upload.single("image"), courseController.createCourse);
+
+router.get("/courses/count", courseController.getTrainerCoursesCount);
+router.get("/courses/top5", courseController.getTrainerTop5Courses);
 
 router
   .route("/courses/:courseId")
@@ -74,6 +78,7 @@ router
 
 //students
 router.get("/students", trainerController.getStudentsWithEnrolledCourses);
+router.get("/students/count", trainerController.getStudentsCount);
 
 //wallet
 router.route("/wallet").get(walletController.getWalletInfo);
@@ -86,5 +91,9 @@ router
   .post(upload.single("thumbnail"), streamController.startStream);
 
 router.route("/streams/:roomId").patch(streamController.endStream);
+
+router.get("/revenue", transactionController.getTrainerRevenue);
+router.get("/revenue/export", transactionController.exportTrainerRevenue);
+router.get("/revenue/graph", transactionController.getTrainerRevenueGraphData);
 
 export default router;

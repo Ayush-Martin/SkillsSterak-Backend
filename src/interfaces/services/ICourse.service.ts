@@ -60,4 +60,10 @@ export interface ICourseService {
   changeCourseThumbnail(courseId: string, thumbnail: string): Promise<void>;
   /** Finds a course by its ID. */
   findById(courseId: string): Promise<ICourse | null>;
+
+  getAdminCoursesCount(): Promise<number>;
+  getTrainerCoursesCount(trainerId: string): Promise<number>;
+
+  getAdminTop5Courses(): Promise<Array<ICourse>>;
+  getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
 }

@@ -12,21 +12,14 @@ dotenv.config();
 
 const app = express();
 
-app.use(
-  "/webhooks",
-  express.raw({ type: ["application/webhook+json", "application/json"] }),
-  webhooksRouter
-);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use("/webhooks", webhooksRouter);
 
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(nocache());
 app.use(cors);
 
-app.use(router);
+app.use("/api", express.json(), express.urlencoded({ extended: true }), router);
 
 app.use(errorHandler);
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ICourseService } from "../interfaces/services/ICourse.service";
 import {
+  aiChatValidator,
   approveRejectCourseValidator,
   createCourseValidator,
   getCoursesValidator,
@@ -10,45 +11,44 @@ import {
 } from "../validators/course.validator";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import {
-  COURSE_APPROVED_SUCCESS_MESSAGE,
-  COURSE_CREATED_SUCCESS_MESSAGE,
-  COURSE_LISTED_SUCCESS_MESSAGE,
-  COURSE_REJECTED_SUCCESS_MESSAGE,
-  COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE,
-  COURSE_UN_LISTED_SUCCESS_MESSAGE,
-  GET_DATA_SUCCESS_MESSAGE,
-  UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE,
-  UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE,
-  UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { getObjectId } from "../utils/objectId";
 import NotificationService from "../services/notification.service";
 import { IAiChatService } from "../interfaces/services/IAiChat.service";
 import { IChatService } from "../interfaces/services/IChat.service";
+import { CourseMessage, GeneralMessage } from "../constants/responseMessages";
+import errorCreator from "../utils/customError";
 
-/** Course controller: manages course creation, updates, and queries */
+/**
+ * Handles course creation, updates, queries, and related notifications.
+ * Delegates business logic to service layer and ensures all methods are bound for Express routing.
+ */
 class CourseController {
-  /** Injects course, notification, AI chat, and chat services */
   constructor(
     private courseService: ICourseService,
     private notificationService: NotificationService,
     private aiChatService: IAiChatService,
     private chatService: IChatService
   ) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Create a new course */
+  /**
+   * Validates and creates a new course, then notifies the trainer.
+   * Returns the created course in the response.
+   */
   public async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const trainerId = getObjectId(req.userId!);
       const thumbnail = req.file;
       const courseData = createCourseValidator(req.body);
 
-      if (!thumbnail) return;
+      if (!thumbnail) {
+        errorCreator(CourseMessage.CourseNoThumbnail, StatusCodes.BAD_REQUEST);
+        return;
+      }
 
       const course = await this.courseService.createCourse({
         ...courseData,
@@ -63,18 +63,19 @@ class CourseController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(COURSE_CREATED_SUCCESS_MESSAGE, course));
+        .json(successResponse(CourseMessage.CourseCreated, course));
     } catch (err) {
       next(err);
     }
   }
 
-  /** AI chat for course */
+  /**
+   * Handles AI-powered chat for a course, passing message and history to the AI service.
+   */
   public async aiChat(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
-      const { message, history } = req.body;
-      console.log("corseId", courseId);
+      const { message, history } = aiChatValidator(req.body);
 
       const result = await this.aiChatService.courseChatHandler(
         courseId,
@@ -84,13 +85,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, result));
+        .json(successResponse(GeneralMessage.DataReturned, result));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get a single course by ID */
+  /**
+   * Retrieves a single course by its ID.
+   */
   public async getCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -99,13 +102,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, course));
+        .json(successResponse(GeneralMessage.DataReturned, course));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Toggle course listed/unlisted */
+  /**
+   * Toggles a course's listed/unlisted status (soft visibility control).
+   */
   public async listUnListCourse(
     req: Request,
     res: Response,
@@ -120,8 +125,8 @@ class CourseController {
         .json(
           successResponse(
             isListed
-              ? COURSE_LISTED_SUCCESS_MESSAGE
-              : COURSE_UN_LISTED_SUCCESS_MESSAGE,
+              ? CourseMessage.CourseListed
+              : CourseMessage.CourseUnlisted,
             { courseId, isListed }
           )
         );
@@ -130,7 +135,10 @@ class CourseController {
     }
   }
 
-  /** Approve or reject a course */
+  /**
+   * Approves or rejects a course and sends notifications accordingly.
+   * If approved, also creates a group chat for the course.
+   */
   public async approveRejectCourse(
     req: Request,
     res: Response,
@@ -154,17 +162,13 @@ class CourseController {
         this.notificationService.sendCourseRejectedNotification(courseId);
       }
 
-      // status == "approved"
-      //   ? this.notificationService.sendCourseApprovedNotification(courseId)
-      //   : this.notificationService.sendCourseRejectedNotification(courseId);
-
       res
         .status(StatusCodes.OK)
         .json(
           successResponse(
             status == "approved"
-              ? COURSE_APPROVED_SUCCESS_MESSAGE
-              : COURSE_REJECTED_SUCCESS_MESSAGE,
+              ? CourseMessage.CourseApproved
+              : CourseMessage.CourseRejected,
             { courseId, status }
           )
         );
@@ -173,7 +177,9 @@ class CourseController {
     }
   }
 
-  /** Get a trainer's course by ID */
+  /**
+   * Retrieves a trainer's course by its ID.
+   */
   public async getTrainerCourse(
     req: Request,
     res: Response,
@@ -186,13 +192,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, course));
+        .json(successResponse(GeneralMessage.DataReturned, course));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all courses for a trainer */
+  /**
+   * Returns all courses for the authenticated trainer, paginated and searchable.
+   */
   public async getTrainerCourses(
     req: Request,
     res: Response,
@@ -211,13 +219,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all courses for admin */
+  /**
+   * Returns all courses for admin, paginated and searchable.
+   */
   public async getAdminCourses(
     req: Request,
     res: Response,
@@ -230,13 +240,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get all courses with filters */
+  /**
+   * Returns all courses with advanced filters (search, category, difficulty, price, sort, pagination).
+   */
   public async getCourses(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, search, category, difficulty, price, size, sort } =
@@ -254,13 +266,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Change course thumbnail */
+  /**
+   * Changes the thumbnail image for a course.
+   */
   public async changeCourseThumbnail(
     req: Request,
     res: Response,
@@ -270,24 +284,24 @@ class CourseController {
       const { courseId } = req.params;
       const thumbnail = req.file;
 
-      if (!thumbnail) return;
+      if (!thumbnail) {
+        errorCreator(CourseMessage.CourseNoThumbnail, StatusCodes.BAD_REQUEST);
+        return;
+      }
 
       await this.courseService.changeCourseThumbnail(courseId, thumbnail.path);
 
       res
         .status(StatusCodes.OK)
-        .json(
-          successResponse(
-            COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE,
-            thumbnail.path
-          )
-        );
+        .json(successResponse(CourseMessage.ThumbnailUpdated, thumbnail.path));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Update course basic details */
+  /**
+   * Updates the basic details of a course (title, description, etc).
+   */
   public async updateCourseBasicDetails(
     req: Request,
     res: Response,
@@ -301,13 +315,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE));
+        .json(successResponse(CourseMessage.BasicDetailsUpdated));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Update course requirements */
+  /**
+   * Updates the requirements for a course.
+   */
   public async updateCourseRequirements(
     req: Request,
     res: Response,
@@ -321,13 +337,15 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE));
+        .json(successResponse(CourseMessage.RequirementsUpdated));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Update course skills covered */
+  /**
+   * Updates the skills covered by a course.
+   */
   public async updateCourseSkillsCovered(
     req: Request,
     res: Response,
@@ -341,7 +359,85 @@ class CourseController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE));
+        .json(successResponse(CourseMessage.SkillsCoveredUpdated));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * Returns the total count of courses for admin analytics.
+   */
+  public async getAdminCoursesCount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const data = await this.courseService.getAdminCoursesCount();
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * Returns the total count of courses for the authenticated trainer.
+   */
+  public async getTrainerCoursesCount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const data = await this.courseService.getTrainerCoursesCount(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * Returns the top 5 courses for the authenticated trainer  by enrollments.
+   */
+  public async getTrainerTop5Courses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const data = await this.courseService.getTrainerTop5Courses(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * Returns the top 5 courses for admin by enrollments .
+   */
+  public async getAdminTop5Courses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const data = await this.courseService.getAdminTop5Courses();
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

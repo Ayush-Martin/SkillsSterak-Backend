@@ -25,6 +25,12 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
       .limit(limit);
   }
 
+  public async getUserEmail(userId: string): Promise<string | undefined> {
+    const user = await this.User.findById(userId, { email: 1 });
+
+    return user?.email;
+  }
+
   public async getUserByEmail(email: string): Promise<IUser | null> {
     return await this.User.findOne({ email });
   }
@@ -87,6 +93,13 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     status: boolean
   ): Promise<IUser | null> {
     return await this.User.findByIdAndUpdate(userId, { isPremium: status });
+  }
+
+  public async updateStripeAccountId(
+    userId: string,
+    stripeAccountId: string
+  ): Promise<IUser | null> {
+    return await this.User.findByIdAndUpdate(userId, { stripeAccountId });
   }
 }
 

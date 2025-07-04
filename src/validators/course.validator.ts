@@ -1,5 +1,7 @@
 import z from "zod";
 import {
+  AiChatHistoryValidationRule,
+  AiChatMessageValidationRule,
   CourseCategoryIdValidationRule,
   CourseDescriptionValidationRule,
   CourseDifficultyValidationRule,
@@ -76,6 +78,15 @@ export const getCoursesValidator = (data: any) => {
 export const approveRejectCourseValidator = (data: any) => {
   const schema = z.object({
     status: z.enum(["approved", "rejected"]),
+  });
+
+  return schema.parse(data);
+};
+
+export const aiChatValidator = (data: any) => {
+  const schema = z.object({
+    message: AiChatMessageValidationRule,
+    history: AiChatHistoryValidationRule,
   });
 
   return schema.parse(data);

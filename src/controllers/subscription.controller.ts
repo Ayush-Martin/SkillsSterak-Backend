@@ -34,21 +34,21 @@ class SubscriptionController {
   }
 
   /** Complete a subscription payment */
-  public async completeSubscription(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { orderId } = req.body;
-      await this.subscriptionService.completeSubscription(orderId);
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse(SUBSCRIPTION_ADDED_SUCCESS_MESSAGE));
-    } catch (error) {
-      next(error);
-    }
-  }
+  // public async completeSubscription(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) {
+  //   try {
+  //     const { orderId } = req.body;
+  //     await this.subscriptionService.completeSubscription(orderId);
+  //     res
+  //       .status(StatusCodes.OK)
+  //       .json(successResponse(SUBSCRIPTION_ADDED_SUCCESS_MESSAGE));
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
 
   /** Get subscription details for a user */
   public async getSubscriptionDetail(

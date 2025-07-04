@@ -7,6 +7,7 @@ import { IMessageRepository } from "../interfaces/repositories/IMessage.reposito
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { IMessage } from "../models/Message.model";
 import { SocketEvents } from "../constants/socketEvents";
+import { messageReactions } from "../types/messageTypes";
 
 class ChatService implements IChatService {
   constructor(
@@ -67,6 +68,7 @@ class ChatService implements IChatService {
 
     io.to(members.map((x) => String(x))).emit(SocketEvents.CHAT_LAST_MESSAGE, {
       lastMessage: messageType === "text" ? message : "image",
+      lastMessageTime: (newMessage as any).createdAt,
       chatId,
     });
   }
@@ -97,6 +99,31 @@ class ChatService implements IChatService {
     io.to(trainerId).emit("chat", trainerChat);
 
     return userChat;
+  }
+
+  public async reactMessage(
+    userId: string,
+    messageId: string,
+    chatId: string,
+    reaction: messageReactions
+  ): Promise<void> {
+    const message = await this.messageRepository.reactMessage(
+      userId,
+      messageId,
+      reaction
+    );
+
+    const members = await this.chatRepository.getChatMembers(chatId);
+
+    io.to(members.map((x) => String(x))).emit(
+      SocketEvents.CHAT_MESSAGE_REACTION_BROADCAST,
+      {
+        userId,
+        messageId,
+        chatId,
+        reactions: message?.reactions,
+      }
+    );
   }
 }
 

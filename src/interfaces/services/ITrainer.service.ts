@@ -29,4 +29,6 @@ export interface ITrainerService {
 
   /** Retrieves a trainer by their ID. */
   getTrainer(trainerId: string): Promise<IUser | null>;
+
+  getStudentsCount(trainerId: string): Promise<number>;
 }

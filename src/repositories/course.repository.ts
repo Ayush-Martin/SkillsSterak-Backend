@@ -463,6 +463,93 @@ class CourseRepository
   ): Promise<ICourse | null> {
     return await this.Course.findByIdAndUpdate(courseId, { thumbnail });
   }
+
+  public async getAdminTop5Courses(): Promise<Array<ICourse>> {
+    return await this.Course.aggregate([
+      {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+              },
+            },
+          ],
+          as: "enrolled",
+        },
+      },
+      {
+        $addFields: {
+          enrolledCount: { $size: "$enrolled" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          enrolledCount: 1,
+          title: 1,
+        },
+      },
+      {
+        $sort: {
+          enrolledCount: -1,
+        },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
+  }
+
+  public async getTrainerTop5Courses(
+    trainerId: string
+  ): Promise<Array<ICourse>> {
+    return await this.Course.aggregate([
+      {
+        $match: {
+          trainerId: new mongoose.Types.ObjectId(trainerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "enrolledcourses",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+              },
+            },
+          ],
+          as: "enrolled",
+        },
+      },
+      {
+        $addFields: {
+          enrolledCount: { $size: "$enrolled" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          enrolledCount: 1,
+          title: 1,
+        },
+      },
+      {
+        $sort: {
+          enrolledCount: -1,
+        },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
+  }
 }
 
 export default CourseRepository;

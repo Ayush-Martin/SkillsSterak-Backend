@@ -320,6 +320,94 @@ class EnrolledCoursesRepository
       { $pull: { completedLessons: lessonId } }
     );
   }
+
+  public async getProgress(userId: string): Promise<IEnrolledCourses> {
+    const courseProgress = await this.EnrolledCourses.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $facet: {
+          enrolledCourses: [
+            {
+              $group: {
+                _id: null,
+                enrolledCourses: { $sum: 1 },
+              },
+            },
+          ],
+          coursesCompleted: [
+            {
+              $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $lookup: {
+                      from: "lessons",
+                      localField: "_id",
+                      foreignField: "courseId",
+                      pipeline: [
+                        {
+                          $group: {
+                            _id: 0,
+                            noOfLessons: { $sum: 1 },
+                          },
+                        },
+                      ],
+                      as: "lessons",
+                    },
+                  },
+                  { $unwind: "$lessons" },
+                  {
+                    $project: {
+                      noOfLessons: "$lessons.noOfLessons",
+                    },
+                  },
+                ],
+                as: "course",
+              },
+            },
+            { $unwind: "$course" },
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $size: "$completedLessons" }, "$course.noOfLessons"],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                coursesCompleted: { $sum: 1 },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          enrolledCourses: {
+            $ifNull: [
+              { $arrayElemAt: ["$enrolledCourses.enrolledCourses", 0] },
+              0,
+            ],
+          },
+          coursesCompleted: {
+            $ifNull: [
+              { $arrayElemAt: ["$coursesCompleted.coursesCompleted", 0] },
+              0,
+            ],
+          },
+        },
+      },
+    ]);
+
+    return courseProgress[0];
+  }
 }
 
 export default EnrolledCoursesRepository;

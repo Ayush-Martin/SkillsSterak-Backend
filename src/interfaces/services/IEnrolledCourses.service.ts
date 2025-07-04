@@ -3,10 +3,7 @@ import { IEnrolledCourses } from "../../models/EnrolledCourse.model";
 
 export interface IEnrolledCoursesService {
   /** Enrolls a user in a course. */
-  enrollCourse(
-    userId: string,
-    courseId: string
-  ): Promise<Orders.RazorpayOrder | null>;
+  enrollCourse(userId: string, courseId: string): Promise<string | null>;
 
   /** Retrieves a paginated list of enrolled courses for a user. */
   getEnrolledCourses(
@@ -43,7 +40,8 @@ export interface IEnrolledCoursesService {
 
   /** Completes a course purchase and returns user and course IDs. */
   completePurchase(
-    orderId: string
+    userId: string,
+    courseId: string
   ): Promise<{ userId: string; courseId: string }>;
 
   /** Marks a lesson as complete or incomplete for a user in a course. */
@@ -52,4 +50,6 @@ export interface IEnrolledCoursesService {
     courseId: string,
     lessonId: string
   ): Promise<IEnrolledCourses | null>;
+
+  getCompletionProgress(userId: string): Promise<IEnrolledCourses>;
 }

@@ -212,6 +212,27 @@ class CourseService implements ICourseService {
   public async findById(courseId: string): Promise<ICourse | null> {
     return await this.courseRepository.findById(courseId);
   }
+
+  public async getAdminCoursesCount(): Promise<number> {
+    return await this.courseRepository.getAdminCourseCount(new RegExp(""));
+  }
+
+  public async getTrainerCoursesCount(trainerId: string): Promise<number> {
+    return await this.courseRepository.getTrainerCourseCount(
+      trainerId,
+      new RegExp("")
+    );
+  }
+
+  public async getAdminTop5Courses(): Promise<Array<ICourse>> {
+    return await this.courseRepository.getAdminTop5Courses();
+  }
+
+  public async getTrainerTop5Courses(
+    trainerId: string
+  ): Promise<Array<ICourse>> {
+    return await this.courseRepository.getTrainerTop5Courses(trainerId);
+  }
 }
 
 export default CourseService;

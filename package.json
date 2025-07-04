@@ -14,22 +14,24 @@
     "clean": "rimraf dist",
     "build": "tsc",
     "start": "node dist/index.js",
-    "prestart": "concurrently \"npm run clean\" \"npm run build\"",
-    "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\"",
-    "predev": "concurrently \"npm run clean\" \"npm run build\"",
+    "prestart": "npm run clean && npm run build",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "ngork": "ngrok http --url=integral-teaching-foxhound.ngrok-free.app 5000"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@livekit/protocol": "^1.38.0",
     "@types/cookie-parser": "^1.4.8",
+    "@types/exceljs": "^0.5.3",
+    "@types/pdfmake": "^0.2.11",
+    "@types/stripe": "^8.0.416",
     "auto-bind": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
-    "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
     "google-auth-library": "^9.15.1",
     "jsonwebtoken": "^9.0.2",
@@ -40,10 +42,12 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nocache": "^4.0.0",
     "nodemailer": "^6.10.0",
+    "pdfmake": "^0.2.20",
     "razorpay": "^2.9.6",
     "redis": "^4.7.0",
     "rimraf": "^6.0.1",
     "socket.io": "^4.8.1",
+    "stripe": "^18.2.1",
     "typescript": "^5.7.3",
     "zod": "^3.24.1"
   },
@@ -59,6 +63,6 @@
     "@types/nodemailer": "^6.4.17",
     "@types/redis": "^4.0.10",
     "@types/socket.io": "^3.0.1",
-    "nodemon": "^3.1.9"
+    "ts-node-dev": "^2.0.0"
   }
 }

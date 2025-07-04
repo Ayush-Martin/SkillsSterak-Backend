@@ -73,4 +73,7 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
 
   /** Change the thumbnail of a course */
   changeThumbnail(courseId: string, thumbnail: string): Promise<ICourse | null>;
+
+  getAdminTop5Courses(): Promise<Array<ICourse>>;
+  getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
 }

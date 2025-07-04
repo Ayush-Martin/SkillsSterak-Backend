@@ -2,18 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import {
-  COURSE_ENROLLED_SUCCESS_MESSAGE,
-  COURSE_ORDER_CREATED_SUCCESS_MESSAGE,
-  GET_DATA_SUCCESS_MESSAGE,
-  LESSON_COMPLETED_SUCCESS_MESSAGE,
-  LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { pageValidator } from "../validators/pagination.validator";
-import { razorpayCompletePurchaseValidator } from "../validators/index.validator";
 import { getObjectId } from "../utils/objectId";
 import { IChatService } from "../interfaces/services/IChat.service";
+import {
+  CourseMessage,
+  GeneralMessage,
+  LessonMessage,
+} from "../constants/responseMessages";
 
 /** EnrolledCourses controller: manages course enrollment and progress */
 class EnrolledCourses {
@@ -39,48 +36,11 @@ class EnrolledCourses {
         .json(
           successResponse(
             order
-              ? COURSE_ORDER_CREATED_SUCCESS_MESSAGE
-              : COURSE_ENROLLED_SUCCESS_MESSAGE,
+              ? CourseMessage.CourseOrderCreated
+              : CourseMessage.CourseEnrolled,
             order
           )
         );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /** Complete course purchase and join chat */
-  public async completePurchase(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { orderId } = razorpayCompletePurchaseValidator(req.body);
-      const { courseId, userId } =
-        await this.enrolledCoursesService.completePurchase(orderId);
-      await this.chatService.joinChat(userId, courseId);
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse(COURSE_ENROLLED_SUCCESS_MESSAGE));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /** Cancel a course purchase */
-  public async cancelCoursePurchase(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const userId = req.userId!;
-      const { courseId } = req.params;
-      await this.enrolledCoursesService.cancelCoursePurchase(userId, courseId);
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse("Course Purchase Cancelled", courseId));
     } catch (error) {
       next(error);
     }
@@ -97,7 +57,7 @@ class EnrolledCourses {
       );
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, access));
+        .json(successResponse(GeneralMessage.DataReturned, access));
     } catch (err) {
       next(err);
     }
@@ -122,7 +82,7 @@ class EnrolledCourses {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, enrolledCourses));
+        .json(successResponse(GeneralMessage.DataReturned, enrolledCourses));
     } catch (err) {
       next(err);
     }
@@ -146,7 +106,7 @@ class EnrolledCourses {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, enrolledCourses));
+        .json(successResponse(GeneralMessage.DataReturned, enrolledCourses));
     } catch (err) {
       next(err);
     }
@@ -167,7 +127,7 @@ class EnrolledCourses {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, enrolledCourse));
+        .json(successResponse(GeneralMessage.DataReturned, enrolledCourse));
     } catch (err) {
       next(err);
     }
@@ -196,11 +156,30 @@ class EnrolledCourses {
         .json(
           successResponse(
             enrolledCourse?.completedLessons?.includes(getObjectId(lessonId))
-              ? LESSON_COMPLETED_SUCCESS_MESSAGE
-              : LESSON_NOT_COMPLETED_SUCCESS_MESSAGE,
+              ? LessonMessage.LessonCompleted
+              : LessonMessage.LessonNotCompleted,
             enrolledCourse
           )
         );
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getCompletionProgress(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const progress = await this.enrolledCoursesService.getCompletionProgress(
+        userId
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, progress));
     } catch (err) {
       next(err);
     }

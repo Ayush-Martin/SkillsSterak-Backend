@@ -1,69 +1,75 @@
-import { Orders } from "razorpay/dist/types/orders";
+
 import { ISubscriptionRepository } from "../interfaces/repositories/ISubscription.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
-import razorpay from "../config/razorpay";
-import errorCreator from "../utils/customError";
-import { StatusCodes } from "../constants/statusCodes";
-import { getThreeMonthsFromNow } from "../utils/date";
+import { getNextMonth } from "../utils/date";
 import { ISubscription } from "../models/Subscription.model";
-import {
-  ORDER_NOT_FOUND_ERROR_MESSAGE,
-  ORDER_NOT_PAID_ERROR_MESSAGE,
-} from "../constants/responseMessages";
 import { getObjectId } from "../utils/objectId";
+import stripe from "../config/stripe";
+import envConfig from "../config/env";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 
 class SubscriptionService implements ISubscriptionService {
   constructor(
     private subscriptionRepository: ISubscriptionRepository,
-    private transactionRepository: ITransactionRepository
+    private transactionRepository: ITransactionRepository,
+    private userRepository: IUserRepository
   ) {}
 
-  public async createSubscriptionOrder(
-    userId: string
-  ): Promise<Orders.RazorpayOrder> {
-    console.log("order");
-    const order = await razorpay.orders.create({
-      amount: 1000 * 100, // amount in paise
-      currency: "INR",
-      receipt: "order_rcpt_id_11",
-      notes: {
-        userId,
+  public async createSubscriptionOrder(userId: string): Promise<string> {
+    const userEmail = await this.userRepository.getUserEmail(userId);
+
+    const session = await stripe.checkout.sessions.create({
+      success_url: envConfig.FRONTEND_DOMAIN,
+      cancel_url: envConfig.FRONTEND_DOMAIN,
+      line_items: [
+        {
+          price: envConfig.STRIPE_SUBSCRIPTION_PREMIUM_PRICE_ID,
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      subscription_data: {
+        metadata: {
+          userId,
+        },
       },
+      customer_email: userEmail,
     });
 
-    console.log(order);
-
-    return order;
+    return session.id;
   }
 
-  public async completeSubscription(orderId: string): Promise<void> {
-    const order = await razorpay.orders.fetch(orderId);
-
-    const userId = order.notes?.userId as string | undefined;
-
-    if (!userId) {
-      return errorCreator(ORDER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
-    }
-
-    if (order.status !== "paid") {
-      return errorCreator(
-        ORDER_NOT_PAID_ERROR_MESSAGE,
-        StatusCodes.BAD_REQUEST
-      );
-    }
+  public async completeSubscription(userId: string): Promise<void> {
 
     const transaction = await this.transactionRepository.create({
       payerId: getObjectId(userId),
-      amount: 1000,
+      amount: 5000,
       type: "subscription",
     });
 
     await this.subscriptionRepository.create({
       userId: getObjectId(userId),
       transactionId: getObjectId(transaction._id as string),
-      endDate: getThreeMonthsFromNow(),
+      endDate: getNextMonth(),
+      active: true,
     });
+  }
+
+  public async deactivateSubscription(
+    stripeSubscriptionId: string
+  ): Promise<void> {
+    await this.subscriptionRepository.deactivateSubscription(
+      stripeSubscriptionId
+    );
+  }
+
+  public async activateSubscription(userId: string): Promise<void> {
+    await this.subscriptionRepository.activateSubscription(
+      userId,
+      new Date(),
+      getNextMonth()
+    );
   }
 
   public async getSubscriptionDetail(

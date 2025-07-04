@@ -17,6 +17,7 @@ router.use(adminAuthMiddleware);
 
 //users
 router.route("/users").get(userController.getUsers);
+router.route("/users/count").get(userController.getUsersCount);
 
 router.route("/users/:userId").patch(userController.blockUnblockUser);
 
@@ -27,6 +28,11 @@ router
 
 //transactions
 router.get("/transactions", transactionController.getTransactions);
+
+//revenue
+router.get("/revenue", transactionController.getAdminRevenue);
+router.get("/revenue/export", transactionController.exportAdminRevenue);
+router.get("/revenue/graph", transactionController.getAdminRevenueGraphData);
 
 //trainer requests
 router
@@ -48,6 +54,8 @@ router
 
 //courses
 router.get("/courses", courseController.getAdminCourses);
+router.get("/courses/top5", courseController.getAdminTop5Courses);
+router.get("/courses/count", courseController.getAdminCoursesCount);
 
 router.patch("/courses/:courseId", courseController.listUnListCourse);
 

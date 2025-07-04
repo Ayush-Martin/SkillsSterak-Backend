@@ -15,6 +15,8 @@ import {
   transactionController,
   userController,
   notebookController,
+  walletController,
+  wishlistController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -56,15 +58,20 @@ router.get("/trainers/:trainerId", trainerController.getTrainer);
 //setting middleware
 router.use(accessTokenValidator);
 
-router.post(
-  "/courses/:courseId/payment",
-  enrolledCourseController.completePurchase
-);
+// router.post(
+//   "/courses/:courseId/payment",
+//   enrolledCourseController.completePurchase
+// );
 
 router.get("/courses/:courseId/access", enrolledCourseController.checkEnrolled);
 
 //enrolled courses
 router.get("/enrolledCourses", enrolledCourseController.getEnrolledCourses);
+
+router.get(
+  "/enrolledCourses/progress",
+  enrolledCourseController.getCompletionProgress
+);
 
 router.get(
   "/enrolledCourses/completed",
@@ -106,13 +113,15 @@ router.get("/trainerRequest", userController.sendTrainerRequest);
 //subscriptions
 router
   .route("/subscription")
-  .get(subscriptionController.createSubscriptionOrder)
-  .post(subscriptionController.completeSubscription);
+  .get(subscriptionController.getSubscriptionDetail)
+  .post(subscriptionController.createSubscriptionOrder);
 
-router.get(
-  "/subscription/detail",
-  subscriptionController.getSubscriptionDetail
-);
+// post(subscriptionController.completeSubscription);
+
+// router.get(
+//   "/subscription/detail",
+//   subscriptionController.getSubscriptionDetail
+// );
 
 //chats
 router.route("/chats").get(chatController.getChats);
@@ -129,5 +138,25 @@ router
 //stream
 router.route("/streams").get(streamController.getStreams);
 router.route("/streams/:streamId").get(streamController.viewStream);
+
+router
+  .route("/wallet")
+  .get(walletController.getWalletInfo)
+  .patch(walletController.redeem);
+router.route("/wallet/account").patch(walletController.setUpStripeAccount);
+
+router
+  .route("/wishlist")
+  .post(wishlistController.addToWishlist)
+  .get(wishlistController.getUserWishlist);
+
+router
+  .route("/wishlist/course/:courseId")
+  .get(wishlistController.checkCourseAddedToWishlist)
+  .delete(wishlistController.removeCourseFromWishlist);
+
+router
+  .route("/wishlist/:wishlistId")
+  .delete(wishlistController.removeFromWishlist);
 
 export default router;

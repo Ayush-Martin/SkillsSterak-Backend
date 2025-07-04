@@ -37,10 +37,6 @@ const envConfig = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
 
-  //Razorpay
-  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID!,
-  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET!,
-
   //Gemini
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
 
@@ -57,6 +53,12 @@ const envConfig = {
   AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME!,
   AWS_ENDPOINT: process.env.AWS_ENDPOINT!,
   AWS_BUCKET_URL: process.env.AWS_BUCKET_URL!,
+
+  //Stripe
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY!,
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET!,
+  STRIPE_SUBSCRIPTION_PREMIUM_PRICE_ID:
+    process.env.STRIPE_SUBSCRIPTION_PREMIUM_PRICE_ID!,
 };
 
 export default envConfig;

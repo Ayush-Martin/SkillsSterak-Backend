@@ -1,7 +1,6 @@
 import { IEnrolledCoursesRepository } from "../interfaces/repositories/IEnrolledCourses.repository";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
 import { IEnrolledCourses } from "../models/EnrolledCourse.model";
-import razorpay from "../config/razorpay";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import errorCreator from "../utils/customError";
 import { StatusCodes } from "../constants/statusCodes";
@@ -17,6 +16,9 @@ import {
 } from "../constants/responseMessages";
 import { getObjectId } from "../utils/objectId";
 import { IChatRepository } from "../interfaces/repositories/IChat.repository";
+import stripe from "../config/stripe";
+import envConfig from "../config/env";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
@@ -24,14 +26,16 @@ class EnrolledCourses implements IEnrolledCoursesService {
     private courseRepository: ICourseRepository,
     private walletRepository: IWalletRepository,
     private transactionRepository: ITransactionRepository,
-    private chatRepository: IChatRepository
+    private chatRepository: IChatRepository,
+    private userRepository: IUserRepository
   ) {}
 
   public async enrollCourse(
     userId: string,
     courseId: string
-  ): Promise<Orders.RazorpayOrder | null> {
+  ): Promise<string | null> {
     const course = await this.courseRepository.findById(courseId);
+    const user = await this.userRepository.findById(userId);
     if (!course) return errorCreator("Course not found", StatusCodes.NOT_FOUND);
 
     if (course.price === 0 || String(course.trainerId) == String(userId)) {
@@ -45,40 +49,37 @@ class EnrolledCourses implements IEnrolledCoursesService {
       return null;
     }
 
-    const order = await razorpay.orders.create({
-      amount: course.price * 100, // amount in paise
-      currency: "INR",
-      receipt: "order_rcpt_id_11",
-      notes: {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: { name: course.title },
+            unit_amount: course.price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: envConfig.FRONTEND_DOMAIN + "/payment/success",
+      cancel_url: envConfig.FRONTEND_DOMAIN + "/payment/failure",
+      metadata: {
         userId,
         courseId,
       },
+      customer_email: user?.email,
     });
 
-    return order;
+    return session.id;
   }
 
   public async completePurchase(
-    orderId: string
+    userId: string,
+    courseId: string
   ): Promise<{ userId: string; courseId: string }> {
-    const order = await razorpay.orders.fetch(orderId);
-
-    const userId = order.notes?.userId as string | undefined;
-    const courseId = order.notes?.courseId as string | undefined;
-
-    const course = await this.courseRepository.findById(courseId as string);
+    const course = await this.courseRepository.findById(courseId);
     if (!course) return errorCreator("Course not found", StatusCodes.NOT_FOUND);
-
-    if (!userId || !courseId) {
-      return errorCreator(ORDER_NOT_FOUND_ERROR_MESSAGE, StatusCodes.NOT_FOUND);
-    }
-
-    if (order.status !== "paid") {
-      return errorCreator(
-        ORDER_NOT_PAID_ERROR_MESSAGE,
-        StatusCodes.BAD_REQUEST
-      );
-    }
 
     await this.enrolledCoursesRepository.create({
       userId: getObjectId(userId),
@@ -270,6 +271,12 @@ class EnrolledCourses implements IEnrolledCoursesService {
       courseId,
       lessonId
     );
+  }
+
+  public async getCompletionProgress(
+    userId: string
+  ): Promise<IEnrolledCourses> {
+    return await this.enrolledCoursesRepository.getProgress(userId);
   }
 }
 

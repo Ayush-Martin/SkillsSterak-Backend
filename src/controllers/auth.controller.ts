@@ -11,24 +11,21 @@ import {
   registerUserValidator,
   resetPasswordValidator,
 } from "../validators/auth.validator";
-import {
-  COMPLETE_REGISTER_SUCCESS_MESSAGE,
-  FORGET_PASSWORD_SUCCESS_MESSAGE,
-  LOGIN_SUCCESS_MESSAGE,
-  LOGOUT_SUCCESS_MESSAGE,
-  REGISTER_SUCCESS_MESSAGE,
-  RESET_PASSWORD_SUCCESS_MESSAGE,
-  TOKEN_REFRESH_SUCCESS_MESSAGE,
-  USER_NOT_FOUND_ERROR_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
 import { RefreshTokenCookieOptions } from "../config/cookie";
 import { REFRESH_TOKEN_COOKIE_NAME } from "../constants/general";
+import { AuthMessage, UserMessage } from "../constants/responseMessages";
 
-/** Auth controller: manages user authentication and tokens */
+/**
+ * Controller for user authentication and token management.
+ * Handles registration, login, logout, Google OAuth, and password operations.
+ */
 class AuthController {
-  /** Injects authentication, JWT, and Google services */
+  /**
+   * Injects authentication, JWT, and Google services.
+   * Binds all methods to the class instance.
+   */
   constructor(
     public authService: IAuthService,
     public jwtService: IJWTService,
@@ -37,7 +34,7 @@ class AuthController {
     binder(this);
   }
 
-  /** Register a new user */
+  /** Registers a new user. */
   public async register(
     req: Request,
     res: Response,
@@ -50,13 +47,13 @@ class AuthController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(REGISTER_SUCCESS_MESSAGE));
+        .json(successResponse(AuthMessage.RegisterOtpSent));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Complete registration after verification */
+  /** Completes registration after email verification. */
   public async completeRegister(
     req: Request,
     res: Response,
@@ -69,13 +66,13 @@ class AuthController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(COMPLETE_REGISTER_SUCCESS_MESSAGE));
+        .json(successResponse(AuthMessage.UserRegistered));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Login user and return tokens */
+  /** Logs in a user and returns access/refresh tokens. */
   public async login(
     req: Request,
     res: Response,
@@ -85,7 +82,7 @@ class AuthController {
       const { email, password } = loginUserValidator(req.body);
 
       const user = await this.authService.login(email, password)!;
-      if (!user) return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
+      if (!user) return errorCreator(UserMessage.UserNotFound);
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
         user
       );
@@ -97,32 +94,32 @@ class AuthController {
           RefreshTokenCookieOptions
         )
         .status(StatusCodes.OK)
-        .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
+        .json(successResponse(AuthMessage.UserLoggedIn, accessToken));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Logout user and clear refresh token */
+  /** Logs out a user and clears the refresh token cookie. */
   public async logout(req: Request, res: Response, next: NextFunction) {
     try {
       res
         .clearCookie(REFRESH_TOKEN_COOKIE_NAME, RefreshTokenCookieOptions)
         .status(StatusCodes.OK)
-        .json(successResponse(LOGOUT_SUCCESS_MESSAGE));
+        .json(successResponse(AuthMessage.UserLoggedOut));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Google OAuth login or register */
+  /** Handles Google OAuth login or registration. */
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
       const { sub, email, name } = await this.googleAuthService.getUser(token);
 
       const user = await this.authService.googleAuth(sub, email!, name!);
-      if (!user) return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
+      if (!user) return errorCreator(UserMessage.UserNotFound);
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
         user
       );
@@ -134,13 +131,13 @@ class AuthController {
           RefreshTokenCookieOptions
         )
         .status(StatusCodes.OK)
-        .json(successResponse(LOGIN_SUCCESS_MESSAGE, accessToken));
+        .json(successResponse(AuthMessage.UserLoggedIn, accessToken));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Start password reset and clear refresh token */
+  /** Initiates password reset and clears refresh token. */
   public async forgetPassword(
     req: Request,
     res: Response,
@@ -154,13 +151,13 @@ class AuthController {
       res
         .clearCookie(REFRESH_TOKEN_COOKIE_NAME, RefreshTokenCookieOptions)
         .status(StatusCodes.CREATED)
-        .json(successResponse(FORGET_PASSWORD_SUCCESS_MESSAGE));
+        .json(successResponse(AuthMessage.ForgetPasswordOtpSent));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Reset user password */
+  /** Resets a user's password. */
   public async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { password, email } = resetPasswordValidator(req.body);
@@ -169,20 +166,20 @@ class AuthController {
 
       res
         .status(StatusCodes.ACCEPTED)
-        .json(successResponse(RESET_PASSWORD_SUCCESS_MESSAGE));
+        .json(successResponse(AuthMessage.PasswordReset));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Refresh and return new tokens */
+  /** Refreshes and returns new access/refresh tokens. */
   public async refresh(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.userId!;
-      const user = await this.authService.getUserById(id);
+      const userId = req.userId!;
+      const user = await this.authService.getUserById(userId);
 
       if (!user) {
-        return errorCreator(USER_NOT_FOUND_ERROR_MESSAGE);
+        return errorCreator(UserMessage.UserNotFound);
       }
 
       const { accessToken, refreshToken } = await this.jwtService.createTokens(
@@ -196,7 +193,7 @@ class AuthController {
           RefreshTokenCookieOptions
         )
         .status(StatusCodes.OK)
-        .json(successResponse(TOKEN_REFRESH_SUCCESS_MESSAGE, accessToken));
+        .json(successResponse(AuthMessage.TokenRefreshed, accessToken));
     } catch (err) {
       next(err);
     }

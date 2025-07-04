@@ -1,5 +1,6 @@
 import { IChat } from "../../models/Chat.model";
 import { IMessage } from "../../models/Message.model";
+import { messageReactions } from "../../types/messageTypes";
 
 export interface IChatService {
   /** Create a group chat for a course with a trainer */
@@ -19,4 +20,11 @@ export interface IChatService {
   ): Promise<void>;
   /** Get all messages for a chat */
   getMessages(chatId: string): Promise<Array<IMessage>>;
+
+  reactMessage(
+    userId: string,
+    messageId: string,
+    chatId: string,
+    reaction: messageReactions
+  ): Promise<void>;
 }

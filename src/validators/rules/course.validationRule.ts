@@ -85,3 +85,11 @@ export const CourseSortValidationRule = z.enum([
   "aA-zZ",
   "zZ-aA",
 ]);
+
+export const AiChatMessageValidationRule = z.string();
+export const AiChatHistoryValidationRule = z.array(
+  z.object({
+    role: z.enum(["user", "model"]),
+    parts: z.tuple([z.object({ text: z.string() })]),
+  })
+);

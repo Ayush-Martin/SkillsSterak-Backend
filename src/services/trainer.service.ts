@@ -86,6 +86,13 @@ class TrainerService implements ITrainerService {
       totalPages,
     };
   }
+
+  public async getStudentsCount(trainerId: string): Promise<number> {
+    return await this.trainerRepository.getTotalStudents(
+      trainerId,
+      new RegExp("")
+    );
+  }
 }
 
 export default TrainerService;

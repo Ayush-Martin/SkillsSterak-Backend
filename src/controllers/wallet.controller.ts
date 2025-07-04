@@ -26,6 +26,38 @@ class WalletController {
       next(err);
     }
   }
+
+  public async setUpStripeAccount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+
+      const data = await this.walletService.setUpStripeUserAccount(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async redeem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId!;
+
+      const data = await this.walletService.redeem(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse("amount has been redeemed"));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default WalletController;

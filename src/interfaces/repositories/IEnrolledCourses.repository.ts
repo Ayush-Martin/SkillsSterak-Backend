@@ -42,4 +42,6 @@ export interface IEnrolledCoursesRepository
     courseId: string,
     lessonId: string
   ): Promise<IEnrolledCourses | null>;
+
+  getProgress(userId: string): Promise<IEnrolledCourses>;
 }

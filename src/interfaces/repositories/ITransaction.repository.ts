@@ -17,4 +17,27 @@ export interface ITransactionRepository extends IBaseRepository<ITransaction> {
 
   /** Get total transaction count */
   getTransactionCount(): Promise<number>;
+
+  getAdminRevenue(
+    filter: Record<string, any>,
+    skip?: number,
+    limit?: number
+  ): Promise<ITransaction>;
+
+  getTrainerRevenue(
+    trainerId: string,
+    filter: Record<string, any>,
+    skip?: number,
+    limit?: number
+  ): Promise<ITransaction>;
+
+  getAdminRevenueCount(filter: Record<string, any>): Promise<number>;
+
+  getTrainerRevenueCount(
+    trainerId: string,
+    filter: Record<string, any>
+  ): Promise<number>;
+
+  getTrainerRevenueGraphData(trainerId: string): Promise<ITransaction>;
+  getAdminRevenueGraphData(): Promise<ITransaction>;
 }

@@ -155,6 +155,18 @@ class UserController {
       next(err);
     }
   }
+
+  public async getUsersCount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await this.userService.getAdminUsersCount();
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default UserController;

@@ -6,24 +6,24 @@ import {
 } from "../validators/category.validator";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
-import {
-  ADD_CATEGORY_SUCCESS_MESSAGE,
-  CATEGORY_LISTED_SUCCESS_MESSAGE,
-  CATEGORY_UN_LISTED_SUCCESS_MESSAGE,
-  EDIT_CATEGORY_SUCCESS_MESSAGE,
-  GET_DATA_SUCCESS_MESSAGE,
-} from "../constants/responseMessages";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
+import { CategoryMessage, GeneralMessage } from "../constants/responseMessages";
 
-/** Category controller: manages category CRUD operations */
+/**
+ * Handles category CRUD operations and delegates business logic to the service layer.
+ * All methods are bound to the instance for safe Express routing.
+ */
 class CategoryController {
-  /** Injects category service */
   constructor(private categoryService: ICategoryService) {
+    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /** Add a new category */
+  /**
+   * Validates and creates a new category.
+   * Returns the created category in the response.
+   */
   public async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryName } = addCategoryValidator(req.body);
@@ -32,13 +32,15 @@ class CategoryController {
 
       res
         .status(StatusCodes.CREATED)
-        .json(successResponse(ADD_CATEGORY_SUCCESS_MESSAGE, category));
+        .json(successResponse(CategoryMessage.CategoryAdded, category));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Edit category name */
+  /**
+   * Updates the name of an existing category after validation.
+   */
   public async editCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.params;
@@ -52,13 +54,15 @@ class CategoryController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(EDIT_CATEGORY_SUCCESS_MESSAGE, category));
+        .json(successResponse(CategoryMessage.CategoryUpdated, category));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Toggle category listed/unlisted */
+  /**
+   * Toggles a category's listed/unlisted status (soft visibility control).
+   */
   public async listUnListCategory(
     req: Request,
     res: Response,
@@ -76,8 +80,8 @@ class CategoryController {
         .json(
           successResponse(
             isListed
-              ? CATEGORY_LISTED_SUCCESS_MESSAGE
-              : CATEGORY_UN_LISTED_SUCCESS_MESSAGE,
+              ? CategoryMessage.CategoryListed
+              : CategoryMessage.CategoryUnlisted,
             { categoryId, isListed }
           )
         );
@@ -86,7 +90,10 @@ class CategoryController {
     }
   }
 
-  /** Get all categories */
+  /**
+   * Retrieves all categories (no pagination or search).
+   * Useful for admin panels or dropdowns.
+   */
   public async getAllCategories(
     req: Request,
     res: Response,
@@ -97,13 +104,15 @@ class CategoryController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, categories));
+        .json(successResponse(GeneralMessage.DataReturned, categories));
     } catch (err) {
       next(err);
     }
   }
 
-  /** Get paginated categories with search */
+  /**
+   * Returns paginated and searchable categories for efficient frontend rendering.
+   */
   public async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);
@@ -112,7 +121,7 @@ class CategoryController {
 
       res
         .status(StatusCodes.OK)
-        .json(successResponse(GET_DATA_SUCCESS_MESSAGE, data));
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

@@ -1,6 +1,16 @@
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
 import { ITransaction } from "../models/Transaction.model";
+import { IFilterType } from "../types/revenueType";
+import { Buffer } from "exceljs";
+import {
+  generateAdminRevenuePdf,
+  generateTrainerRevenuePdf,
+} from "../utils/pdf";
+import {
+  generateAdminRevenueExcel,
+  generateTrainerRevenueExcel,
+} from "../utils/excel";
 
 class TransactionService implements ITransactionService {
   constructor(private transactionRepository: ITransactionRepository) {}
@@ -47,6 +57,253 @@ class TransactionService implements ITransactionService {
     const totalPages = Math.ceil(totalTransactions / size);
 
     return { transactions, currentPage: page, totalPages };
+  }
+
+  public async getAdminRevenue(
+    page: number,
+    size: number,
+    filterType: IFilterType,
+    startDate?: string,
+    endDate?: string
+  ): Promise<{
+    revenue: ITransaction;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * size;
+
+    let filter: Record<string, any> = {};
+
+    if (filterType !== "all") {
+      let fromDate = new Date();
+      let toDate = new Date();
+
+      switch (filterType) {
+        case "daily":
+          fromDate.setHours(0, 0, 0, 0);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+        case "monthly":
+          fromDate.setMonth(fromDate.getMonth() - 1);
+          break;
+        case "yearly":
+          fromDate.setFullYear(fromDate.getFullYear() - 1);
+          break;
+        case "custom":
+          if (startDate) fromDate = new Date(startDate);
+          if (endDate) toDate = new Date(endDate);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+      }
+
+      filter = { createdAt: { $gte: fromDate, $lte: toDate } };
+    }
+
+    const revenue = await this.transactionRepository.getAdminRevenue(
+      filter,
+      skip,
+      size
+    );
+
+    const totalTransactions =
+      await this.transactionRepository.getAdminRevenueCount(filter);
+
+    const totalPages = Math.ceil(totalTransactions / size);
+
+    return { revenue, currentPage: page, totalPages };
+  }
+
+  public async exportAdminRevenue(
+    filterType: IFilterType,
+    startDate: string,
+    endDate: string,
+    exportType: "pdf" | "excel"
+  ): Promise<PDFKit.PDFDocument | Buffer> {
+    let filter: Record<string, any> = {};
+
+    let fromDate = new Date();
+    let toDate = new Date();
+
+    if (filterType !== "all") {
+      switch (filterType) {
+        case "daily":
+          fromDate.setHours(0, 0, 0, 0);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+        case "monthly":
+          fromDate.setMonth(fromDate.getMonth() - 1);
+          break;
+        case "yearly":
+          fromDate.setFullYear(fromDate.getFullYear() - 1);
+          break;
+        case "custom":
+          if (startDate) fromDate = new Date(startDate);
+          if (endDate) toDate = new Date(endDate);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+      }
+
+      filter = { createdAt: { $gte: fromDate, $lte: toDate } };
+    }
+
+    const revenue = (await this.transactionRepository.getAdminRevenue(
+      filter
+    )) as unknown as {
+      totalRevenue: number;
+      commissionRevenue: number;
+      subscriptionRevenue: number;
+      transactions: Array<{ payer: string; type: string; amount: string }>;
+    };
+
+    if (exportType === "pdf") {
+      return generateAdminRevenuePdf(
+        revenue.totalRevenue,
+        revenue.commissionRevenue,
+        revenue.subscriptionRevenue,
+        revenue.transactions,
+        filterType === "all" ? undefined : fromDate,
+        filterType === "all" ? undefined : toDate
+      );
+    } else {
+      return generateAdminRevenueExcel(
+        revenue.totalRevenue,
+        revenue.commissionRevenue,
+        revenue.subscriptionRevenue,
+        revenue.transactions,
+        filterType === "all" ? undefined : fromDate,
+        filterType === "all" ? undefined : toDate
+      );
+    }
+  }
+
+  public async getTrainerRevenue(
+    trainerId: string,
+    page: number,
+    size: number,
+    filterType: IFilterType,
+    startDate: string,
+    endDate: string
+  ): Promise<{
+    revenue: ITransaction;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * size;
+
+    let filter: Record<string, any> = {};
+
+    if (filterType !== "all") {
+      let fromDate = new Date();
+      let toDate = new Date();
+
+      switch (filterType) {
+        case "daily":
+          fromDate.setHours(0, 0, 0, 0);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+        case "monthly":
+          fromDate.setMonth(fromDate.getMonth() - 1);
+          break;
+        case "yearly":
+          fromDate.setFullYear(fromDate.getFullYear() - 1);
+          break;
+        case "custom":
+          if (startDate) fromDate = new Date(startDate);
+          if (endDate) toDate = new Date(endDate);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+      }
+
+      filter = { createdAt: { $gte: fromDate, $lte: toDate } };
+    }
+
+    const revenue = await this.transactionRepository.getTrainerRevenue(
+      trainerId,
+      filter,
+      skip,
+      size
+    );
+
+    const totalTransactions =
+      await this.transactionRepository.getTrainerRevenueCount(
+        trainerId,
+        filter
+      );
+
+    const totalPages = Math.ceil(totalTransactions / size);
+
+    return { revenue, currentPage: page, totalPages };
+  }
+
+  public async exportTrainerRevenue(
+    trainerId: string,
+    filterType: IFilterType,
+    startDate: string,
+    endDate: string,
+    exportType: "pdf" | "excel"
+  ): Promise<PDFKit.PDFDocument | Buffer> {
+    let filter: Record<string, any> = {};
+
+    let fromDate = new Date();
+    let toDate = new Date();
+
+    if (filterType !== "all") {
+      switch (filterType) {
+        case "daily":
+          fromDate.setHours(0, 0, 0, 0);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+        case "monthly":
+          fromDate.setMonth(fromDate.getMonth() - 1);
+          break;
+        case "yearly":
+          fromDate.setFullYear(fromDate.getFullYear() - 1);
+          break;
+        case "custom":
+          if (startDate) fromDate = new Date(startDate);
+          if (endDate) toDate = new Date(endDate);
+          toDate.setHours(23, 59, 59, 999);
+          break;
+      }
+
+      filter = { createdAt: { $gte: fromDate, $lte: toDate } };
+    }
+
+    const revenue = (await this.transactionRepository.getTrainerRevenue(
+      trainerId,
+      filter
+    )) as unknown as {
+      totalRevenue: number;
+      transactions: Array<{ payer: string; course: string; amount: string }>;
+    };
+
+    if (exportType === "pdf") {
+      return generateTrainerRevenuePdf(
+        revenue.totalRevenue,
+        revenue.transactions,
+        filterType === "all" ? undefined : fromDate,
+        filterType === "all" ? undefined : toDate
+      );
+    } else {
+      return generateTrainerRevenueExcel(
+        revenue.totalRevenue,
+        revenue.transactions,
+        filterType === "all" ? undefined : fromDate,
+        filterType === "all" ? undefined : toDate
+      );
+    }
+  }
+
+  public async getAdminRevenueGraphData(): Promise<ITransaction> {
+    return await this.transactionRepository.getAdminRevenueGraphData();
+  }
+
+  public async getTrainerRevenueGraphData(
+    trainerId: string
+  ): Promise<ITransaction> {
+    return await this.transactionRepository.getTrainerRevenueGraphData(
+      trainerId
+    );
   }
 }
 

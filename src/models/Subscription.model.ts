@@ -3,8 +3,9 @@ import { Document, ObjectId, Schema, model } from "mongoose";
 export interface ISubscription extends Document {
   userId: ObjectId;
   transactionId: ObjectId;
-  startDate?: Date;
+  startDate: Date;
   endDate: Date;
+  active: boolean;
 }
 
 const SubscriptionSchema = new Schema<ISubscription>(
@@ -26,6 +27,10 @@ const SubscriptionSchema = new Schema<ISubscription>(
     endDate: {
       type: Date,
       required: true,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -4,7 +4,7 @@ export interface ITransaction extends Document {
   payerId?: ObjectId;
   receiverId?: ObjectId;
   amount: number;
-  type: "payment" | "commission" | "subscription" | "refund";
+  type: "payment" | "commission" | "subscription" | "refund" | "redeem";
   courseId?: ObjectId;
 }
 
@@ -24,7 +24,7 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     type: {
       type: String,
-      enum: ["payment", "commission", "subscription", "refund"],
+      enum: ["payment", "commission", "subscription", "refund", "redeem"],
       required: true,
     },
     courseId: {

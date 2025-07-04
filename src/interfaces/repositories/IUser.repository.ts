@@ -6,6 +6,8 @@ export interface IUserRepository extends BaseRepository<IUser> {
   getAdmin(): Promise<IUser | null>;
   /** Gets users based on search query and pagination */
   getUsers(search: RegExp, skip: number, limit: number): Promise<Array<IUser>>;
+
+  getUserEmail(userId: string): Promise<string | undefined>;
   /** Gets user by email */
   getUserByEmail(email: string): Promise<IUser | null>;
   /** Gets user by Google Id */
@@ -27,4 +29,9 @@ export interface IUserRepository extends BaseRepository<IUser> {
   changeBlockStatus(userId: string, status: boolean): Promise<IUser | null>;
   /** Changes user's premium status */
   changePremiumStatus(userId: string, status: boolean): Promise<IUser | null>;
+
+  updateStripeAccountId(
+    userId: string,
+    stripeAccountId: string
+  ): Promise<IUser | null>;
 }

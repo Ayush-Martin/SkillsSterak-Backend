@@ -3,6 +3,7 @@ import { IChatRepository } from "../interfaces/repositories/IChat.repository";
 import { IMessageRepository } from "../interfaces/repositories/IMessage.repository";
 import { IMessageService } from "../interfaces/services/IMessage.service";
 import { IMessage } from "../models/Message.model";
+import { messageReactions } from "../types/messageTypes";
 import { getObjectId } from "../utils/objectId";
 
 class MessageService implements IMessageService {
@@ -23,12 +24,19 @@ class MessageService implements IMessageService {
       chatId: getObjectId(chatId),
       message,
       messageType,
+      reactions: [],
     });
 
     io.to(members as unknown as string[]).emit("message:New", newMessage);
   }
 
-  
+  public async reactMessage(
+    userId: string,
+    messageId: string,
+    reaction: messageReactions
+  ): Promise<void> {
+    await this.messageRepository.reactMessage(userId, messageId, reaction);
+  }
 }
 
 export default MessageService;

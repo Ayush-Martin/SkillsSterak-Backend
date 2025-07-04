@@ -2,6 +2,7 @@ import mongoose, { Model } from "mongoose";
 import { IMessageRepository } from "../interfaces/repositories/IMessage.repository";
 import { IMessage } from "./../models/Message.model";
 import BaseRepository from "./Base.repository";
+import { messageReactions } from "../types/messageTypes";
 
 class MessageRepository
   extends BaseRepository<IMessage>
@@ -45,6 +46,33 @@ class MessageRepository
         },
       },
     ]);
+  }
+
+  public async reactMessage(
+    userId: string,
+    messageId: string,
+    emoji: messageReactions
+  ): Promise<IMessage | null> {
+    await this.Message.updateOne(
+      { _id: messageId },
+      { $pull: { reactions: { userId } } }
+    );
+
+    await this.Message.updateOne(
+      { _id: messageId },
+      {
+        $push: {
+          reactions: {
+            userId,
+            emoji,
+          },
+        },
+      }
+    );
+
+    const updatedMessage = await this.Message.findById(messageId);
+
+    return updatedMessage;
   }
 }
 

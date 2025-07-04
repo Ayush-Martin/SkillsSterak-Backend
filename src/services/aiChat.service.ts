@@ -34,6 +34,8 @@ class AiChatService implements IAiChatService {
       if (data) {
         await this.aiChatRepository.setCourseOutlineData(courseId, data);
       }
+
+      courseOutlineData = data;
     }
 
     if (!courseOutlineData) {

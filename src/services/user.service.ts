@@ -64,6 +64,10 @@ class UserService implements IUserService {
     const UserId = getObjectId(userId);
     await this.trainerRequestRepository.create({ userId: UserId });
   }
+
+  public async getAdminUsersCount(): Promise<number> {
+    return await this.userRepository.getUsersCount(new RegExp(""));
+  }
 }
 
 export default UserService;

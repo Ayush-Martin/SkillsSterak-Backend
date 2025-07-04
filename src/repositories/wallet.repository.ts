@@ -38,6 +38,7 @@ class WalletRepository
   public async getUserWalletInfo(userId: string): Promise<IWallet | null> {
     return await this.Wallet.findOne({ userId });
   }
+
 }
 
 export default WalletRepository;

@@ -4,7 +4,7 @@ import envConfig from "../env";
 const MONGO_URI = envConfig.MONGO_URI;
 
 /**
- * Connects to the MongoDB database
+ * Connects to the MongoDB database using the provided MONGO_URI.
  */
 const connectToMongoDB = async (): Promise<void> => {
   try {

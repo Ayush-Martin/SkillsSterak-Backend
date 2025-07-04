@@ -1,10 +1,17 @@
 import { Schema, Document, model, ObjectId } from "mongoose";
+import { messageReactions } from "../types/messageTypes";
+
+interface IMessageReaction {
+  userId: ObjectId;
+  emoji: messageReactions;
+}
 
 export interface IMessage extends Document {
   sender: ObjectId;
   chatId: ObjectId;
   message: string;
   messageType: "text" | "image";
+  reactions: IMessageReaction[];
 }
 
 const MessageSchema = new Schema<IMessage>(
@@ -26,6 +33,23 @@ const MessageSchema = new Schema<IMessage>(
     messageType: {
       type: String,
       default: "text",
+    },
+    reactions: {
+      type: [
+        {
+          userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+          },
+          emoji: {
+            type: String,
+            enum: ["😂", "❤️", "👍", "👎", "🔥"],
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
   },
   { timestamps: true }

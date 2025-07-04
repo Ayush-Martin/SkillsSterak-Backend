@@ -1,113 +1,155 @@
-//* ------Error Message----------- *//
+/**
+ * General success messages for API responses
+ */
+export enum GeneralMessage {
+  // Success messages
+  DataReturned = "Data returned",
+}
 
-//Auth
-export const EMAIL_EXIST_ERROR_MESSAGE = "User with email already exists ";
-export const OTP_EXPIRED_ERROR_MESSAGE = "OTP is expired";
-export const INVALID_OTP_ERROR_MESSAGE = "Invalid OTP";
-export const OTP_NOT_VERIFIED_ERROR_MESSAGE = "OTP is not verified";
-export const INVALID_CREDENTIALS_ERROR_MESSAGE = "Invalid credentials";
-export const BLOCKED_ERROR_MESSAGE = "You have been blocked by admin";
-export const INVALID_REFRESH_TOKEN_ERROR_MESSAGE = "Invalid refresh token";
-export const INVALID_ACCESS_TOKEN_ERROR_MESSAGE = "Invalid token";
+/**
+ * Authentication and authorization related messages
+ */
+export enum AuthMessage {
+  // Error messages
+  EmailExists = "User with email already exists",
+  OtpExpired = "OTP is expired",
+  InvalidOtp = "Invalid OTP",
+  OtpNotVerified = "OTP is not verified",
+  InvalidCredentials = "Invalid credentials",
+  UserBlocked = "Blocked",
+  InvalidRefreshToken = "Invalid refresh token",
+  InvalidAccessToken = "Invalid token",
+  NoAccess = "You have no access",
 
-//User
-export const USER_NOT_FOUND_ERROR_MESSAGE = "User Not found";
-export const NO_ACCESS_ERROR_MESSAGE = "You have no access";
-export const NO_PROFILE_IMAGE_ERROR_MESSAGE = "profile image is not given";
-export const USER_BLOCKED_ERROR_MESSAGE = "You are blocked by admin";
+  // Success messages
+  RegisterOtpSent = "OTP sent to your email, verify to complete registration",
+  UserRegistered = "New user created",
+  UserLoggedIn = "Login successful",
+  UserLoggedOut = "User is logged out",
+  ForgetPasswordOtpSent = "OTP sent to your email, verify to reset password",
+  OtpVerified = "OTP is verified",
+  PasswordReset = "Password is updated",
+  TokenRefreshed = "Token refreshed",
+}
 
-//Category
-export const CATEGORY_EXIST_ERROR_MESSAGE = "Category already exist";
-export const CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Category not found";
+/**
+ * User profile and account related messages
+ */
+export enum UserMessage {
+  // Error messages
+  UserNotFound = "User not found",
+  NoProfileImage = "Profile image is not given",
 
-//Course
-export const COURSE_TITLE_EXIST_ERROR_MESSAGE =
-  "Course with same title already exist";
-export const COURSE_NOT_FOUND_ERROR_MESSAGE = "Course not found";
-export const COURSE_ACCESS_ERROR_MESSAGE = "You have no access to this course";
+  // Success messages
+  ProfileImageUpdated = "Profile image is updated",
+  ProfileUpdated = "Profile updated",
+  UserBlocked = "User blocked",
+  UserUnblocked = "User unblocked",
+}
 
-//Lesson
-export const LESSON_NO_FILE_ATTACHED_ERROR_MESSAGE = "File is required";
+/**
+ * Category management related messages
+ */
+export enum CategoryMessage {
+  // Error messages
+  CategoryExists = "Category already exists",
+  CategoryNotFound = "Category not found",
 
-//Subscription
-export const USER_NOT_SUBSCRIBED_ERROR_MESSAGE = "you are not subscribed";
-export const SUBSCRIPTION_EXPIRED_ERROR_MESSAGE =
-  "subscription has been expired";
+  // Success messages
+  CategoryAdded = "New category created",
+  CategoryUpdated = "Category updated",
+  CategoryListed = "Category has been listed",
+  CategoryUnlisted = "Category has been unlisted",
+}
 
-//Payment
-export const ORDER_NOT_FOUND_ERROR_MESSAGE = "Order not found";
-export const ORDER_NOT_PAID_ERROR_MESSAGE = "Order not paid";
+/**
+ * Course management and enrollment related messages
+ */
+export enum CourseMessage {
+  // Error messages
+  CourseExists = "Course with the same title already exists",
+  CourseNotFound = "Course not found",
+  NoCourseAccess = "You have no access to this course",
+  CourseNoThumbnail = "Course thumbnail not added",
 
-//* --------Success Message--------------- *//
-export const GET_DATA_SUCCESS_MESSAGE = "Data Returned";
+  // Success messages
+  CourseCreated = "New course created",
+  ThumbnailUpdated = "Course thumbnail changed",
+  BasicDetailsUpdated = "Basic details updated",
+  RequirementsUpdated = "Course requirements updated",
+  SkillsCoveredUpdated = "Course skills covered updated",
+  CourseEnrolled = "Course enrolled",
+  CourseOrderCreated = "Order created",
+  CourseAccessGranted = "Course access granted",
+  CourseListed = "Course has been listed",
+  CourseUnlisted = "Course has been unlisted",
+  CourseApproved = "Course has been approved",
+  CourseRejected = "Course has been rejected",
+}
 
-//Auth
-export const REGISTER_SUCCESS_MESSAGE =
-  "OTP sent to your email , verify to complete registration";
-export const COMPLETE_REGISTER_SUCCESS_MESSAGE = "new user created";
-export const LOGIN_SUCCESS_MESSAGE = "Login successful";
-export const LOGOUT_SUCCESS_MESSAGE = "user is logged out";
-export const FORGET_PASSWORD_SUCCESS_MESSAGE =
-  "OTP sent to your email , verify to reset password";
-export const VERIFY_OTP_SUCCESS_MESSAGE = "OTP is verified";
-export const RESET_PASSWORD_SUCCESS_MESSAGE = "password is updated";
-export const TOKEN_REFRESH_SUCCESS_MESSAGE = "Token refreshed";
+/**
+ * Module management related messages
+ */
+export enum ModuleMessage {
+  // Success messages
+  ModuleAdded = "New module added",
+  ModuleDeleted = "Module deleted",
+  ModuleTitleChanged = "Module title changed",
+}
 
-//User
-export const CHANGE_PROFILE_IMAGE_SUCCESS_MESSAGE = "profile image is updated";
-export const UPDATE_PROFILE_SUCCESS_MESSAGE = "profile updated";
-export const SEND_TRAINER_REQUEST_SUCCESS_MESSAGE =
-  "Trainer request has been send";
-export const USER_BLOCKED_SUCCESS_MESSAGE = "user  blocked";
-export const USER_UN_BLOCKED_SUCCESS_MESSAGE = "user  un blocked";
+/**
+ * Lesson management and file upload related messages
+ */
+export enum LessonMessage {
+  // Error messages
+  NoFile = "File is required",
 
-//Category
-export const ADD_CATEGORY_SUCCESS_MESSAGE = "New category created";
-export const EDIT_CATEGORY_SUCCESS_MESSAGE = "Category updated";
-export const CATEGORY_LISTED_SUCCESS_MESSAGE = "Category has been listed";
-export const CATEGORY_UN_LISTED_SUCCESS_MESSAGE = "Category has been un listed";
+  // Success messages
+  LessonDetailsUpdated = "Lesson details updated",
+  LessonFileUpdated = "Lesson file has been updated",
+  LessonCompleted = "Lesson completed",
+  LessonNotCompleted = "Lesson not completed",
+  LessonAdded = "New lesson added",
+  LessonDeleted = "Lesson deleted",
+}
 
-//Course
-export const COURSE_CREATED_SUCCESS_MESSAGE = "New course created";
-export const COURSE_THUMBNAIL_CHANGE_SUCCESS_MESSAGE =
-  "Course thumbnail changed";
-export const UPDATED_COURSE_BASIC_DETAILS_SUCCESS_MESSAGE =
-  "Basic Details updated";
-export const UPDATED_COURSE_REQUIREMENTS_SUCCESS_MESSAGE =
-  "Course requirements updated";
-export const UPDATED_COURSE_SKILLS_COVERED_SUCCESS_MESSAGE =
-  "Course skills covered updated";
-export const COURSE_ENROLLED_SUCCESS_MESSAGE = "Course Enrolled";
-export const COURSE_ORDER_CREATED_SUCCESS_MESSAGE = "Order Created";
-export const COURSE_ACCESS_SUCCESS_MESSAGE = "Course access granted";
-export const LESSON_COMPLETED_SUCCESS_MESSAGE = "Lesson completed";
-export const LESSON_NOT_COMPLETED_SUCCESS_MESSAGE = "Lesson not completed";
-export const LESSON_ADDED_SUCCESS_MESSAGE = "New lesson added";
-export const LESSON_DELETED_SUCCESS_MESSAGE = "Lesson deleted";
-export const MODULE_ADDED_SUCCESS_MESSAGE = "New module added";
-export const MODULE_DELETED_SUCCESS_MESSAGE = "Module deleted";
-export const MODULE_TITLE_CHANGED_SUCCESS_MESSAGE = "Module title changed";
-export const COURSE_LISTED_SUCCESS_MESSAGE = "Course has been listed";
-export const COURSE_UN_LISTED_SUCCESS_MESSAGE = "Course has been un listed";
-export const COURSE_APPROVED_SUCCESS_MESSAGE = "Course has been approved";
-export const COURSE_REJECTED_SUCCESS_MESSAGE = "Course has been rejected";
+/**
+ * Subscription and access control related messages
+ */
+export enum SubscriptionMessage {
+  // Error messages
+  NotSubscribed = "You are not subscribed",
+  SubscriptionExpired = "Subscription has expired",
 
-//Lesson
-export const LESSON_DETAILS_UPDATED_SUCCESS_MESSAGE = "updated lesson details";
-export const LESSON_FILE_UPDATED_SUCCESS_MESSAGE = "file has been updated";
+  // Success messages
+  SubscriptionAdded = "Subscription added",
+}
 
-//Review
-export const REVIEW_ADDED_SUCCESS_MESSAGE = "review has been added";
-export const REVIEW_DELETE_SUCCESS_MESSAGE = "review has been deleted";
+/**
+ * Review and reply related messages
+ */
+export enum ReviewMessage {
+  // Success messages
+  ReviewAdded = "Review has been added",
+  ReviewDeleted = "Review has been deleted",
+  ReplyAdded = "Reply has been added",
+}
 
-//Reply
-export const REPLY_ADDED_SUCCESS_MESSAGE = "reply has been added";
+/**
+ * Trainer request and approval related messages
+ */
+export enum TrainerRequestMessage {
+  // Success messages
+  TrainerRequestSent = "Trainer request has been sent",
+  RequestApproved = "Request has been approved",
+  RequestRejected = "Request has been rejected",
+}
 
-//Subscription
-export const SUBSCRIPTION_ADDED_SUCCESS_MESSAGE = "subscription added";
-
-//Trainer Request
-export const TRAINER_REQUEST_APPROVED_SUCCESS_MESSAGE =
-  "request has ben approved";
-export const TRAINER_REQUEST_REJECTED_SUCCESS_MESSAGE =
-  "request has ben rejected";
+/**
+ * Chat response messages
+ */
+export enum ChatMessage {
+  //Success messages
+  MediaSent = "Media Sent",
+  NewChat = "New chat created",
+}

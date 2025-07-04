@@ -128,6 +128,7 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
           course: 1,
           otherMember: 1,
           lastMessage: "$lastMessage.message",
+          lastMessageTime: "$lastMessage.createdAt",
         },
       },
     ]);
