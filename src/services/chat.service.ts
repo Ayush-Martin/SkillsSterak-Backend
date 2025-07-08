@@ -123,6 +123,10 @@ class ChatService implements IChatService {
       }
     );
   }
+
+  public async getChatMembers(chatId: string): Promise<IChat> {
+    return await this.chatRepository.getChatMembersDetails(chatId);
+  }
 }
 
 export default ChatService;

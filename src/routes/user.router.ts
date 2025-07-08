@@ -1,3 +1,4 @@
+import { chatController } from "./../dependencyInjector";
 import { Router } from "express";
 
 const router = Router();
@@ -131,6 +132,8 @@ router
   .route("/chats/:chatId")
   .get(chatController.getChatMessages)
   .post(upload.single("file"), chatController.sendMedia);
+
+router.route("/chats/:chatId/members").get(chatController.getChatMembers);
 // .get(chatController.getMessages);
 
 //stream

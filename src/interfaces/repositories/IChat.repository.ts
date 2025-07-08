@@ -30,4 +30,6 @@ export interface IChatRepository extends BaseRepository<IChat> {
    * Useful for displaying participant lists or managing group permissions.
    */
   getChatMembers(chatId: string): Promise<Array<ObjectId>>;
+
+  getChatMembersDetails(chatId: string): Promise<IChat>;
 }

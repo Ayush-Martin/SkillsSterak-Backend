@@ -208,6 +208,47 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
 
     return chat[0];
   }
+
+  public async getChatMembersDetails(chatId: string): Promise<IChat> {
+    const chat = await this.Chat.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(chatId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "members",
+          foreignField: "_id",
+          as: "memberDetails",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          members: {
+            $map: {
+              input: "$memberDetails",
+              as: "user",
+              in: {
+                _id: "$$user._id",
+                username: "$$user.username",
+                profileImage: "$$user.profileImage",
+                isAdmin: {
+                  $eq: ["$adminId", "$$user._id"],
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    console.log(chat[0]);
+
+    return chat[0].members;
+  }
 }
 
 export default ChatRepository;

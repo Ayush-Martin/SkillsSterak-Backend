@@ -102,6 +102,20 @@ class ChatController {
       next(err);
     }
   }
+
+  public async getChatMembers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { chatId } = req.params;
+
+      const members = await this.chatService.getChatMembers(chatId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, members));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default ChatController;

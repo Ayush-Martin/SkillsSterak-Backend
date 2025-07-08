@@ -58,4 +58,6 @@ export interface IChatService {
     chatId: string,
     reaction: messageReactions
   ): Promise<void>;
+
+  getChatMembers(chatId: string): Promise<IChat>;
 }
