@@ -39,7 +39,7 @@ export interface IChatService {
     userId: string,
     chatId: string,
     message: string,
-    messageType: "text" | "image"
+    messageType: "text" | "image" | "emoji"
   ): Promise<void>;
 
   /**

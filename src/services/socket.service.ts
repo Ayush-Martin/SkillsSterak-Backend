@@ -39,8 +39,21 @@ class SocketService implements ISocketService {
 
     socket.on(
       SocketEvents.CHAT_MESSAGE_SEND,
-      async ({ chatId, message }: { chatId: string; message: string }) => {
-        await this.chatService.addNewMessage(userId, chatId, message, "text");
+      async ({
+        chatId,
+        message,
+        type,
+      }: {
+        chatId: string;
+        message: string;
+        type?: "text" | "emoji";
+      }) => {
+        await this.chatService.addNewMessage(
+          userId,
+          chatId,
+          message,
+          type || "text"
+        );
       }
     );
 

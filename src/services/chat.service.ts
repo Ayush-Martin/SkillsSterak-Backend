@@ -40,7 +40,7 @@ class ChatService implements IChatService {
     userId: string,
     chatId: string,
     message: string,
-    messageType: "text" | "image"
+    messageType: "text" | "image" | "emoji"
   ): Promise<void> {
     const members = await this.chatRepository.getChatMembers(chatId);
     const newMessage = await this.messageRepository.create({
@@ -65,7 +65,12 @@ class ChatService implements IChatService {
     );
 
     io.to(members.map((x) => String(x))).emit(SocketEvents.CHAT_LAST_MESSAGE, {
-      lastMessage: messageType === "text" ? message : "image",
+      lastMessage:
+        messageType === "text"
+          ? message
+          : messageType == "emoji"
+          ? "emoji"
+          : "image",
       lastMessageTime: (newMessage as any).createdAt,
       chatId,
     });

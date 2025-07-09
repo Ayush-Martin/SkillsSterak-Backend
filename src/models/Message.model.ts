@@ -10,7 +10,7 @@ export interface IMessage extends Document {
   sender: ObjectId;
   chatId: ObjectId;
   message: string;
-  messageType: "text" | "image";
+  messageType: "text" | "image" | "emoji";
   reactions: IMessageReaction[];
 }
 
@@ -32,6 +32,7 @@ const MessageSchema = new Schema<IMessage>(
     },
     messageType: {
       type: String,
+      enum: ["text", "image", "emoji"],
       default: "text",
     },
     reactions: {

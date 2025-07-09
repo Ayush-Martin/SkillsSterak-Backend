@@ -1,4 +1,3 @@
-import { chatController } from "./../dependencyInjector";
 import { Router } from "express";
 
 const router = Router();
@@ -55,6 +54,7 @@ router
 router.get("/trainers", trainerController.getAllTrainers);
 router.get("/trainers/:trainerId", trainerController.getTrainer);
 
+//** Routes for only authenticated users */
 //setting middleware
 router.use(accessTokenValidator);
 
