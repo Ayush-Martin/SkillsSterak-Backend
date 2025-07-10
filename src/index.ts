@@ -4,6 +4,7 @@ import app from "./app";
 import http from "http";
 import setUpSocket from "./config/socket";
 import envConfig from "./config/env";
+import "./config/corn";
 
 connectToMongoDB();
 connectToRedis();

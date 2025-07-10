@@ -152,7 +152,7 @@ export const trainerService = new TrainerService(
   trainerRepository,
   trainerRequestRepository
 );
-export const transactionService = new TransactionService(transactionRepository);
+export const transactionService = new TransactionService(transactionRepository,walletRepository);
 export const userService = new UserService(
   userRepository,
   trainerRequestRepository
@@ -215,7 +215,8 @@ export const trainerRequestController = new TrainerRequestController(
   notificationService
 );
 export const transactionController = new TransactionController(
-  transactionService
+  transactionService,
+  enrolledCoursesService
 );
 export const userController = new UserController(
   userService,

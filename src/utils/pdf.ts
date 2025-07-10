@@ -161,7 +161,15 @@ export const generateAdminRevenuePdf = (
  */
 export const generateTrainerRevenuePdf = (
   totalRevenue: number,
-  transactions: Array<{ payer: string; course: string; amount: string }>,
+  totalCommission: number,
+  onProcessAmount: number,
+  transactions: Array<{
+    payer: string;
+    course: string;
+    amount: string;
+    status: string;
+    adminCommission: number;
+  }>,
   fromDate?: Date,
   toDate?: Date
 ): PDFKit.PDFDocument => {
@@ -195,6 +203,14 @@ export const generateTrainerRevenuePdf = (
     {
       title: "Total Revenue",
       value: `₹${totalRevenue.toLocaleString()}`,
+    },
+    {
+      title: "Total Commission",
+      value: `₹${totalCommission.toLocaleString()}`,
+    },
+    {
+      title: "ON_Process Amount",
+      value: `₹${onProcessAmount.toLocaleString()}`,
     },
   ];
 
@@ -234,19 +250,23 @@ export const generateTrainerRevenuePdf = (
       { text: "Payer", style: "tableHeader" },
       { text: "Amount", style: "tableHeader" },
       { text: "Course", style: "tableHeader" },
+      { text: "Status", style: "tableHeader" },
+      { text: "Admin Commission", style: "tableHeader" },
     ],
     ...transactions.map((tx, i) => [
       `${i + 1}`,
       tx.payer,
       tx.amount,
       tx.course,
+      tx.status,
+      tx.adminCommission,
     ]),
   ];
 
   content.push({
     table: {
       headerRows: 1,
-      widths: ["auto", "*", "*", "auto"],
+      widths: ["auto", "*", "*", "*", "auto", "auto"],
       body: tableBody,
     },
     layout: "lightHorizontalLines",
@@ -285,7 +305,7 @@ export const generateTrainerRevenuePdf = (
         color: "#000000",
       },
     },
-    pageMargins: [40, 60, 40, 60],
+    pageMargins: [40, 60, 40, 40],
     footer(currentPage: number, pageCount: number) {
       return {
         text: `Page ${currentPage} of ${pageCount}`,

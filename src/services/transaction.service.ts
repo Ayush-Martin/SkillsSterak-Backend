@@ -1,6 +1,6 @@
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
-import { ITransaction } from "../models/Transaction.model";
+import { ITransaction, ITransactionStatus } from "../models/Transaction.model";
 import { IFilterType } from "../types/revenueType";
 import { Buffer } from "exceljs";
 import {
@@ -11,9 +11,13 @@ import {
   generateAdminRevenueExcel,
   generateTrainerRevenueExcel,
 } from "../utils/excel";
+import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 
 class TransactionService implements ITransactionService {
-  constructor(private transactionRepository: ITransactionRepository) {}
+  constructor(
+    private transactionRepository: ITransactionRepository,
+    private walletRepository: IWalletRepository
+  ) {}
 
   public async getUserTransactions(
     userId: string,
@@ -274,12 +278,22 @@ class TransactionService implements ITransactionService {
       filter
     )) as unknown as {
       totalRevenue: number;
-      transactions: Array<{ payer: string; course: string; amount: string }>;
+      totalCommission: number;
+      onProcessAmount: number;
+      transactions: Array<{
+        payer: string;
+        course: string;
+        amount: string;
+        status: string;
+        adminCommission: number;
+      }>;
     };
 
     if (exportType === "pdf") {
       return generateTrainerRevenuePdf(
         revenue.totalRevenue,
+        revenue.totalCommission,
+        revenue.onProcessAmount,
         revenue.transactions,
         filterType === "all" ? undefined : fromDate,
         filterType === "all" ? undefined : toDate
@@ -287,6 +301,8 @@ class TransactionService implements ITransactionService {
     } else {
       return generateTrainerRevenueExcel(
         revenue.totalRevenue,
+        revenue.totalCommission,
+        revenue.onProcessAmount,
         revenue.transactions,
         filterType === "all" ? undefined : fromDate,
         filterType === "all" ? undefined : toDate
@@ -304,6 +320,46 @@ class TransactionService implements ITransactionService {
     return await this.transactionRepository.getTrainerRevenueGraphData(
       trainerId
     );
+  }
+
+  public async completeTransaction(
+    transactionId: string
+  ): Promise<ITransaction | null> {
+    return await this.transactionRepository.changePaymentStatus(
+      transactionId,
+      "completed"
+    );
+  }
+
+  public async cancelTransaction(
+    userId: string,
+    transactionId: string
+  ): Promise<ITransaction | null> {
+    const transaction = await this.transactionRepository.findById(
+      transactionId
+    );
+
+    await this.walletRepository.creditWallet(userId, transaction?.amount!);
+
+    return await this.transactionRepository.changePaymentStatus(
+      transactionId,
+      "canceled"
+    );
+  }
+
+  public async failedTransaction(
+    transactionId: string
+  ): Promise<ITransaction | null> {
+    return await this.transactionRepository.changePaymentStatus(
+      transactionId,
+      "failed"
+    );
+  }
+
+  public async updateOnProcessPurchaseTransactions(): Promise<
+    Array<ITransaction>
+  > {
+    return await this.transactionRepository.updateOnProcessPurchaseTransactions();
   }
 }
 

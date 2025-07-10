@@ -1,11 +1,14 @@
-
 import { IEnrolledCourses } from "../../models/EnrolledCourse.model";
 
 export interface IEnrolledCoursesService {
   /**
    * Registers a user for a course, creating an enrollment record. Used when a user initiates a course purchase or joins a free course.
    */
-  enrollCourse(userId: string, courseId: string): Promise<string | null>;
+  enrollCourse(
+    userId: string,
+    courseId: string,
+    method?: "wallet" | "stripe"
+  ): Promise<string | null>;
 
   /**
    * Returns a paginated list of all courses a user is enrolled in. Used for user dashboards and course navigation.
@@ -19,7 +22,6 @@ export interface IEnrolledCoursesService {
     currentPage: number;
     totalPages: number;
   }>;
-
 
   /**
    * Returns a paginated list of courses a user has completed. Used for certificates, achievements, and progress tracking.
@@ -51,7 +53,8 @@ export interface IEnrolledCoursesService {
    */
   completePurchase(
     userId: string,
-    courseId: string
+    courseId: string,
+    transactionId: string
   ): Promise<{ userId: string; courseId: string }>;
 
   /**
@@ -67,4 +70,6 @@ export interface IEnrolledCoursesService {
    * Returns the user's overall course completion progress. Used for dashboards, gamification, and analytics.
    */
   getCompletionProgress(userId: string): Promise<IEnrolledCourses>;
+
+  cancelPurchase(transactionId: string): Promise<void>;
 }

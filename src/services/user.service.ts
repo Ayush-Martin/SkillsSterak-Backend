@@ -51,10 +51,7 @@ class UserService implements IUserService {
   public async blockUnblockUser(userId: string): Promise<boolean> {
     const blockStatus = await this.userRepository.getUserBlockStatus(userId);
     if (!blockStatus) {
-      return errorCreator(
-        UserMessage.UserNotFound,
-        StatusCodes.BAD_REQUEST
-      );
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.BAD_REQUEST);
     }
     await this.userRepository.changeBlockStatus(userId, !blockStatus.isBlocked);
     return !blockStatus.isBlocked;
@@ -67,6 +64,10 @@ class UserService implements IUserService {
 
   public async getAdminUsersCount(): Promise<number> {
     return await this.userRepository.getUsersCount(new RegExp(""));
+  }
+
+  public async getAdmin(): Promise<IUser | null> {
+    return await this.userRepository.getAdmin();
   }
 }
 

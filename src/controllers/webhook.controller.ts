@@ -82,8 +82,12 @@ class WebHookController {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object;
-          const { userId, courseId } = session.metadata!;
-          await this.enrolledCourseService.completePurchase(userId, courseId);
+          const { userId, courseId, transactionId } = session.metadata!;
+          await this.enrolledCourseService.completePurchase(
+            userId,
+            courseId,
+            transactionId
+          );
           await this.chatService.joinChat(userId, courseId);
           await this.wishlistService.removeCourseFromWishlist(userId, courseId);
           break;

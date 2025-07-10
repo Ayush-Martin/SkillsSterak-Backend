@@ -32,4 +32,6 @@ export interface IChatRepository extends BaseRepository<IChat> {
   getChatMembers(chatId: string): Promise<Array<ObjectId>>;
 
   getChatMembersDetails(chatId: string): Promise<IChat>;
+
+  removeMemberFromChat(courseId: string, userId: string): Promise<void>;
 }

@@ -408,6 +408,13 @@ class EnrolledCoursesRepository
 
     return courseProgress[0];
   }
+
+  public async deleteUserCourseEnrollment(
+    userId: string,
+    courseId: string
+  ): Promise<void> {
+    await this.EnrolledCourses.deleteOne({ userId, courseId });
+  }
 }
 
 export default EnrolledCoursesRepository;

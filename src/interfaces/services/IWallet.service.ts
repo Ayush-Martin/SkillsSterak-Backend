@@ -6,8 +6,6 @@ export interface IWalletService {
    */
   getUserWalletInfo(userId: string): Promise<{
     balance: number;
-    commission?: number;
-    redeemable?: number;
   }>;
 
   /**
@@ -19,4 +17,6 @@ export interface IWalletService {
    * Sets up a Stripe account for a user. Used to enable payouts and financial integrations.
    */
   setUpStripeUserAccount(userId: string): Promise<string>;
+
+  creditWallet(userId: string, amount: number): Promise<void>;
 }

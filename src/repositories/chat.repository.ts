@@ -15,6 +15,13 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
     await this.Chat.updateOne({ courseId }, { $addToSet: { members: userId } });
   }
 
+  public async removeMemberFromChat(
+    courseId: string,
+    userId: string
+  ): Promise<void> {
+    await this.Chat.updateOne({ courseId }, { $pull: { members: userId } });
+  }
+
   public async getChats(userId: string): Promise<Array<IChat>> {
     return await this.Chat.aggregate([
       {

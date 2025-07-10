@@ -1,6 +1,6 @@
 import mongoose, { Model } from "mongoose";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
-import { ITransaction } from "../models/Transaction.model";
+import { ITransaction, ITransactionStatus } from "../models/Transaction.model";
 import BaseRepository from "./Base.repository";
 
 class TransactionRepository
@@ -16,15 +16,108 @@ class TransactionRepository
     skip: number,
     limit: number
   ): Promise<Array<ITransaction>> {
-    return await this.Transaction.find({
-      $or: [{ payerId: userId }, { receiverId: userId }],
-    })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("payerId", "email _id role")
-      .populate("receiverId", "email _id role")
-      .populate("courseId", "title _id");
+    // return await this.Transaction.find({
+    //   $or: [{ payerId: userId }, { receiverId: userId }],
+    // })
+    //   .sort({ createdAt: -1 })
+    //   .skip(skip)
+    //   .limit(limit)
+    //   .populate("payerId", "email _id role")
+    //   .populate("receiverId", "email _id role")
+    //   .populate("courseId", "title _id");
+
+    return await this.Transaction.aggregate([
+      {
+        $match: {
+          $or: [
+            { payerId: new mongoose.Types.ObjectId(userId) },
+            { receiverId: new mongoose.Types.ObjectId(userId) },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "payerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                email: 1,
+                role: 1,
+              },
+            },
+          ],
+          as: "payer",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receiverId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                email: 1,
+                role: 1,
+              },
+            },
+          ],
+          as: "receiver",
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                thumbnail: 1,
+              },
+            },
+          ],
+          as: "course",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$receiver",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          payer: 1,
+          receiver: 1,
+          amount: 1,
+          type: 1,
+          method: 1,
+          status: 1,
+          course: 1,
+          adminCommission: 1,
+        },
+      },
+    ]);
   }
 
   public async getUserTransactionCount(userId: string): Promise<number> {
@@ -65,7 +158,8 @@ class TransactionRepository
   ): Promise<number> {
     return await this.Transaction.countDocuments({
       receiverId: trainerId,
-      type: "payment",
+      status: "completed",
+      type: "course_purchase",
       ...filter,
     });
   }
@@ -82,7 +176,8 @@ class TransactionRepository
     const data = await this.Transaction.aggregate([
       {
         $match: {
-          type: "payment",
+          type: "course_purchase",
+          $or: [{ status: "completed" }, { status: "on_process" }],
           receiverId: trainerId,
           ...filter,
         },
@@ -102,6 +197,27 @@ class TransactionRepository
                 totalRevenue: {
                   $subtract: ["$total", { $multiply: ["$total", 0.1] }],
                 },
+              },
+            },
+          ],
+          totalCommission: [
+            {
+              $group: {
+                _id: null,
+                totalCommission: { $sum: "$adminCommission" },
+              },
+            },
+          ],
+          onProcessAmount: [
+            {
+              $match: {
+                status: "on_process",
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                onProcessAmount: { $sum: "$amount" },
               },
             },
           ],
@@ -145,6 +261,8 @@ class TransactionRepository
                 payer: "$payer.payer",
                 course: "$course.title",
                 amount: 1,
+                status: 1,
+                adminCommission: 1,
               },
             },
             {
@@ -163,9 +281,27 @@ class TransactionRepository
         },
       },
       {
+        $unwind: {
+          path: "$totalCommission",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$onProcessAmount",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           totalRevenue: {
             $ifNull: ["$totalRevenue.totalRevenue", 0],
+          },
+          totalCommission: {
+            $ifNull: ["$totalCommission.totalCommission", 0],
+          },
+          onProcessAmount: {
+            $ifNull: ["$onProcessAmount.onProcessAmount", 0],
           },
           transactions: 1,
         },
@@ -417,6 +553,39 @@ class TransactionRepository
     ]);
 
     return data[0];
+  }
+
+  public async changePaymentStatus(
+    transactionId: string,
+    status: ITransactionStatus
+  ): Promise<ITransaction | null> {
+    return await this.Transaction.findByIdAndUpdate(transactionId, {
+      $set: { status },
+    });
+  }
+
+  public async updateOnProcessPurchaseTransactions(): Promise<ITransaction[]> {
+    const expiry = new Date();
+    expiry.setMinutes(expiry.getMinutes() - 1); // 5 hours ago
+
+    const transactions = await this.Transaction.find({
+      status: "on_process",
+      type: "course_purchase",
+      createdAt: { $lte: expiry },
+    });
+
+    await this.Transaction.updateMany(
+      {
+        status: "on_process",
+        type: "course_purchase",
+        createdAt: { $lte: expiry },
+      },
+      {
+        $set: { status: "completed" },
+      }
+    );
+
+    return transactions;
   }
 }
 

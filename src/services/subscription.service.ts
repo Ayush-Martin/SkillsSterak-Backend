@@ -1,4 +1,3 @@
-
 import { ISubscriptionRepository } from "../interfaces/repositories/ISubscription.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
@@ -41,11 +40,12 @@ class SubscriptionService implements ISubscriptionService {
   }
 
   public async completeSubscription(userId: string): Promise<void> {
-
     const transaction = await this.transactionRepository.create({
       payerId: getObjectId(userId),
       amount: 5000,
       type: "subscription",
+      status: "completed",
+      method: "stripe",
     });
 
     await this.subscriptionRepository.create({

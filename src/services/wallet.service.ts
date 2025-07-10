@@ -19,38 +19,17 @@ class WalletService implements IWalletService {
 
   public async getUserWalletInfo(userId: string): Promise<{
     balance: number;
-    commission?: number;
-    redeemable?: number;
   }> {
     const user = await this.userRepository.findById(userId);
-    const isAdmin = user?.role === "admin";
 
     const wallet = await this.walletRepository.getUserWalletInfo(userId);
     if (!wallet) {
       await this.walletRepository.create({
         userId: getObjectId(userId),
       });
-
-      if (isAdmin) return { balance: 0 };
-
-      return {
-        balance: 0,
-        commission: 0,
-        redeemable: 0,
-      };
     }
 
-    if (isAdmin) {
-      return { balance: wallet.balance };
-    }
-
-    const calculatedCommission = wallet.balance * COURSE_COMMISSION_RATE;
-    const calculatedRedeemableAmount = wallet.balance - calculatedCommission;
-    return {
-      balance: wallet.balance,
-      commission: calculatedCommission,
-      redeemable: calculatedRedeemableAmount,
-    };
+    return { balance: wallet?.balance || 0 };
   }
 
   public async setUpStripeUserAccount(userId: string): Promise<string> {
@@ -82,7 +61,6 @@ class WalletService implements IWalletService {
   public async redeem(userId: string): Promise<void> {
     const wallet = (await this.walletRepository.getUserWalletInfo(userId))!;
     const user = (await this.userRepository.findById(userId))!;
-    const admin = (await this.userRepository.getAdmin())!;
 
     if (!user.stripeAccountId) {
       throw errorCreator(
@@ -98,28 +76,24 @@ class WalletService implements IWalletService {
       );
     }
 
-    const adminCommission = wallet.balance * COURSE_COMMISSION_RATE;
-    const redeemableAmount = wallet.balance - adminCommission;
-
     const transfer = await stripe.transfers.create({
-      amount: Math.round((redeemableAmount * 100) / 83.2), // convert to usd
+      amount: Math.round((wallet.balance * 100) / 83.2),
       currency: "usd",
       destination: user.stripeAccountId,
       description: "Wallet Redeem",
     });
 
-    await this.walletRepository.debitWallet(userId, wallet.balance); // convert back to rupees
-    await this.walletRepository.creditWallet(admin.id, adminCommission);
+    await this.walletRepository.debitWallet(userId, wallet.balance);
     await this.transactionRepository.create({
       receiverId: getObjectId(userId),
-      amount: redeemableAmount,
-      type: "redeem",
+      amount: wallet.balance,
+      type: "wallet_redeem",
+      status: "completed",
     });
-    await this.transactionRepository.create({
-      payerId: getObjectId(userId),
-      amount: adminCommission,
-      type: "commission",
-    });
+  }
+
+  public async creditWallet(userId: string, amount: number): Promise<void> {
+    await this.walletRepository.creditWallet(userId, amount);
   }
 }
 

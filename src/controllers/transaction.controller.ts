@@ -12,13 +12,17 @@ import {
   getAdminRevenueValidator,
   getTrainerRevenueValidator,
 } from "../validators/transaction.validator";
+import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
 
 /**
  * Handles user and admin transaction queries, revenue exports, and analytics.
  * All methods are bound for safe Express routing.
  */
 class TransactionController {
-  constructor(private transactionService: ITransactionService) {
+  constructor(
+    private transactionService: ITransactionService,
+    private enrolledCourseService: IEnrolledCoursesService
+  ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -262,6 +266,22 @@ class TransactionController {
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async cancelCoursePurchase(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { transactionId } = req.params;
+
+      await this.enrolledCourseService.cancelPurchase(transactionId);
+
+      res.status(StatusCodes.OK).json(successResponse("Purchase canceled"));
     } catch (err) {
       next(err);
     }

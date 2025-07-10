@@ -89,4 +89,15 @@ export interface ITransactionService {
    * Returns revenue data for a trainer in a format suitable for graphing. Used for trainer dashboards and performance tracking.
    */
   getTrainerRevenueGraphData(trainerId: string): Promise<ITransaction>;
+
+  completeTransaction(transactionId: string): Promise<ITransaction | null>;
+
+  cancelTransaction(
+    userId: string,
+    transactionId: string
+  ): Promise<ITransaction | null>;
+
+  failedTransaction(transactionId: string): Promise<ITransaction | null>;
+
+  updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
 }

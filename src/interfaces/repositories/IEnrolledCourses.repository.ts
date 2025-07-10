@@ -62,4 +62,6 @@ export interface IEnrolledCoursesRepository
    * Used for dashboards, analytics, and personalized recommendations.
    */
   getProgress(userId: string): Promise<IEnrolledCourses>;
+
+  deleteUserCourseEnrollment(userId: string, courseId: string): Promise<void>;
 }

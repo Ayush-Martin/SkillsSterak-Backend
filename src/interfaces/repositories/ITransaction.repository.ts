@@ -1,4 +1,7 @@
-import { ITransaction } from "../../models/Transaction.model";
+import {
+  ITransaction,
+  ITransactionStatus,
+} from "../../models/Transaction.model";
 import { IBaseRepository } from "./IBase.repository";
 
 export interface ITransactionRepository extends IBaseRepository<ITransaction> {
@@ -48,4 +51,11 @@ export interface ITransactionRepository extends IBaseRepository<ITransaction> {
 
   getTrainerRevenueGraphData(trainerId: string): Promise<ITransaction>;
   getAdminRevenueGraphData(): Promise<ITransaction>;
+
+  changePaymentStatus(
+    transactionId: string,
+    status: ITransactionStatus
+  ): Promise<ITransaction | null>;
+
+  updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
 }

@@ -104,6 +104,10 @@ router
 
 //transactions
 router.get("/transactions", transactionController.getUserTransactions);
+router.patch(
+  "/transactions/:transactionId",
+  transactionController.cancelCoursePurchase
+);
 
 //trainer request
 router.get("/trainerRequest", userController.sendTrainerRequest);

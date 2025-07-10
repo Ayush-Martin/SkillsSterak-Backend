@@ -72,7 +72,15 @@ export const generateAdminRevenueExcel = async (
  */
 export const generateTrainerRevenueExcel = async (
   totalRevenue: number,
-  transactions: Array<{ payer: string; course: string; amount: string }>,
+  totalCommission: number,
+  onProcessAmount: number,
+  transactions: Array<{
+    payer: string;
+    course: string;
+    amount: string;
+    status: string;
+    adminCommission: number;
+  }>,
   fromDate?: Date,
   toDate?: Date
 ): Promise<ExcelJS.Buffer> => {
@@ -90,10 +98,18 @@ export const generateTrainerRevenueExcel = async (
   sheet.addRow([dateRangeLabel]);
   sheet.addRow([]);
   sheet.addRow(["Total Revenue", totalRevenue]);
+  sheet.addRow(["Total Commission", totalCommission]);
+  sheet.addRow(["On_Process Amount", onProcessAmount]);
   sheet.addRow([]);
 
   // Add header row for transaction details
-  const headerRow = sheet.addRow(["Payer", "Amount", "Course"]);
+  const headerRow = sheet.addRow([
+    "Payer",
+    "Amount",
+    "Course",
+    "Status",
+    "Admin Commission",
+  ]);
   headerRow.eachCell((cell) => {
     cell.font = { bold: true };
     cell.fill = {
@@ -111,7 +127,13 @@ export const generateTrainerRevenueExcel = async (
 
   // Add each transaction as a row
   transactions.forEach((tx) => {
-    sheet.addRow([tx.payer, tx.amount, tx.course]);
+    sheet.addRow([
+      tx.payer,
+      tx.amount,
+      tx.course,
+      tx.status,
+      tx.adminCommission,
+    ]);
   });
 
   // Adjust column widths for readability

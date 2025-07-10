@@ -31,10 +31,12 @@ class EnrolledCourses {
   public async enrollCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
+      const { method }: { method?: "wallet" | "stripe" } = req.body;
       const userId = req.userId!;
       const order = await this.enrolledCoursesService.enrollCourse(
         userId,
-        courseId
+        courseId,
+        method
       );
       res
         .status(StatusCodes.CREATED)
@@ -202,6 +204,8 @@ class EnrolledCourses {
       next(err);
     }
   }
+
+ 
 }
 
 export default EnrolledCourses;

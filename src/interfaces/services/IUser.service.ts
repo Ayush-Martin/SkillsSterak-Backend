@@ -37,4 +37,6 @@ export interface IUserService {
    * Returns the total number of users in the system. Used for admin analytics and reporting.
    */
   getAdminUsersCount(): Promise<number>;
+
+  getAdmin(): Promise<IUser | null>;
 }

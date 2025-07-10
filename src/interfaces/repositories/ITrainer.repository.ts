@@ -62,4 +62,6 @@ export interface ITrainerRepository extends BaseRepository<IUser> {
    * Supports profile viewing, editing, and validation.
    */
   getTrainer(trainerId: string): Promise<IUser | null>;
+
+  
 }
