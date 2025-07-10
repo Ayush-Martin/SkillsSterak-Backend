@@ -21,3 +21,5 @@ export const addReplyValidator = (data: any) => {
 
   return schema.parse(data);
 };
+
+export const updateReviewValidator = addReviewValidator;

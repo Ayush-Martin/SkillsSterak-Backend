@@ -35,4 +35,10 @@ export interface IReviewService {
    * Removes a review from the system. Used for moderation, user requests, or content management.
    */
   deleteReview(reviewId: string): Promise<void>;
+
+  updateReview(
+    reviewId: string,
+    rating: number,
+    content: string
+  ): Promise<void>;
 }

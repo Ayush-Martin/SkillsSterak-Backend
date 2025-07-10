@@ -12,12 +12,21 @@ class ReviewRepository
   }
 
   public async getReviewsByCourseId(courseId: string): Promise<IReview[]> {
-    return this.Review.find({ courseId })
+    return await this.Review.find({ courseId })
       .populate({
         path: "userId",
         select: "username profileImage",
       })
       .select("courseId rating content");
+  }
+
+  public async checkUserAddedReview(
+    courseId: string,
+    userId: string
+  ): Promise<boolean> {
+    const review = await this.Review.findOne({ userId, courseId });
+
+    return !!review;
   }
 }
 

@@ -5,6 +5,7 @@ import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
 import errorCreator from "../utils/customError";
 import {
+  changePasswordValidator,
   completeRegisterValidator,
   forgetPasswordValidator,
   loginUserValidator,
@@ -163,6 +164,28 @@ class AuthController {
       const { password, email } = resetPasswordValidator(req.body);
 
       await this.authService.resetPassword(email, password);
+
+      res
+        .status(StatusCodes.ACCEPTED)
+        .json(successResponse(AuthMessage.PasswordReset));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId!;
+
+      const { currentPassword, newPassword } = changePasswordValidator(
+        req.body
+      );
+
+      await this.authService.changePassword(
+        userId,
+        currentPassword,
+        newPassword
+      );
 
       res
         .status(StatusCodes.ACCEPTED)

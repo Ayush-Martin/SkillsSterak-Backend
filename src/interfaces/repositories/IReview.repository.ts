@@ -11,4 +11,6 @@ export interface IReviewRepository extends IBaseRepository<IReview> {
    * Enables course rating displays and user feedback features.
    */
   getReviewsByCourseId(courseId: string): Promise<IReview[]>;
+
+  checkUserAddedReview(courseId: string, userId: string): Promise<boolean>;
 }

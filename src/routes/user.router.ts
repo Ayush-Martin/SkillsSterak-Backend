@@ -40,11 +40,10 @@ router
   .post(accessTokenValidator, reviewController.addReview)
   .get(reviewController.getReviews);
 
-router.delete(
-  "/courses/:courseId/reviews/:reviewId",
-  accessTokenValidator,
-  reviewController.deleteReview
-);
+router
+  .route("/courses/:courseId/reviews/:reviewId")
+  .delete(accessTokenValidator, reviewController.deleteReview)
+  .put(accessTokenValidator, reviewController.updateReview);
 
 router
   .route("/courses/:courseId/reviews/:reviewId/replies")

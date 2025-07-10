@@ -20,6 +20,7 @@ export enum AuthMessage {
   InvalidRefreshToken = "Invalid refresh token",
   InvalidAccessToken = "Invalid token",
   NoAccess = "You have no access",
+  InvalidCurrentPassword = "Current password is invalid",
 
   // Success messages
   OTPResent = "OTP resent",
@@ -130,10 +131,15 @@ export enum SubscriptionMessage {
  * Review and reply related messages
  */
 export enum ReviewMessage {
+  //Error messages
+  ReviewedAlready = "Already reviewed cannot review",
+  NotEnrolledCourse = "You must enroll the course to add review",
+
   // Success messages
   ReviewAdded = "Review has been added",
   ReviewDeleted = "Review has been deleted",
   ReplyAdded = "Reply has been added",
+  ReviewUpdated = "Review has been updated",
 }
 
 /**

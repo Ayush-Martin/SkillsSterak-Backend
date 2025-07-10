@@ -140,7 +140,8 @@ export const lessonService = new LessonService(lessonRepository);
 export const moduleService = new ModuleService(moduleRepository);
 export const reviewService = new ReviewService(
   reviewRepository,
-  replyRepository
+  replyRepository,
+  enrolledCoursesRepository
 );
 export const subscriptionService = new SubscriptionService(
   subscriptionRepository,

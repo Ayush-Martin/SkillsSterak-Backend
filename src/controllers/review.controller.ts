@@ -3,6 +3,7 @@ import { IReviewService } from "../interfaces/services/IReview.service";
 import {
   addReplyValidator,
   addReviewValidator,
+  updateReviewValidator,
 } from "../validators/review.validator";
 import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
@@ -110,6 +111,22 @@ class ReviewController {
       res
         .status(StatusCodes.OK)
         .json(successResponse(ReviewMessage.ReviewDeleted));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  
+  public async updateReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { reviewId } = req.params;
+      const { content, rating } = updateReviewValidator(req.body);
+
+      await this.reviewService.updateReview(reviewId, rating, content);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(ReviewMessage.ReviewUpdated));
     } catch (err) {
       next(err);
     }

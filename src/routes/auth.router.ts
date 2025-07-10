@@ -4,7 +4,10 @@ const router = Router();
 import { authController, otpController } from "../dependencyInjector";
 
 //middlewares
-import { refreshTokenValidator } from "../middlewares/userAuth.middleware";
+import {
+  accessTokenValidator,
+  refreshTokenValidator,
+} from "../middlewares/userAuth.middleware";
 
 router
   .route("/register")
@@ -26,6 +29,12 @@ router.post("/verifyOTP", otpController.verifyOTP);
 router.get("/resendOTP/:email", otpController.resendOTP);
 
 router.post("/resetPassword", authController.resetPassword);
+
+router.patch(
+  "/changePassword",
+  accessTokenValidator,
+  authController.changePassword
+);
 
 router.post("/google", authController.googleAuth);
 

@@ -48,3 +48,12 @@ export const resetPasswordValidator = (data: any) => {
 
   return schema.parse(data);
 };
+
+export const changePasswordValidator = (data: any) => {
+  const schema = z.object({
+    currentPassword: PasswordValidationRule,
+    newPassword: PasswordValidationRule,
+  });
+
+  return schema.parse(data);
+};

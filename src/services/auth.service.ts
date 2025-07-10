@@ -137,6 +137,24 @@ class AuthService implements IAuthService {
     await this.userRepository.updatePassword(id, hashedPassword);
   }
 
+  public async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+
+    console.log(user);
+
+    if (!comparePassword(currentPassword, user?.password!)) {
+      errorCreator(AuthMessage.InvalidCurrentPassword, StatusCodes.BAD_REQUEST);
+    }
+
+    const hashedPassword = hashPassword(newPassword);
+
+    await this.userRepository.updatePassword(userId, hashedPassword);
+  }
+
   public async getUserById(userId: string): Promise<IUser | null> {
     return await this.userRepository.findById(userId);
   }

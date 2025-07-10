@@ -39,6 +39,12 @@ export interface IAuthService {
    */
   resetPassword(email: string, password: string): Promise<void>;
 
+  changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void>;
+
   /**
    * Retrieves a user by their unique ID.
    * Supports authentication, profile access, and validation flows.
