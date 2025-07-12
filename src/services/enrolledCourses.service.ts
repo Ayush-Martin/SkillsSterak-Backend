@@ -102,7 +102,11 @@ class EnrolledCourses implements IEnrolledCoursesService {
         {
           price_data: {
             currency: "inr",
-            product_data: { name: course.title },
+            product_data: {
+              name: course.title,
+              description: course.description,
+              images: [course.thumbnail],
+            },
             unit_amount: course.price * 100,
           },
           quantity: 1,

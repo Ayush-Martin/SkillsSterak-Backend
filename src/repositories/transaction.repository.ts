@@ -2,6 +2,7 @@ import mongoose, { Model } from "mongoose";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ITransaction, ITransactionStatus } from "../models/Transaction.model";
 import BaseRepository from "./Base.repository";
+import envConfig from "../config/env";
 
 class TransactionRepository
   extends BaseRepository<ITransaction>
@@ -105,6 +106,9 @@ class TransactionRepository
         },
       },
       {
+        $sort: { createdAt: -1 },
+      },
+      {
         $project: {
           _id: 1,
           payer: 1,
@@ -116,6 +120,13 @@ class TransactionRepository
           course: 1,
           adminCommission: 1,
         },
+      },
+
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
       },
     ]);
   }
@@ -566,7 +577,7 @@ class TransactionRepository
 
   public async updateOnProcessPurchaseTransactions(): Promise<ITransaction[]> {
     const expiry = new Date();
-    expiry.setMinutes(expiry.getMinutes() - 1); // 5 hours ago
+    expiry.setHours(expiry.getHours() - envConfig.COURSE_CANCELLATION_HOURS); // 5 hours ago
 
     const transactions = await this.Transaction.find({
       status: "on_process",

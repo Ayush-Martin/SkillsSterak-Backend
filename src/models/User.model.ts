@@ -9,11 +9,12 @@ export interface IUser extends Document {
   place?: string;
   company?: string;
   position?: string;
-  socialLinks: {
-    github?: string;
-    linkedin?: string;
-    website?: string;
-  };
+  yearsOfExperience?: number;
+  github?: string;
+  linkedin?: string;
+  website?: string;
+  educationalQualification?: string;
+  skills?: string;
   role?: "user" | "trainer" | "admin";
   googleId?: string;
   isBlocked?: boolean;
@@ -67,25 +68,36 @@ const UserSchema: Schema<IUser> = new Schema(
       required: false,
       default: "",
     },
-    socialLinks: {
-      type: {
-        github: {
-          type: String,
-          required: false,
-          default: "",
-        },
-        linkedin: {
-          type: String,
-          required: false,
-          default: "",
-        },
-        website: {
-          type: String,
-          required: false,
-          default: "",
-        },
-      },
-      default: {},
+
+    github: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    linkedin: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    website: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    educationalQualification: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    skills: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    yearsOfExperience: {
+      type: Number,
+      required: false,
+      default: 0,
     },
     role: {
       type: "string",

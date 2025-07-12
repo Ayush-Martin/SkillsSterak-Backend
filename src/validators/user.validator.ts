@@ -1,12 +1,13 @@
 import { z } from "zod";
 import {
-  AboutValidationRule,
   BioValidationRule,
   CompanyValidationRule,
+  GithubValidationRule,
   PlaceValidationRule,
   PositionValidationRule,
-  SocialLinksValidationRule,
   UsernameValidationRule,
+  LinkedinValidationRule,
+  WebsiteValidationRule,
 } from "./rules/user.validationRule";
 
 export const updateProfileValidator = (user: any) => {
@@ -16,7 +17,12 @@ export const updateProfileValidator = (user: any) => {
     place: PlaceValidationRule,
     company: CompanyValidationRule,
     bio: BioValidationRule,
-    socialLinks: SocialLinksValidationRule,
+    github: GithubValidationRule,
+    linkedin: LinkedinValidationRule,
+    website: WebsiteValidationRule,
+    educationalQualification: z.string(),
+    skills: z.string(),
+    yearsOfExperience: z.number(),
   });
 
   return schema.parse(user);

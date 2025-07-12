@@ -62,29 +62,14 @@ class UserController {
    */
   public async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      const { username, bio, company, place, position, socialLinks } =
-        updateProfileValidator(req.body);
+      const data = updateProfileValidator(req.body);
       const userId = req.userId!;
 
-      await this.userService.updateProfile(userId, {
-        username,
-        bio,
-        company,
-        place,
-        position,
-        socialLinks,
-      });
+      await this.userService.updateProfile(userId, data);
 
-      res.status(StatusCodes.OK).json(
-        successResponse(UserMessage.ProfileUpdated, {
-          username,
-          bio,
-          company,
-          place,
-          position,
-          socialLinks,
-        })
-      );
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(UserMessage.ProfileUpdated, data));
     } catch (err) {
       next(err);
     }
