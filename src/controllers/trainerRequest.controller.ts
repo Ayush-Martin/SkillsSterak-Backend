@@ -10,6 +10,7 @@ import {
   GeneralMessage,
   TrainerRequestMessage,
 } from "../constants/responseMessages";
+import { userInfo } from "os";
 
 /**
  * Handles trainer request approvals and queries, supporting admin workflows and notifications.
@@ -59,15 +60,24 @@ class TrainerRequestController {
     res: Response,
     next: NextFunction
   ) {
-    const { status } = approveRejectRequestValidator(req.query);
+    const { status, rejectedReason } = approveRejectRequestValidator(req.query);
 
-    const { userId } = req.params;
+    const { trainerRequestId } = req.params;
 
-    await this.trainerService.approveRejectTrainerRequest(userId, status);
+    const trainerRequest =
+      await this.trainerService.approveRejectTrainerRequest(
+        trainerRequestId,
+        status,
+        rejectedReason
+      );
 
     status == "approved"
-      ? this.notificationService.sendApproveTrainerRequestNotification(userId)
-      : this.notificationService.sendRejectTrainerRequestNotification(userId);
+      ? this.notificationService.sendApproveTrainerRequestNotification(
+          String(trainerRequest?.userId)
+        )
+      : this.notificationService.sendRejectTrainerRequestNotification(
+          String(trainerRequest?.userId)
+        );
 
     res
       .status(StatusCodes.OK)
@@ -76,7 +86,7 @@ class TrainerRequestController {
           status == "approved"
             ? TrainerRequestMessage.RequestApproved
             : TrainerRequestMessage.RequestRejected,
-          { userId, status }
+          trainerRequest
         )
       );
   }

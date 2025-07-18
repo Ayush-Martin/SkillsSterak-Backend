@@ -6,15 +6,27 @@ export interface IUser extends Document {
   password?: string;
   profileImage?: string;
   bio?: string;
-  place?: string;
+  location?: string;
   company?: string;
   position?: string;
-  yearsOfExperience?: number;
-  github?: string;
-  linkedin?: string;
-  website?: string;
-  educationalQualification?: string;
-  skills?: string;
+  experiences?: {
+    id: string;
+    company: string;
+    position: string;
+    duration?: string;
+    description?: string;
+  }[];
+  socialLinks?: {
+    github?: string;
+    linkedin?: string;
+    website?: string;
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+  };
+
+  education?: string;
+  skills?: string[];
   role?: "user" | "trainer" | "admin";
   googleId?: string;
   isBlocked?: boolean;
@@ -53,7 +65,7 @@ const UserSchema: Schema<IUser> = new Schema(
       required: false,
       default: "",
     },
-    place: {
+    location: {
       type: String,
       required: false,
       default: "",
@@ -68,36 +80,15 @@ const UserSchema: Schema<IUser> = new Schema(
       required: false,
       default: "",
     },
-
-    github: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    linkedin: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    website: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    educationalQualification: {
+    education: {
       type: String,
       required: false,
       default: "",
     },
     skills: {
-      type: String,
+      type: [String],
       required: false,
-      default: "",
-    },
-    yearsOfExperience: {
-      type: Number,
-      required: false,
-      default: 0,
+      default: [],
     },
     role: {
       type: "string",
@@ -119,6 +110,38 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false,
       default: "",
+    },
+    experiences: {
+      type: [
+        {
+          id: String,
+          company: String,
+          position: String,
+          duration: String,
+          description: String,
+        },
+      ],
+      required: false,
+      default: [],
+    },
+    socialLinks: {
+      type: {
+        github: String,
+        linkedin: String,
+        website: String,
+        instagram: String,
+        facebook: String,
+        youtube: String,
+      },
+      required: false,
+      default: {
+        github: "",
+        linkedin: "",
+        website: "",
+        instagram: "",
+        facebook: "",
+        youtube: "",
+      },
     },
   },
   { timestamps: true }

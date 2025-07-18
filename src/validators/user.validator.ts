@@ -14,15 +14,28 @@ export const updateProfileValidator = (user: any) => {
   const schema = z.object({
     username: UsernameValidationRule,
     position: PositionValidationRule,
-    place: PlaceValidationRule,
+    location: PlaceValidationRule,
     company: CompanyValidationRule,
     bio: BioValidationRule,
-    github: GithubValidationRule,
-    linkedin: LinkedinValidationRule,
-    website: WebsiteValidationRule,
-    educationalQualification: z.string(),
-    skills: z.string(),
-    yearsOfExperience: z.number(),
+    education: z.string(),
+    skills: z.array(z.string()),
+    experiences: z.array(
+      z.object({
+        id: z.string(),
+        company: z.string(),
+        position: z.string(),
+        duration: z.string(),
+        description: z.string(),
+      })
+    ),
+    socialLinks: z.object({
+      github: z.string(),
+      linkedin: z.string(),
+      website: z.string(),
+      instagram: z.string(),
+      facebook: z.string(),
+      youtube: z.string(),
+    }),
   });
 
   return schema.parse(user);

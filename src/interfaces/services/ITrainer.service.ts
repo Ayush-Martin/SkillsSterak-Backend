@@ -1,3 +1,4 @@
+import { ITrainerRequest } from "../../models/TrainerRequest.model";
 import { IUser } from "../../models/User.model";
 export interface ITrainerService {
   /**
@@ -17,9 +18,10 @@ export interface ITrainerService {
    * Approves or rejects a user's request to become a trainer. Used to control platform quality and access.
    */
   approveRejectTrainerRequest(
-    userId: string,
-    status: "approved" | "rejected"
-  ): Promise<void>;
+    trainerRequestId: string,
+    status: "approved" | "rejected",
+    rejectedReason?: string
+  ): Promise<ITrainerRequest | null>;
 
   /**
    * Retrieves a paginated list of students and their enrolled courses for a trainer, with search support. Used for trainer dashboards and analytics.

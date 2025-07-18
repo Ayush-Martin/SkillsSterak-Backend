@@ -5,13 +5,17 @@ import { successResponse } from "../utils/responseCreators";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { GeneralMessage } from "../constants/responseMessages";
+import { IUserService } from "../interfaces/services/IUser.service";
 
 /**
  * Handles trainer and student operations, including trainer listing and student analytics.
  * All methods are bound for safe Express routing.
  */
 class TrainerController {
-  constructor(private trainerService: ITrainerService) {
+  constructor(
+    private trainerService: ITrainerService,
+    private userService: IUserService
+  ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -38,7 +42,7 @@ class TrainerController {
     try {
       const { trainerId } = req.params;
 
-      const trainer = await this.trainerService.getTrainer(trainerId);
+      const trainer = await this.userService.getUserProfileDetails(trainerId);
 
       res
         .status(StatusCodes.OK)

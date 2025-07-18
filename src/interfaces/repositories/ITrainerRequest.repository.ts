@@ -12,8 +12,9 @@ export interface ITrainerRequestRepository
    * Enables admin workflows for managing trainer applications.
    */
   changeRequestStatus(
-    userId: string,
-    status: "approved" | "rejected"
+    trainerRequestId: string,
+    status: "approved" | "rejected",
+    rejectedReason?: string
   ): Promise<ITrainerRequest | null>;
 
   /**
@@ -27,4 +28,8 @@ export interface ITrainerRequestRepository
    * Enables analytics and pagination for request management.
    */
   getRequestedUserCount(): Promise<number>;
+
+  getUserPreviousRequestDetails(
+    userId: string
+  ): Promise<ITrainerRequest | null>;
 }

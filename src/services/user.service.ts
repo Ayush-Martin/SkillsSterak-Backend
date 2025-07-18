@@ -6,12 +6,21 @@ import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { getObjectId } from "../utils/objectId";
 import { UserMessage } from "../constants/responseMessages";
+import { ITrainerRequest } from "../models/TrainerRequest.model";
 
 class UserService implements IUserService {
   constructor(
     private userRepository: IUserRepository,
     private trainerRequestRepository: ITrainerRequestRepository
   ) {}
+
+  public async getProfile(userId: string): Promise<IUser | null> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
+    }
+    return user;
+  }
 
   public async updateProfile(
     userId: string,
@@ -68,6 +77,55 @@ class UserService implements IUserService {
 
   public async getAdmin(): Promise<IUser | null> {
     return await this.userRepository.getAdmin();
+  }
+
+  public async checkCompleteProfile(userId: string): Promise<boolean> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return errorCreator(UserMessage.UserNotFound, StatusCodes.BAD_REQUEST);
+    }
+
+    const {
+      username,
+      bio,
+      socialLinks,
+      profileImage,
+      location,
+      company,
+      education,
+      skills,
+      experiences,
+      position,
+    } = user;
+
+    const hasOneLink = socialLinks && Object.values(socialLinks).some((x) => x);
+
+    const isComplete = !!(
+      username &&
+      bio &&
+      profileImage &&
+      location &&
+      company &&
+      education &&
+      skills?.length &&
+      experiences?.length &&
+      position &&
+      hasOneLink
+    );
+
+    return isComplete;
+  }
+
+  public async getPreviousTrainerRequestDetails(
+    userId: string
+  ): Promise<ITrainerRequest | null> {
+    return await this.trainerRequestRepository.getUserPreviousRequestDetails(
+      userId
+    );
+  }
+
+  public async getUserProfileDetails(userId: string): Promise<IUser | null> {
+    return await this.userRepository.getUserProfileDetails(userId);
   }
 }
 

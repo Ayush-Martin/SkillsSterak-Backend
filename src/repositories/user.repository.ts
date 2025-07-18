@@ -1,6 +1,6 @@
 import { IUser } from "../models/User.model";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import BaseRepository from "./Base.repository";
 
 class UserRepository extends BaseRepository<IUser> implements IUserRepository {
@@ -100,6 +100,160 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     stripeAccountId: string
   ): Promise<IUser | null> {
     return await this.User.findByIdAndUpdate(userId, { stripeAccountId });
+  }
+
+  public async getUserProfileDetails(userId: string): Promise<IUser | null> {
+    const user = await this.User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "_id",
+          foreignField: "trainerId",
+          pipeline: [
+            {
+              $match: {
+                isListed: true,
+                status: "approved",
+              },
+            },
+            {
+              $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $match: {
+                      isListed: true,
+                    },
+                  },
+                  {
+                    $project: {
+                      _id: 1,
+                      categoryName: 1,
+                    },
+                  },
+                ],
+                as: "category",
+              },
+            },
+            {
+              $unwind: "$category",
+            },
+            {
+              $lookup: {
+                from: "modules",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "moduleCount",
+                  },
+                ],
+                as: "moduleCount",
+              },
+            },
+            {
+              $unwind: {
+                path: "$moduleCount",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $lookup: {
+                from: "enrolledcourses",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $count: "noOfEnrolled",
+                  },
+                ],
+                as: "noOfEnrolled",
+              },
+            },
+            {
+              $unwind: {
+                path: "$noOfEnrolled",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $lookup: {
+                from: "reviews",
+                localField: "_id",
+                foreignField: "courseId",
+                pipeline: [
+                  {
+                    $group: {
+                      _id: "$courseId",
+                      averageRating: {
+                        $avg: "$rating",
+                      },
+                    },
+                  },
+                ],
+                as: "reviews_summary",
+              },
+            },
+            {
+              $unwind: {
+                path: "$reviews_summary",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $addFields: {
+                averageRating: {
+                  $ifNull: ["$reviews_summary.averageRating", 0],
+                },
+              },
+            },
+            {
+              $project: {
+                averageRating: 1,
+                _id: 1,
+                trainerId: 1,
+                title: 1,
+                price: 1,
+                difficulty: 1,
+                thumbnail: 1,
+                category: "$category.categoryName",
+                moduleCount: {
+                  $ifNull: ["$moduleCount.moduleCount", 0],
+                },
+                noOfEnrolled: {
+                  $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+                },
+              },
+            },
+          ],
+          as: "courses",
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          email: 1,
+          profileImage: 1,
+          bio: 1,
+          role: 1,
+          company: 1,
+          location: 1,
+          socialLinks: 1,
+          skills: 1,
+          experiences: 1,
+          courses: 1,
+        },
+      },
+    ]);
+
+    return user[0];
   }
 }
 

@@ -230,6 +230,7 @@ class CourseService implements ICourseService {
   ): Promise<Array<ICourse>> {
     return await this.courseRepository.getTrainerTop5Courses(trainerId);
   }
+
 }
 
 export default CourseService;

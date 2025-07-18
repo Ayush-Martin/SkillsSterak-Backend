@@ -113,4 +113,6 @@ export interface ICourseService {
    * Returns the top 5 courses for a specific trainer based on engagement or ratings. Used for trainer analytics.
    */
   getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
+
+
 }

@@ -12,12 +12,19 @@ class TrainerRequestRepository
   }
 
   public async changeRequestStatus(
-    userId: string,
-    status: "approved" | "rejected"
+    trainerRequestId: string,
+    status: "approved" | "rejected",
+    rejectedReason?: string
   ): Promise<ITrainerRequest | null> {
-    return await this.TrainerRequest.findOneAndUpdate(
-      { userId },
-      { status },
+    const updateData: Partial<ITrainerRequest> = { status };
+
+    if (rejectedReason) {
+      updateData.rejectedReason = rejectedReason;
+    }
+
+    return await this.TrainerRequest.findByIdAndUpdate(
+      trainerRequestId,
+      updateData,
       { new: true }
     );
   }
@@ -35,6 +42,17 @@ class TrainerRequestRepository
         path: "userId",
         select: "username email _id",
       });
+  }
+
+  public async getUserPreviousRequestDetails(
+    userId: string
+  ): Promise<ITrainerRequest | null> {
+    return await this.TrainerRequest.findOne(
+      { userId },
+      { status: 1, rejectedReason: 1 }
+    ).sort({
+      createdAt: -1,
+    });
   }
 }
 

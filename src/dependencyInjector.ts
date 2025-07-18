@@ -152,7 +152,10 @@ export const trainerService = new TrainerService(
   trainerRepository,
   trainerRequestRepository
 );
-export const transactionService = new TransactionService(transactionRepository,walletRepository);
+export const transactionService = new TransactionService(
+  transactionRepository,
+  walletRepository
+);
 export const userService = new UserService(
   userRepository,
   trainerRequestRepository
@@ -209,7 +212,10 @@ export const reviewController = new ReviewController(reviewService);
 export const subscriptionController = new SubscriptionController(
   subscriptionService
 );
-export const trainerController = new TrainerController(trainerService);
+export const trainerController = new TrainerController(
+  trainerService,
+  userService
+);
 export const trainerRequestController = new TrainerRequestController(
   trainerService,
   notificationService

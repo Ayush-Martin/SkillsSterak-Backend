@@ -99,8 +99,11 @@ router
 //profile
 router
   .route("/profile")
+  .get(userController.getProfile)
   .patch(multerUpload.single("image"), userController.changeProfileImage)
   .put(userController.updateProfile);
+
+router.get("/profile/check", userController.checkUserCompletedProfile);
 
 //transactions
 router.get("/transactions", transactionController.getUserTransactions);
@@ -110,7 +113,10 @@ router.patch(
 );
 
 //trainer request
-router.get("/trainerRequest", userController.sendTrainerRequest);
+router
+  .route("/trainerRequest")
+  .post(userController.sendTrainerRequest)
+  .get(userController.getPreviousTrainerRequestDetails);
 
 //subscriptions
 router

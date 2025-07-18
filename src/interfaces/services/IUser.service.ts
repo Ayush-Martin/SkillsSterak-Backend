@@ -1,3 +1,4 @@
+import { ITrainerRequest } from "../../models/TrainerRequest.model";
 import { IUser } from "../../models/User.model";
 
 export interface IUserService {
@@ -8,6 +9,11 @@ export interface IUserService {
     userId: string,
     updatedData: Partial<IUser>
   ): Promise<void | IUser | null>;
+
+  /**
+   * Retrieves a user's profile information. Used to display user details in the application.
+   */
+  getProfile(userId: string): Promise<IUser | null>;
 
   /**
    * Updates the profile image for a user. Used to personalize user accounts and enhance user experience.
@@ -33,10 +39,18 @@ export interface IUserService {
    */
   sendTrainerRequest(userId: string): Promise<void>;
 
+  getPreviousTrainerRequestDetails(
+    userId: string
+  ): Promise<ITrainerRequest | null>;
+
   /**
    * Returns the total number of users in the system. Used for admin analytics and reporting.
    */
   getAdminUsersCount(): Promise<number>;
 
   getAdmin(): Promise<IUser | null>;
+
+  checkCompleteProfile(userId: string): Promise<boolean>;
+
+  getUserProfileDetails(userId: string): Promise<IUser | null>;
 }

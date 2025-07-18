@@ -1,8 +1,10 @@
-
+import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
 import { ITrainerService } from "../interfaces/services/ITrainer.service";
+import { ITrainerRequest } from "../models/TrainerRequest.model";
 import { IUser } from "../models/User.model";
+import errorCreator from "../utils/customError";
 
 class TrainerService implements ITrainerService {
   constructor(
@@ -43,17 +45,26 @@ class TrainerService implements ITrainerService {
   }
 
   public async approveRejectTrainerRequest(
-    userId: string,
-    status: "approved" | "rejected"
-  ): Promise<void> {
+    trainerRequestId: string,
+    status: "approved" | "rejected",
+    rejectedReason?: string
+  ): Promise<ITrainerRequest | null> {
     const res = await this.trainerRequestRepository.changeRequestStatus(
-      userId,
-      status
+      trainerRequestId,
+      status,
+      rejectedReason
     );
 
-    if (status == "approved") {
-      await this.trainerRepository.changeRole(userId, "trainer");
+    if (!res) {
+      errorCreator("Trainer request not found", StatusCodes.NOT_FOUND);
+      return null;
     }
+
+    if (status == "approved") {
+      await this.trainerRepository.changeRole(String(res.userId), "trainer");
+    }
+
+    return res;
   }
 
   public async getStudentsWithEnrolledCourses(

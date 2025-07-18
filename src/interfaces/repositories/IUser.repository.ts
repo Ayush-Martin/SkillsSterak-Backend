@@ -89,4 +89,6 @@ export interface IUserRepository extends BaseRepository<IUser> {
     userId: string,
     stripeAccountId: string
   ): Promise<IUser | null>;
+
+  getUserProfileDetails(userId: string): Promise<IUser | null>;
 }

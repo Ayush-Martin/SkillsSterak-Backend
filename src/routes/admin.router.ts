@@ -19,7 +19,10 @@ router.use(adminAuthMiddleware);
 router.route("/users").get(userController.getUsers);
 router.route("/users/count").get(userController.getUsersCount);
 
-router.route("/users/:userId").patch(userController.blockUnblockUser);
+router
+  .route("/users/:userId")
+  .patch(userController.blockUnblockUser)
+  .get(userController.getAdminUserProfile);
 
 //trainer requests
 router
@@ -36,7 +39,7 @@ router.get("/revenue/graph", transactionController.getAdminRevenueGraphData);
 
 //trainer requests
 router
-  .route("/trainerRequests/:userId")
+  .route("/trainerRequests/:trainerRequestId")
   .patch(trainerRequestController.approveRejectRequests);
 
 //categories

@@ -3,6 +3,7 @@ import { Document, ObjectId, Schema, model } from "mongoose";
 export interface ITrainerRequest extends Document {
   userId: ObjectId;
   status?: "pending" | "approved" | "rejected";
+  rejectedReason?: string;
 }
 
 const TrainerRequestSchema = new Schema<ITrainerRequest>(
@@ -17,6 +18,12 @@ const TrainerRequestSchema = new Schema<ITrainerRequest>(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    rejectedReason: {
+      type: String,
+      required: false,
+    },
+    
+
   },
   { timestamps: true }
 );

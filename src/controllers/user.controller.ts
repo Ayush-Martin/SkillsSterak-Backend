@@ -57,11 +57,24 @@ class UserController {
     }
   }
 
+  public async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId!;
+      const data = await this.userService.getProfile(userId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   /**
    * Updates the user's profile details, supporting richer user information and personalization.
    */
   public async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
+      // const data = updateProfileValidator(req.body);
       const data = updateProfileValidator(req.body);
       const userId = req.userId!;
 
@@ -70,6 +83,24 @@ class UserController {
       res
         .status(StatusCodes.OK)
         .json(successResponse(UserMessage.ProfileUpdated, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async checkUserCompletedProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+
+      const isComplete = await this.userService.checkCompleteProfile(userId);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, isComplete));
     } catch (err) {
       next(err);
     }
@@ -92,6 +123,26 @@ class UserController {
       res
         .status(200)
         .json(successResponse(TrainerRequestMessage.TrainerRequestSent));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getPreviousTrainerRequestDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+
+      const data = await this.userService.getPreviousTrainerRequestDetails(
+        userId
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
@@ -155,6 +206,22 @@ class UserController {
     try {
       const data = await this.userService.getAdminUsersCount();
 
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getAdminUserProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { userId } = req.params;
+      const data = await this.userService.getUserProfileDetails(userId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
