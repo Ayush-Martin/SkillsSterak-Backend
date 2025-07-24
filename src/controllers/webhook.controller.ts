@@ -86,51 +86,27 @@ class WebHookController {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object;
-          const { userId, courseId, transactionId } = session.metadata!;
-          await this.enrolledCourseService.completePurchase(
-            userId,
-            courseId,
-            transactionId
-          );
-          await this.chatService.joinChat(userId, courseId);
-          await this.wishlistService.removeCourseFromWishlist(userId, courseId);
-          break;
-        }
-
-        case "customer.subscription.created": {
-          const session = event.data.object;
-          const { userId } = session.metadata!;
-
-          await this.subscriptionService.completeSubscription(
-            userId,
-            session.id
-          );
-
-          break;
-        }
-
-        case "customer.subscription.deleted": {
-          const session = event.data.object;
-          const { userId } = session.metadata!;
-          await this.subscriptionService.deactivateSubscription(userId);
-          break;
-        }
-
-        case "customer.subscription.updated": {
-          const session = event.data.object;
-          const status = session.status;
-          const { userId } = session.metadata!;
-
-          if (
-            status === "canceled" ||
-            status === "unpaid" ||
-            status === "incomplete_expired"
-          ) {
-            await this.subscriptionService.deactivateSubscription(userId);
-          } else if (status == "active") {
-            await this.subscriptionService.activateSubscription(userId);
+          const { userId, courseId, transactionId, planId } = session.metadata!;
+          if (courseId) {
+            await this.enrolledCourseService.completePurchase(
+              userId,
+              courseId,
+              transactionId
+            );
+            await this.chatService.joinChat(userId, courseId);
+            await this.wishlistService.removeCourseFromWishlist(
+              userId,
+              courseId
+            );
           }
 
+          if (planId) {
+            await this.subscriptionService.completeSubscription(
+              userId,
+              planId,
+              transactionId
+            );
+          }
           break;
         }
       }

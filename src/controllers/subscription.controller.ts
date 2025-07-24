@@ -26,8 +26,10 @@ class SubscriptionController {
   ) {
     try {
       const userId = req.userId!;
+      const { subscriptionPlanId } = req.params;
       const order = await this.subscriptionService.createSubscriptionOrder(
-        userId
+        userId,
+        subscriptionPlanId
       );
       res
         .status(StatusCodes.OK)

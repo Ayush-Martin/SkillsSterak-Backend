@@ -225,3 +225,11 @@ export enum DiscussionMessage {
   DiscussionUpdated = "Discussion updated",
   ReplyAdded = "Reply has been added",
 }
+
+export enum SubscriptionPlanMessage {
+  //Success messages
+  SubscriptionPlanAdded = "Subscription plan added",
+  SubscriptionPlanUpdated = "Subscription plan updated",
+  SubscriptionListed = "Subscription plan listed",
+  SubscriptionUnlisted = "Subscription plan unlisted",
+}

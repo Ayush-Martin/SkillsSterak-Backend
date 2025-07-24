@@ -7,31 +7,56 @@ import { getObjectId } from "../utils/objectId";
 import stripe from "../config/stripe";
 import envConfig from "../config/env";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
+import { ISubscriptionPlanRepository } from "../interfaces/repositories/ISubscriptionPlan.repository";
 
 class SubscriptionService implements ISubscriptionService {
   constructor(
     private subscriptionRepository: ISubscriptionRepository,
     private transactionRepository: ITransactionRepository,
-    private userRepository: IUserRepository
+    private userRepository: IUserRepository,
+    private subscriptionPlanRepository: ISubscriptionPlanRepository
   ) {}
 
-  public async createSubscriptionOrder(userId: string): Promise<string> {
+  public async createSubscriptionOrder(
+    userId: string,
+    planId: string
+  ): Promise<string> {
     const userEmail = await this.userRepository.getUserEmail(userId);
 
+    const plan = (await this.subscriptionPlanRepository.findById(planId))!;
+
+    console.log(plan, planId);
+
+    const transaction = await this.transactionRepository.create({
+      payerId: getObjectId(userId),
+      amount: plan.price,
+      type: "subscription",
+      status: "pending",
+      method: "stripe",
+    });
+
     const session = await stripe.checkout.sessions.create({
-      success_url: envConfig.FRONTEND_DOMAIN,
-      cancel_url: envConfig.FRONTEND_DOMAIN,
+      payment_method_types: ["card"],
       line_items: [
         {
-          price: envConfig.STRIPE_SUBSCRIPTION_PREMIUM_PRICE_ID,
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: plan.title,
+              description: plan.description,
+            },
+            unit_amount: plan.price * 100,
+          },
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      subscription_data: {
-        metadata: {
-          userId,
-        },
+      mode: "payment",
+      success_url: envConfig.FRONTEND_DOMAIN + "/payment/success",
+      cancel_url: envConfig.FRONTEND_DOMAIN + "/payment/failure",
+      metadata: {
+        userId,
+        planId,
+        transactionId: transaction.id,
       },
       customer_email: userEmail,
     });
@@ -39,37 +64,27 @@ class SubscriptionService implements ISubscriptionService {
     return session.id;
   }
 
-  public async completeSubscription(userId: string): Promise<void> {
-    const transaction = await this.transactionRepository.create({
-      payerId: getObjectId(userId),
-      amount: 5000,
-      type: "subscription",
-      status: "completed",
-      method: "stripe",
-    });
+  public async completeSubscription(
+    userId: string,
+    planId: string,
+    transactionId: string
+  ): Promise<void> {
+    const plan = (await this.subscriptionPlanRepository.findById(planId))!;
+
+    await this.transactionRepository.changePaymentStatus(
+      transactionId,
+      "completed"
+    );
+
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + plan.duration);
 
     await this.subscriptionRepository.create({
       userId: getObjectId(userId),
-      transactionId: getObjectId(transaction._id as string),
-      endDate: getNextMonth(),
-      active: true,
+      transactionId: getObjectId(transactionId),
+      subscriptionPlanId: getObjectId(planId),
+      endDate,
     });
-  }
-
-  public async deactivateSubscription(
-    stripeSubscriptionId: string
-  ): Promise<void> {
-    await this.subscriptionRepository.deactivateSubscription(
-      stripeSubscriptionId
-    );
-  }
-
-  public async activateSubscription(userId: string): Promise<void> {
-    await this.subscriptionRepository.activateSubscription(
-      userId,
-      new Date(),
-      getNextMonth()
-    );
   }
 
   public async getSubscriptionDetail(

@@ -17,6 +17,27 @@ class SubscriptionPlanRepository
   ): Promise<void> {
     await this._SubscriptionPlan.updateOne({ _id: id }, { isListed });
   }
+
+  public async getSubscriptionPlansCount(): Promise<number> {
+    return await this._SubscriptionPlan.countDocuments();
+  }
+
+  public async getSubscriptionPlans(
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<ISubscriptionPlan[]> {
+    return await this._SubscriptionPlan
+      .find({ title: search })
+      .skip(skip)
+      .limit(limit);
+  }
+
+  public async getSubscriptionPlanById(
+    id: string
+  ): Promise<ISubscriptionPlan | null> {
+    return await this._SubscriptionPlan.findById(id);
+  }
 }
 
 export default SubscriptionPlanRepository;

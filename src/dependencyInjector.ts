@@ -29,6 +29,7 @@ import AssignmentModel from "./models/Assignment.model";
 import LiveSessionModel from "./models/LiveSession.model";
 import DiscussionModel from "./models/Discussion.model";
 import AssignmentSubmissionModel from "./models/AssignmentSubmission.model";
+import SubscriptionPlanModel from "./models/SubscriptionPlan.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -57,6 +58,7 @@ import AssignmentRepository from "./repositories/assignment.repository";
 import LiveSessionRepository from "./repositories/liveSession.repository";
 import DiscussionRepository from "./repositories/discussion.repository";
 import AssignmentSubmissionRepository from "./repositories/assignmentSubmission.repository";
+import SubscriptionPlanRepository from "./repositories/subscriptionPlan.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -84,6 +86,7 @@ import AssignmentService from "./services/assignment.service";
 import LiveSessionService from "./services/liveSession.service";
 import DiscussionService from "./services/discussion.service";
 import AssignmentSubmissionService from "./services/assignmentSubmission.service";
+import SubscriptionPlanService from "./services/subscriptionPlan.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -109,6 +112,7 @@ import AssignmentController from "./controllers/assignment.controller";
 import LiveSessionController from "./controllers/liveSession.controller";
 import DiscussionController from "./controllers/discussion.controller";
 import AssignmentSubmissionController from "./controllers/assignmentSubmission.controller";
+import SubscriptionPlanController from "./controllers/subscriptionPlan.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -143,6 +147,9 @@ const discussionRepository = new DiscussionRepository(DiscussionModel);
 const assignmentSubmissionRepository = new AssignmentSubmissionRepository(
   AssignmentSubmissionModel
 );
+const subscriptionPlanRepository = new SubscriptionPlanRepository(
+  SubscriptionPlanModel
+);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -168,7 +175,8 @@ export const reviewService = new ReviewService(
 export const subscriptionService = new SubscriptionService(
   subscriptionRepository,
   transactionRepository,
-  userRepository
+  userRepository,
+  subscriptionPlanRepository
 );
 export const trainerService = new TrainerService(
   trainerRepository,
@@ -220,6 +228,9 @@ export const discussionService = new DiscussionService(
 );
 export const assignmentSubmissionService = new AssignmentSubmissionService(
   assignmentSubmissionRepository
+);
+export const subscriptionPlanService = new SubscriptionPlanService(
+  subscriptionPlanRepository
 );
 
 // Instantiate Controllers
@@ -282,3 +293,6 @@ export const liveSessionController = new LiveSessionController(
 export const discussionController = new DiscussionController(discussionService);
 export const assignmentSubmissionController =
   new AssignmentSubmissionController(assignmentSubmissionService);
+export const subscriptionPlanController = new SubscriptionPlanController(
+  subscriptionPlanService
+);

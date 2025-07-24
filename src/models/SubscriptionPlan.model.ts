@@ -4,7 +4,6 @@ export interface ISubscriptionPlan extends Document {
   title: string;
   price: number;
   description: string;
-  type: "monthly" | "yearly";
   duration: number;
   isListed: boolean;
 }
@@ -20,11 +19,6 @@ const SubscriptionPlanSchema = new Schema<ISubscriptionPlan>({
   },
   description: {
     type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: ["monthly", "yearly"],
     required: true,
   },
   duration: {

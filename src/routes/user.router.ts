@@ -21,6 +21,7 @@ import {
   liveSessionController,
   assignmentController,
   assignmentSubmissionController,
+  subscriptionPlanController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -145,6 +146,14 @@ router
 router
   .route("/subscription")
   .get(subscriptionController.getSubscriptionDetail)
+  .post(subscriptionController.createSubscriptionOrder);
+
+router
+  .route("/subscriptionPlans")
+  .get(subscriptionPlanController.getAllSubscriptionPlans);
+
+router
+  .route("/subscriptionPlans/:subscriptionPlanId")
   .post(subscriptionController.createSubscriptionOrder);
 
 // post(subscriptionController.completeSubscription);
