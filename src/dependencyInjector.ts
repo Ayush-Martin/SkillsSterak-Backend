@@ -6,6 +6,7 @@
  */
 
 //models
+import MessageModel from "./models/Message.model";
 import CategoryModel from "./models/Category.model";
 import CourseModel from "./models/Course.model";
 import EnrolledCourseModel from "./models/EnrolledCourse.model";
@@ -24,6 +25,10 @@ import StreamModel from "./models/Stream.model";
 import ChatModel from "./models/Chat.model";
 import NoteBookModel from "./models/Notebook.model";
 import WishlistModel from "./models/Wishlist.model";
+import AssignmentModel from "./models/Assignment.model";
+import LiveSessionModel from "./models/LiveSession.model";
+import DiscussionModel from "./models/Discussion.model";
+import AssignmentSubmissionModel from "./models/AssignmentSubmission.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -48,6 +53,10 @@ import ChatRepository from "./repositories/chat.repository";
 import MessageRepository from "./repositories/message.repository";
 import NotebookRepository from "./repositories/Notebook.repository";
 import WishlistRepository from "./repositories/wishlist.repository";
+import AssignmentRepository from "./repositories/assignment.repository";
+import LiveSessionRepository from "./repositories/liveSession.repository";
+import DiscussionRepository from "./repositories/discussion.repository";
+import AssignmentSubmissionRepository from "./repositories/assignmentSubmission.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -71,6 +80,10 @@ import AiChatService from "./services/aiChat.service";
 import ChatService from "./services/chat.service";
 import NotebookService from "./services/notebook.service";
 import WishlistService from "./services/wishlist.service";
+import AssignmentService from "./services/assignment.service";
+import LiveSessionService from "./services/liveSession.service";
+import DiscussionService from "./services/discussion.service";
+import AssignmentSubmissionService from "./services/assignmentSubmission.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -92,8 +105,11 @@ import ChatController from "./controllers/chat.controller";
 import NotebookController from "./controllers/notebook.controller";
 import WebHookController from "./controllers/webhook.controller";
 import WishlistController from "./controllers/wishlist.controller";
+import AssignmentController from "./controllers/assignment.controller";
+import LiveSessionController from "./controllers/liveSession.controller";
+import DiscussionController from "./controllers/discussion.controller";
+import AssignmentSubmissionController from "./controllers/assignmentSubmission.controller";
 
-import MessageModel from "./models/Message.model";
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
 const courseRepository = new CourseRepository(CourseModel);
@@ -121,6 +137,12 @@ const chatRepository = new ChatRepository(ChatModel);
 const messageRepository = new MessageRepository(MessageModel);
 const noteBookRepository = new NotebookRepository(NoteBookModel);
 const wishlistRepository = new WishlistRepository(WishlistModel);
+const assignmentRepository = new AssignmentRepository(AssignmentModel);
+const liveSessionRepository = new LiveSessionRepository(LiveSessionModel);
+const discussionRepository = new DiscussionRepository(DiscussionModel);
+const assignmentSubmissionRepository = new AssignmentSubmissionRepository(
+  AssignmentSubmissionModel
+);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -187,6 +209,18 @@ export const chatService = new ChatService(
 );
 export const notebookService = new NotebookService(noteBookRepository);
 export const wishlistService = new WishlistService(wishlistRepository);
+export const assignmentService = new AssignmentService(assignmentRepository);
+export const liveSessionService = new LiveSessionService(
+  liveSessionRepository,
+  courseRepository
+);
+export const discussionService = new DiscussionService(
+  discussionRepository,
+  replyRepository
+);
+export const assignmentSubmissionService = new AssignmentSubmissionService(
+  assignmentSubmissionRepository
+);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -237,6 +271,14 @@ export const webhookController = new WebHookController(
   enrolledCoursesService,
   chatService,
   subscriptionService,
-  wishlistService
+  wishlistService,
+  liveSessionService
 );
 export const wishlistController = new WishlistController(wishlistService);
+export const assignmentController = new AssignmentController(assignmentService);
+export const liveSessionController = new LiveSessionController(
+  liveSessionService
+);
+export const discussionController = new DiscussionController(discussionService);
+export const assignmentSubmissionController =
+  new AssignmentSubmissionController(assignmentSubmissionService);

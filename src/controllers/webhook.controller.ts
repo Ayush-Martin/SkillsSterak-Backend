@@ -8,6 +8,7 @@ import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses
 import { IChatService } from "../interfaces/services/IChat.service";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
 import { IWishlistService } from "../interfaces/services/IWishlist.service";
+import { ILiveSessionService } from "../interfaces/services/ILiveSession.service";
 
 /**
  * Handles third-party webhook events (LiveKit, Stripe) for real-time updates and automation.
@@ -19,7 +20,8 @@ class WebHookController {
     private enrolledCourseService: IEnrolledCoursesService,
     private chatService: IChatService,
     private subscriptionService: ISubscriptionService,
-    private wishlistService: IWishlistService
+    private wishlistService: IWishlistService,
+    private liveSessionService: ILiveSessionService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -49,10 +51,12 @@ class WebHookController {
         case "participant_joined":
           console.log("⏳ Waiting 1s before starting recording...");
           await new Promise((res) => setTimeout(res, 1000));
-          await this.streamService.startRecording(event.room?.name!);
+          // await this.streamService.startRecording(event.room?.name!);
+          await this.liveSessionService.startRecording(event.room?.name!);
           break;
         case "participant_left":
-          await this.streamService.endStream(event.room?.name!);
+          // await this.streamService.endStream(event.room?.name!);
+          await this.liveSessionService.endLiveSession(event.room?.name!);
 
           break;
       }

@@ -10,7 +10,7 @@ export interface IReplyRepository extends BaseRepository<IReply> {
    * Retrieves all replies associated with a specific review.
    * Enables nested conversations and review engagement.
    */
-  getReviewReplies(reviewId: string): Promise<Array<IReply | null>>;
+  getReplies(reviewId: string): Promise<Array<IReply>>;
 
   /**
    * Deletes all replies associated with a given entity (e.g., review or comment).

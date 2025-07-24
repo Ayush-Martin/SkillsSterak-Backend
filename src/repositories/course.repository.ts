@@ -383,7 +383,6 @@ class CourseRepository
     ]).collation({ locale: "en", strength: 2 });
   }
 
-
   public async getAdminCourses(
     search: RegExp,
     skip: number,
@@ -550,6 +549,132 @@ class CourseRepository
         $limit: 5,
       },
     ]);
+  }
+
+  public async getAdminCourse(courseId: string): Promise<ICourse | null> {
+    const course = await this.Course.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(courseId),
+        },
+      },
+      {
+        $lookup: {
+          from: "modules",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "moduleId",
+                pipeline: [
+                  {
+                    $project: {
+                      title: 1,
+                      type: 1,
+                      path: 1,
+                    },
+                  },
+                ],
+                as: "lessons",
+              },
+            },
+            {
+              $project: {
+                title: 1,
+                lessons: 1,
+              },
+            },
+          ],
+          as: "modules",
+        },
+      },
+      {
+        $lookup: {
+          from: "livesessions",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $project: {
+                __v: 0,
+                courseId: 0,
+                createdAt: 0,
+                updatedAt: 0,
+              },
+            },
+          ],
+          as: "liveSessions",
+        },
+      },
+      {
+        $lookup: {
+          from: "assignments",
+          localField: "_id",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $project: {
+                __v: 0,
+                courseId: 0,
+              },
+            },
+          ],
+          as: "assignments",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                categoryName: 1,
+              },
+            },
+          ],
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                username: 1,
+                email: 1,
+                profileImage: 1,
+              },
+            },
+          ],
+          as: "trainer",
+        },
+      },
+      {
+        $unwind: "$trainer",
+      },
+      {
+        $project: {
+          trainerId: 0,
+          categoryId: 0,
+          createdAt: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
+      },
+    ]);
+
+    return course[0];
   }
 }
 

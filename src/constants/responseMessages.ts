@@ -198,3 +198,30 @@ export enum LiveStreamMessage {
   RecordingNotFound = "Recording not found",
   StreamNotFound = "Stream not found",
 }
+
+export enum AssignmentMessage {
+  //Success messages
+  AssignmentAdded = "Assignment added",
+  AssignmentDeleted = "Assignment deleted",
+  AssignmentUpdated = "Assignment updated",
+  AssignmentSubmitted = "Assignment submitted",
+  AssignmentGraded = "Assignment graded",
+  AssignmentUngraded = "Assignment ungraded",
+  AssignmentReSubmitted = "Assignment resubmitted",
+}
+
+export enum LiveSessionMessage {
+  //Success messages
+  LiveSessionScheduled = "Live session scheduled",
+  LiveSessionUpdated = "Live session updated",
+  LiveSessionDeleted = "Live session deleted",
+  LiveSessionStarted = "Live session started",
+}
+
+export enum DiscussionMessage {
+  //Success messages
+  DiscussionAdded = "Discussion added",
+  DiscussionDeleted = "Discussion deleted",
+  DiscussionUpdated = "Discussion updated",
+  ReplyAdded = "Reply has been added",
+}

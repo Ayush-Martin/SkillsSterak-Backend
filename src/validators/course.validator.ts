@@ -40,21 +40,7 @@ export const updateCourseBasicDetailsValidator = (data: any) => {
     difficulty: CourseDifficultyValidationRule,
     description: CourseDescriptionValidationRule,
     categoryId: CourseCategoryIdValidationRule,
-  });
-
-  return schema.parse(data);
-};
-
-export const updateCourseRequirementsValidator = (data: any) => {
-  const schema = z.object({
     requirements: z.array(z.string()),
-  });
-
-  return schema.parse(data);
-};
-
-export const updateCourseSkillsCoveredValidator = (data: any) => {
-  const schema = z.object({
     skillsCovered: z.array(z.string()),
   });
 

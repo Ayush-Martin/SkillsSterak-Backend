@@ -65,7 +65,7 @@ class ReviewService implements IReviewService {
   }
 
   public async getReplies(reviewId: string): Promise<Array<IReply | null>> {
-    return await this.replyRepository.getReviewReplies(reviewId);
+    return await this.replyRepository.getReplies(reviewId);
   }
 
   public async deleteReview(reviewId: string): Promise<void> {

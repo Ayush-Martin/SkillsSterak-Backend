@@ -100,4 +100,6 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
    * Supports trainer dashboards and recognition features.
    */
   getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
+
+  getAdminCourse(courseId: string): Promise<ICourse | null>;
 }

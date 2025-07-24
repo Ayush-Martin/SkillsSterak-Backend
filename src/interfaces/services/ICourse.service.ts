@@ -114,5 +114,5 @@ export interface ICourseService {
    */
   getTrainerTop5Courses(trainerId: string): Promise<Array<ICourse>>;
 
-
+  getAdminCourse(courseId: string): Promise<ICourse | null>;
 }

@@ -231,6 +231,9 @@ class CourseService implements ICourseService {
     return await this.courseRepository.getTrainerTop5Courses(trainerId);
   }
 
+  public async getAdminCourse(courseId: string): Promise<ICourse | null> {
+    return await this.courseRepository.getAdminCourse(courseId);
+  }
 }
 
 export default CourseService;

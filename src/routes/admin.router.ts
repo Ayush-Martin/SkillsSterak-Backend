@@ -60,7 +60,10 @@ router.get("/courses", courseController.getAdminCourses);
 router.get("/courses/top5", courseController.getAdminTop5Courses);
 router.get("/courses/count", courseController.getAdminCoursesCount);
 
-router.patch("/courses/:courseId", courseController.listUnListCourse);
+router
+  .route("/courses/:courseId")
+  .patch(courseController.listUnListCourse)
+  .get(courseController.getAdminCourse);
 
 router.patch("/courses/:courseId/status", courseController.approveRejectCourse);
 

@@ -11,9 +11,7 @@ class ReplyRepository
     super(Reply);
   }
 
-  public async getReviewReplies(
-    reviewId: string
-  ): Promise<Array<IReply | null>> {
+  public async getReplies(reviewId: string): Promise<Array<IReply>> {
     return await this.Reply.find({ entityId: reviewId })
       .populate({
         path: "userId",

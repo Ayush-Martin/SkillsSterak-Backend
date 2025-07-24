@@ -17,6 +17,10 @@ import {
   notebookController,
   walletController,
   wishlistController,
+  discussionController,
+  liveSessionController,
+  assignmentController,
+  assignmentSubmissionController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -63,6 +67,25 @@ router.use(accessTokenValidator);
 // );
 
 router.get("/courses/:courseId/access", enrolledCourseController.checkEnrolled);
+
+router
+  .route("/courses/:courseId/liveSessions")
+  .get(liveSessionController.getLiveSessions);
+
+router
+  .route("/courses/:courseId/assignments")
+  .get(assignmentController.getUserAssignments);
+
+router
+  .route("/courses/:courseId/assignments/:assignmentId")
+  .put(
+    multerUpload.single("file"),
+    assignmentSubmissionController.resubmitAssignment
+  )
+  .post(
+    multerUpload.single("file"),
+    assignmentSubmissionController.submitAssignment
+  );
 
 //enrolled courses
 router.get("/enrolledCourses", enrolledCourseController.getEnrolledCourses);
@@ -168,5 +191,17 @@ router
 router
   .route("/wishlist/:wishlistId")
   .delete(wishlistController.removeFromWishlist);
+
+router
+  .route("/discussions")
+  .get(discussionController.getDiscussions)
+  .post(discussionController.createDiscussion);
+
+router
+  .route("/discussions/:discussionId")
+  .get(discussionController.getReplies)
+  .post(discussionController.addReply)
+  .patch(discussionController.editDiscussion)
+  .delete(discussionController.deleteDiscussion);
 
 export default router;

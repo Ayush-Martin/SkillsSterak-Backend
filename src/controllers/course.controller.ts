@@ -6,8 +6,6 @@ import {
   createCourseValidator,
   getCoursesValidator,
   updateCourseBasicDetailsValidator,
-  updateCourseRequirementsValidator,
-  updateCourseSkillsCoveredValidator,
 } from "../validators/course.validator";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
@@ -322,50 +320,6 @@ class CourseController {
   }
 
   /**
-   * Updates the requirements for a course.
-   */
-  public async updateCourseRequirements(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { courseId } = req.params;
-      const data = updateCourseRequirementsValidator(req.body);
-
-      await this.courseService.updateCourse(courseId, data);
-
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse(CourseMessage.RequirementsUpdated));
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  /**
-   * Updates the skills covered by a course.
-   */
-  public async updateCourseSkillsCovered(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { courseId } = req.params;
-      const data = updateCourseSkillsCoveredValidator(req.body);
-
-      await this.courseService.updateCourse(courseId, data);
-
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse(CourseMessage.SkillsCoveredUpdated));
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  /**
    * Returns the total count of courses for admin analytics.
    */
   public async getAdminCoursesCount(
@@ -435,6 +389,18 @@ class CourseController {
     try {
       const data = await this.courseService.getAdminTop5Courses();
 
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getAdminCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      const data = await this.courseService.getAdminCourse(courseId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
