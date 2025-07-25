@@ -13,15 +13,17 @@ import stripe from "../config/stripe";
 import envConfig from "../config/env";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { CourseMessage, WalletMessage } from "../constants/responseMessages";
+import { ILessonRepository } from "../interfaces/repositories/ILesson.repository";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
-    private enrolledCoursesRepository: IEnrolledCoursesRepository,
-    private courseRepository: ICourseRepository,
-    private walletRepository: IWalletRepository,
-    private transactionRepository: ITransactionRepository,
-    private chatRepository: IChatRepository,
-    private userRepository: IUserRepository
+    private _enrolledCoursesRepository: IEnrolledCoursesRepository,
+    private _courseRepository: ICourseRepository,
+    private _walletRepository: IWalletRepository,
+    private _transactionRepository: ITransactionRepository,
+    private _chatRepository: IChatRepository,
+    private _userRepository: IUserRepository,
+    private _lessonsRepository: ILessonRepository
   ) {}
 
   public async enrollCourse(
@@ -29,19 +31,27 @@ class EnrolledCourses implements IEnrolledCoursesService {
     courseId: string,
     method?: "wallet" | "stripe"
   ): Promise<string | null> {
-    const course = await this.courseRepository.findById(courseId);
-    const user = await this.userRepository.findById(userId);
+    const course = await this._courseRepository.findById(courseId);
+    const user = await this._userRepository.findById(userId);
+    const courseDuration =
+      await this._lessonsRepository.getCourseLessonsDuration(courseId);
+
+    console.log(courseDuration);
+
+    const cancelTime = new Date();
+    cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);
+
     if (!course)
       return errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
 
     //If course is free
     if (course.price === 0 || String(course.trainerId) == String(userId)) {
-      await this.enrolledCoursesRepository.create({
+      await this._enrolledCoursesRepository.create({
         userId: getObjectId(userId),
         courseId: getObjectId(courseId),
       });
 
-      await this.chatRepository.addMemberToChat(courseId, userId);
+      await this._chatRepository.addMemberToChat(courseId, userId);
 
       return null;
     }
@@ -50,7 +60,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
 
     //Handle payment done by wallet
     if (method == "wallet") {
-      const userWalletInfo = await this.walletRepository.getUserWalletInfo(
+      const userWalletInfo = await this._walletRepository.getUserWalletInfo(
         userId
       );
 
@@ -61,7 +71,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
         );
       }
 
-      await this.transactionRepository.create({
+      await this._transactionRepository.create({
         payerId: getObjectId(userId),
         receiverId: course.trainerId,
         amount: course.price,
@@ -70,22 +80,23 @@ class EnrolledCourses implements IEnrolledCoursesService {
         courseId: getObjectId(courseId),
         method,
         adminCommission,
+        cancelTime,
       });
 
-      await this.enrolledCoursesRepository.create({
+      await this._enrolledCoursesRepository.create({
         userId: getObjectId(userId),
         courseId: getObjectId(courseId),
       });
 
-      await this.walletRepository.debitWallet(userId, course.price);
+      await this._walletRepository.debitWallet(userId, course.price);
 
-      await this.chatRepository.addMemberToChat(courseId, userId);
+      await this._chatRepository.addMemberToChat(courseId, userId);
 
       return null;
     }
 
     //Payment done by stripe
-    const transaction = await this.transactionRepository.create({
+    const transaction = await this._transactionRepository.create({
       payerId: getObjectId(userId),
       receiverId: course.trainerId,
       amount: course.price,
@@ -94,6 +105,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
       courseId: getObjectId(courseId),
       method,
       adminCommission,
+      cancelTime,
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -131,20 +143,20 @@ class EnrolledCourses implements IEnrolledCoursesService {
     courseId: string,
     transactionId: string
   ): Promise<{ userId: string; courseId: string }> {
-    const course = await this.courseRepository.findById(courseId);
+    const course = await this._courseRepository.findById(courseId);
     if (!course) return errorCreator("Course not found", StatusCodes.NOT_FOUND);
 
-    await this.enrolledCoursesRepository.create({
+    await this._enrolledCoursesRepository.create({
       userId: getObjectId(userId),
       courseId: getObjectId(courseId),
     });
 
-    await this.walletRepository.creditWallet(
+    await this._walletRepository.creditWallet(
       course?.trainerId as unknown as string,
       course?.price
     );
 
-    await this.transactionRepository.changePaymentStatus(
+    await this._transactionRepository.changePaymentStatus(
       transactionId,
       "on_process"
     );
@@ -163,14 +175,14 @@ class EnrolledCourses implements IEnrolledCoursesService {
   }> {
     const skip = (page - 1) * size;
     const enrolledCourses =
-      await this.enrolledCoursesRepository.getEnrolledCourses(
+      await this._enrolledCoursesRepository.getEnrolledCourses(
         userId,
         skip,
         size
       );
 
     const enrolledCoursesCount =
-      await this.enrolledCoursesRepository.getEnrolledCoursesCount(userId);
+      await this._enrolledCoursesRepository.getEnrolledCoursesCount(userId);
 
     const totalPages = Math.ceil(enrolledCoursesCount / size);
     return { enrolledCourses, currentPage: page, totalPages };
@@ -186,14 +198,14 @@ class EnrolledCourses implements IEnrolledCoursesService {
   }> {
     const skip = (page - 1) * RECORDS_PER_PAGE;
     const completedEnrolledCourses =
-      await this.enrolledCoursesRepository.getComptedEnrolledCourses(
+      await this._enrolledCoursesRepository.getComptedEnrolledCourses(
         userId,
         skip,
         RECORDS_PER_PAGE
       );
 
     const completedEnrolledCoursesCount =
-      await this.enrolledCoursesRepository.getCompletedEnrolledCoursesCount(
+      await this._enrolledCoursesRepository.getCompletedEnrolledCoursesCount(
         userId
       );
 
@@ -207,7 +219,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
     userId: string,
     courseId: string
   ): Promise<IEnrolledCourses | null> {
-    return await this.enrolledCoursesRepository.getEnrolledCourseByCourseId(
+    return await this._enrolledCoursesRepository.getEnrolledCourseByCourseId(
       userId,
       courseId
     );
@@ -217,7 +229,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
     userId: string,
     courseId: string
   ): Promise<boolean> {
-    const enrolledData = await this.enrolledCoursesRepository.checkEnrolled(
+    const enrolledData = await this._enrolledCoursesRepository.checkEnrolled(
       userId,
       courseId
     );
@@ -235,7 +247,7 @@ class EnrolledCourses implements IEnrolledCoursesService {
     lessonId: string
   ): Promise<IEnrolledCourses | null> {
     const enrolledCourse =
-      await this.enrolledCoursesRepository.getEnrolledCourseByCourseId(
+      await this._enrolledCoursesRepository.getEnrolledCourseByCourseId(
         userId,
         courseId
       );
@@ -245,14 +257,14 @@ class EnrolledCourses implements IEnrolledCoursesService {
     }
 
     if (enrolledCourse.completedLessons?.includes(getObjectId(lessonId))) {
-      return await this.enrolledCoursesRepository.removeLessonComplete(
+      return await this._enrolledCoursesRepository.removeLessonComplete(
         userId,
         courseId,
         lessonId
       );
     }
 
-    return await this.enrolledCoursesRepository.addLessonComplete(
+    return await this._enrolledCoursesRepository.addLessonComplete(
       userId,
       courseId,
       lessonId
@@ -262,11 +274,11 @@ class EnrolledCourses implements IEnrolledCoursesService {
   public async getCompletionProgress(
     userId: string
   ): Promise<IEnrolledCourses> {
-    return await this.enrolledCoursesRepository.getProgress(userId);
+    return await this._enrolledCoursesRepository.getProgress(userId);
   }
 
   public async cancelPurchase(transactionId: string): Promise<void> {
-    const transaction = (await this.transactionRepository.findById(
+    const transaction = (await this._transactionRepository.findById(
       transactionId
     ))!;
 
@@ -292,31 +304,41 @@ class EnrolledCourses implements IEnrolledCoursesService {
     expiry.setHours(expiry.getHours() + cancellationHours);
 
     if (now > expiry) {
-      await this.transactionRepository.changePaymentStatus(
+      await this._transactionRepository.changePaymentStatus(
         transactionId,
         "completed"
       );
       errorCreator("Cancellation period has expired", StatusCodes.BAD_REQUEST);
     }
 
-    await this.transactionRepository.changePaymentStatus(
+    await this._transactionRepository.changePaymentStatus(
       transactionId,
       "canceled"
     );
 
-    await this.enrolledCoursesRepository.deleteUserCourseEnrollment(
+    await this._enrolledCoursesRepository.deleteUserCourseEnrollment(
       String(transaction.payerId),
       String(transaction.courseId)
     );
 
-    await this.chatRepository.removeMemberFromChat(
+    await this._chatRepository.removeMemberFromChat(
       String(transaction.courseId),
       String(transaction.payerId)
     );
 
-    await this.walletRepository.creditWallet(
+    await this._walletRepository.creditWallet(
       String(transaction.payerId),
       transaction.amount
+    );
+  }
+
+  public async getEnrolledCourseCompletionStatus(
+    userId: string,
+    courseId: string
+  ): Promise<IEnrolledCourses | null> {
+    return await this._enrolledCoursesRepository.getEnrolledCourseCompletionStatus(
+      userId,
+      courseId
     );
   }
 }

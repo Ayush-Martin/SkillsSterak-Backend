@@ -7,15 +7,15 @@ class CategoryRepository
   extends BaseRepository<ICategory>
   implements ICategoryRepository
 {
-  constructor(private Category: Model<ICategory>) {
-    super(Category);
+  constructor(private _Category: Model<ICategory>) {
+    super(_Category);
   }
 
   public async changeListStatus(
     categoryId: string,
     isListed: boolean
   ): Promise<ICategory | null> {
-    return this.Category.findByIdAndUpdate(
+    return this._Category.findByIdAndUpdate(
       categoryId,
       { isListed },
       { new: true }
@@ -25,7 +25,7 @@ class CategoryRepository
   public async findByCategoryName(
     categoryName: string
   ): Promise<ICategory | null> {
-    return await this.Category.findOne({
+    return await this._Category.findOne({
       categoryName: new RegExp(`^${categoryName}$`, "i"),
     });
   }
@@ -35,20 +35,24 @@ class CategoryRepository
     skip: number,
     limit: number
   ): Promise<Array<ICategory>> {
-    return await this.Category.find({ categoryName: search })
+    return await this._Category
+      .find({ categoryName: search })
       .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit);
   }
 
   public async getAllCategories(): Promise<Array<Partial<ICategory>>> {
-    return await this.Category.find({ isListed: true },{categoryName:1,_id:1});
+    return await this._Category.find(
+      { isListed: true },
+      { categoryName: 1, _id: 1 }
+    );
   }
 
   public async getCategoryListedStatus(
     categoryId: string
   ): Promise<boolean | null> {
-    const data = await this.Category.findById(categoryId, {
+    const data = await this._Category.findById(categoryId, {
       _id: 0,
       isListed: 1,
     });
@@ -59,7 +63,7 @@ class CategoryRepository
   }
 
   public async getCategoriesCount(search: RegExp): Promise<number> {
-    return await this.Category.countDocuments({ categoryName: search });
+    return await this._Category.countDocuments({ categoryName: search });
   }
 }
 

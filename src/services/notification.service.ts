@@ -8,14 +8,14 @@ import { ICourseRepository } from "../interfaces/repositories/ICourse.repository
 
 class NotificationService implements INotificationService {
   constructor(
-    private notificationRepository: INotificationRepository,
-    private userRepository: IUserRepository,
-    private trainerRepository: ITrainerRepository,
-    private courseRepository: ICourseRepository
+    private _notificationRepository: INotificationRepository,
+    private _userRepository: IUserRepository,
+    private _trainerRepository: ITrainerRepository,
+    private _courseRepository: ICourseRepository
   ) {}
 
   public async sendUserNotifications(userId: string): Promise<void> {
-    const notifications = await this.notificationRepository.getAllNotifications(
+    const notifications = await this._notificationRepository.getAllNotifications(
       userId
     );
 
@@ -23,17 +23,17 @@ class NotificationService implements INotificationService {
   }
 
   public async markAsRead(notificationId: string): Promise<void> {
-    await this.notificationRepository.markAsRead(notificationId);
+    await this._notificationRepository.markAsRead(notificationId);
   }
 
   public async sendCourseAddedNotification(
     trainerId: string,
     courseName: string
   ): Promise<void> {
-    const admin = await this.userRepository.getAdmin();
-    const trainer = await this.userRepository.findById(trainerId);
+    const admin = await this._userRepository.getAdmin();
+    const trainer = await this._userRepository.findById(trainerId);
 
-    const adminNotification = await this.notificationRepository.addNotification(
+    const adminNotification = await this._notificationRepository.addNotification(
       admin?.id,
       `${trainer!.username} has added a new course: ${courseName}`
     );
@@ -42,22 +42,22 @@ class NotificationService implements INotificationService {
   }
 
   public async sendCourseApprovedNotification(courseId: string): Promise<void> {
-    const course = await this.courseRepository.findById(courseId);
-    const trainer = await this.userRepository.findById(
+    const course = await this._courseRepository.findById(courseId);
+    const trainer = await this._userRepository.findById(
       course?.trainerId.toString()!
     );
-    const userIds = await this.trainerRepository.getStudentsIds(
+    const userIds = await this._trainerRepository.getStudentsIds(
       trainer?.id as string
     );
 
     const userNotifications =
-      await this.notificationRepository.addNotifications(
+      await this._notificationRepository.addNotifications(
         userIds,
         `${trainer!.username} has added a new course: ${course?.title}`
       );
 
     const trainerNotification =
-      await this.notificationRepository.addNotification(
+      await this._notificationRepository.addNotification(
         trainer?.id,
         `course ${course?.title} approved by admin`
       );
@@ -77,10 +77,10 @@ class NotificationService implements INotificationService {
   }
 
   public async sendCourseRejectedNotification(courseId: string): Promise<void> {
-    const course = await this.courseRepository.findById(courseId);
+    const course = await this._courseRepository.findById(courseId);
 
     const trainerNotification =
-      await this.notificationRepository.addNotification(
+      await this._notificationRepository.addNotification(
         course?.trainerId.toString()!,
         `course ${course?.title} rejected by admin`
       );
@@ -92,9 +92,9 @@ class NotificationService implements INotificationService {
   }
 
   public async sendTrainerRequestNotification(userId: string): Promise<void> {
-    const admin = await this.userRepository.getAdmin();
-    const user = await this.userRepository.findById(userId);
-    const adminNotification = await this.notificationRepository.addNotification(
+    const admin = await this._userRepository.getAdmin();
+    const user = await this._userRepository.findById(userId);
+    const adminNotification = await this._notificationRepository.addNotification(
       admin?.id,
       `${user?.username} has sent a trainer request`
     );
@@ -104,7 +104,7 @@ class NotificationService implements INotificationService {
   public async sendApproveTrainerRequestNotification(
     userId: string
   ): Promise<void> {
-    const notification = await this.notificationRepository.addNotification(
+    const notification = await this._notificationRepository.addNotification(
       userId,
       "admin approved your trainer request"
     );
@@ -114,7 +114,7 @@ class NotificationService implements INotificationService {
   public async sendRejectTrainerRequestNotification(
     userId: string
   ): Promise<void> {
-    const notification = await this.notificationRepository.addNotification(
+    const notification = await this._notificationRepository.addNotification(
       userId,
       "admin rejected your trainer request"
     );

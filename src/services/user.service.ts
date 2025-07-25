@@ -10,12 +10,12 @@ import { ITrainerRequest } from "../models/TrainerRequest.model";
 
 class UserService implements IUserService {
   constructor(
-    private userRepository: IUserRepository,
-    private trainerRequestRepository: ITrainerRequestRepository
+    private _userRepository: IUserRepository,
+    private _trainerRequestRepository: ITrainerRequestRepository
   ) {}
 
   public async getProfile(userId: string): Promise<IUser | null> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
     if (!user) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
@@ -26,18 +26,18 @@ class UserService implements IUserService {
     userId: string,
     updatedData: Partial<IUser>
   ): Promise<void | IUser | null> {
-    const oldUserData = await this.userRepository.findById(userId);
+    const oldUserData = await this._userRepository.findById(userId);
     if (!oldUserData) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
-    return await this.userRepository.updateUser(userId, updatedData);
+    return await this._userRepository.updateUser(userId, updatedData);
   }
 
   public async updateProfileImage(
     userId: string,
     profileImage: string
   ): Promise<void> {
-    await this.userRepository.updateProfileImage(userId, profileImage);
+    await this._userRepository.updateProfileImage(userId, profileImage);
   }
 
   public async getUsers(
@@ -47,8 +47,8 @@ class UserService implements IUserService {
   ): Promise<{ users: Array<IUser>; currentPage: number; totalPages: number }> {
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
-    const users = await this.userRepository.getUsers(searchRegex, skip, size);
-    const totalUsers = await this.userRepository.getUsersCount(searchRegex);
+    const users = await this._userRepository.getUsers(searchRegex, skip, size);
+    const totalUsers = await this._userRepository.getUsersCount(searchRegex);
     const totalPages = Math.ceil(totalUsers / size);
     return {
       users,
@@ -58,29 +58,29 @@ class UserService implements IUserService {
   }
 
   public async blockUnblockUser(userId: string): Promise<boolean> {
-    const blockStatus = await this.userRepository.getUserBlockStatus(userId);
+    const blockStatus = await this._userRepository.getUserBlockStatus(userId);
     if (!blockStatus) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.BAD_REQUEST);
     }
-    await this.userRepository.changeBlockStatus(userId, !blockStatus.isBlocked);
+    await this._userRepository.changeBlockStatus(userId, !blockStatus.isBlocked);
     return !blockStatus.isBlocked;
   }
 
   public async sendTrainerRequest(userId: string): Promise<void> {
     const UserId = getObjectId(userId);
-    await this.trainerRequestRepository.create({ userId: UserId });
+    await this._trainerRequestRepository.create({ userId: UserId });
   }
 
   public async getAdminUsersCount(): Promise<number> {
-    return await this.userRepository.getUsersCount(new RegExp(""));
+    return await this._userRepository.getUsersCount(new RegExp(""));
   }
 
   public async getAdmin(): Promise<IUser | null> {
-    return await this.userRepository.getAdmin();
+    return await this._userRepository.getAdmin();
   }
 
   public async checkCompleteProfile(userId: string): Promise<boolean> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
     if (!user) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.BAD_REQUEST);
     }
@@ -119,13 +119,13 @@ class UserService implements IUserService {
   public async getPreviousTrainerRequestDetails(
     userId: string
   ): Promise<ITrainerRequest | null> {
-    return await this.trainerRequestRepository.getUserPreviousRequestDetails(
+    return await this._trainerRequestRepository.getUserPreviousRequestDetails(
       userId
     );
   }
 
   public async getUserProfileDetails(userId: string): Promise<IUser | null> {
-    return await this.userRepository.getUserProfileDetails(userId);
+    return await this._userRepository.getUserProfileDetails(userId);
   }
 }
 

@@ -4,26 +4,29 @@ import { IChat } from "../models/Chat.model";
 import BaseRepository from "./Base.repository";
 
 class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
-  constructor(private Chat: Model<IChat>) {
-    super(Chat);
+  constructor(private _Chat: Model<IChat>) {
+    super(_Chat);
   }
 
   public async addMemberToChat(
     courseId: string,
     userId: string
   ): Promise<void> {
-    await this.Chat.updateOne({ courseId }, { $addToSet: { members: userId } });
+    await this._Chat.updateOne(
+      { courseId },
+      { $addToSet: { members: userId } }
+    );
   }
 
   public async removeMemberFromChat(
     courseId: string,
     userId: string
   ): Promise<void> {
-    await this.Chat.updateOne({ courseId }, { $pull: { members: userId } });
+    await this._Chat.updateOne({ courseId }, { $pull: { members: userId } });
   }
 
   public async getChats(userId: string): Promise<Array<IChat>> {
-    return await this.Chat.aggregate([
+    return await this._Chat.aggregate([
       {
         $match: {
           members: new mongoose.Types.ObjectId(userId),
@@ -142,7 +145,7 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
   }
 
   public async getChatMembers(chatId: string): Promise<Array<ObjectId>> {
-    const chatMembers = await this.Chat.findOne(
+    const chatMembers = await this._Chat.findOne(
       { _id: chatId },
       { members: 1 }
     );
@@ -156,7 +159,7 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
     chatId: string,
     userId: string
   ): Promise<IChat> {
-    const chat = await this.Chat.aggregate([
+    const chat = await this._Chat.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(chatId),
@@ -217,7 +220,7 @@ class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
   }
 
   public async getChatMembersDetails(chatId: string): Promise<IChat> {
-    const chat = await this.Chat.aggregate([
+    const chat = await this._Chat.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(chatId),

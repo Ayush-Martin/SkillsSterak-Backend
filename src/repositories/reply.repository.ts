@@ -7,12 +7,13 @@ class ReplyRepository
   extends BaseRepository<IReply>
   implements IReplyRepository
 {
-  constructor(private Reply: Model<IReply>) {
-    super(Reply);
+  constructor(private _Reply: Model<IReply>) {
+    super(_Reply);
   }
 
   public async getReplies(reviewId: string): Promise<Array<IReply>> {
-    return await this.Reply.find({ entityId: reviewId })
+    return await this._Reply
+      .find({ entityId: reviewId })
       .populate({
         path: "userId",
         select: "username profileImage",
@@ -21,7 +22,7 @@ class ReplyRepository
   }
 
   public async deleteByEntityId(entityId: string): Promise<void> {
-    await this.Reply.deleteMany({ entityId });
+    await this._Reply.deleteMany({ entityId });
   }
 }
 

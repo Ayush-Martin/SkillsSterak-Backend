@@ -19,8 +19,8 @@ import {
  */
 class UserController {
   constructor(
-    private userService: IUserService,
-    private notificationService: INotificationService
+    private _userService: IUserService,
+    private _notificationService: INotificationService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -45,7 +45,7 @@ class UserController {
         );
       }
 
-      await this.userService.updateProfileImage(userID, profileImage.path);
+      await this._userService.updateProfileImage(userID, profileImage.path);
 
       res.status(StatusCodes.OK).json(
         successResponse(UserMessage.ProfileImageUpdated, {
@@ -60,7 +60,7 @@ class UserController {
   public async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
-      const data = await this.userService.getProfile(userId);
+      const data = await this._userService.getProfile(userId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
@@ -78,7 +78,7 @@ class UserController {
       const data = updateProfileValidator(req.body);
       const userId = req.userId!;
 
-      await this.userService.updateProfile(userId, data);
+      await this._userService.updateProfile(userId, data);
 
       res
         .status(StatusCodes.OK)
@@ -96,7 +96,7 @@ class UserController {
     try {
       const userId = req.userId!;
 
-      const isComplete = await this.userService.checkCompleteProfile(userId);
+      const isComplete = await this._userService.checkCompleteProfile(userId);
 
       res
         .status(StatusCodes.OK)
@@ -117,8 +117,8 @@ class UserController {
     try {
       const userId = req.userId!;
 
-      await this.userService.sendTrainerRequest(userId);
-      this.notificationService.sendTrainerRequestNotification(userId);
+      await this._userService.sendTrainerRequest(userId);
+      this._notificationService.sendTrainerRequestNotification(userId);
 
       res
         .status(200)
@@ -136,7 +136,7 @@ class UserController {
     try {
       const userId = req.userId!;
 
-      const data = await this.userService.getPreviousTrainerRequestDetails(
+      const data = await this._userService.getPreviousTrainerRequestDetails(
         userId
       );
 
@@ -156,7 +156,7 @@ class UserController {
       const { search, page, size } = paginatedGetDataValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.userService.getUsers(search, page, size);
+        await this._userService.getUsers(search, page, size);
 
       res.status(StatusCodes.OK).json(
         successResponse(
@@ -184,7 +184,7 @@ class UserController {
   ) {
     try {
       const { userId } = req.params;
-      const blockStatus = await this.userService.blockUnblockUser(userId);
+      const blockStatus = await this._userService.blockUnblockUser(userId);
       res.status(StatusCodes.OK).json(
         successResponse(
           blockStatus ? UserMessage.UserBlocked : UserMessage.UserUnblocked,
@@ -204,7 +204,7 @@ class UserController {
    */
   public async getUsersCount(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.userService.getAdminUsersCount();
+      const data = await this._userService.getAdminUsersCount();
 
       res
         .status(StatusCodes.OK)
@@ -221,7 +221,7 @@ class UserController {
   ) {
     try {
       const { userId } = req.params;
-      const data = await this.userService.getUserProfileDetails(userId);
+      const data = await this._userService.getUserProfileDetails(userId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));

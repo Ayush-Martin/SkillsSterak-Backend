@@ -11,9 +11,9 @@ import { IEnrolledCoursesRepository } from "../interfaces/repositories/IEnrolled
 
 class ReviewService implements IReviewService {
   constructor(
-    private reviewRepository: IReviewRepository,
-    private replyRepository: IReplyRepository,
-    private enrolledCourseRepository: IEnrolledCoursesRepository
+    private _reviewRepository: IReviewRepository,
+    private _replyRepository: IReplyRepository,
+    private _enrolledCourseRepository: IEnrolledCoursesRepository
   ) {}
 
   public async createReview(
@@ -22,7 +22,7 @@ class ReviewService implements IReviewService {
     rating: number,
     content: string
   ): Promise<IReview> {
-    const reviewedAlready = await this.reviewRepository.checkUserAddedReview(
+    const reviewedAlready = await this._reviewRepository.checkUserAddedReview(
       courseId,
       userId
     );
@@ -31,7 +31,7 @@ class ReviewService implements IReviewService {
       errorCreator(ReviewMessage.ReviewedAlready, StatusCodes.BAD_REQUEST);
     }
 
-    const isUserEnrolled = await this.enrolledCourseRepository.checkEnrolled(
+    const isUserEnrolled = await this._enrolledCourseRepository.checkEnrolled(
       userId,
       courseId
     );
@@ -40,7 +40,7 @@ class ReviewService implements IReviewService {
       errorCreator(ReviewMessage.NotEnrolledCourse, StatusCodes.FORBIDDEN);
     }
 
-    return await this.reviewRepository.create({
+    return await this._reviewRepository.create({
       userId: getObjectId(userId),
       courseId: getObjectId(courseId),
       rating,
@@ -49,7 +49,7 @@ class ReviewService implements IReviewService {
   }
 
   public async getReviews(courseId: string): Promise<Array<IReview>> {
-    return await this.reviewRepository.getReviewsByCourseId(courseId);
+    return await this._reviewRepository.getReviewsByCourseId(courseId);
   }
 
   public async addReply(
@@ -57,7 +57,7 @@ class ReviewService implements IReviewService {
     reviewId: string,
     content: string
   ): Promise<IReply | null> {
-    return await this.replyRepository.create({
+    return await this._replyRepository.create({
       userId: getObjectId(userId),
       entityId: getObjectId(reviewId),
       content,
@@ -65,12 +65,12 @@ class ReviewService implements IReviewService {
   }
 
   public async getReplies(reviewId: string): Promise<Array<IReply | null>> {
-    return await this.replyRepository.getReplies(reviewId);
+    return await this._replyRepository.getReplies(reviewId);
   }
 
   public async deleteReview(reviewId: string): Promise<void> {
-    await this.reviewRepository.deleteById(reviewId);
-    await this.replyRepository.deleteByEntityId(reviewId);
+    await this._reviewRepository.deleteById(reviewId);
+    await this._replyRepository.deleteByEntityId(reviewId);
   }
 
   public async updateReview(
@@ -78,7 +78,7 @@ class ReviewService implements IReviewService {
     rating: number,
     content: string
   ): Promise<void> {
-    await this.reviewRepository.updateById(reviewId, { rating, content });
+    await this._reviewRepository.updateById(reviewId, { rating, content });
   }
 }
 

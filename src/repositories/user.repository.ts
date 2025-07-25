@@ -4,12 +4,12 @@ import mongoose, { Model } from "mongoose";
 import BaseRepository from "./Base.repository";
 
 class UserRepository extends BaseRepository<IUser> implements IUserRepository {
-  constructor(private User: Model<IUser>) {
-    super(User);
+  constructor(private _User: Model<IUser>) {
+    super(_User);
   }
 
   public async getAdmin(): Promise<IUser | null> {
-    return await this.User.findOne({ role: "admin" });
+    return await this._User.findOne({ role: "admin" });
   }
 
   public async getUsers(
@@ -17,36 +17,37 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
-    return await this.User.find(
-      { email: search, role: { $ne: "admin" } },
-      { username: 1, email: 1, isBlocked: 1, role: 1, profileImage: 1 }
-    )
+    return await this._User
+      .find(
+        { email: search, role: { $ne: "admin" } },
+        { username: 1, email: 1, isBlocked: 1, role: 1, profileImage: 1 }
+      )
       .skip(skip)
       .limit(limit);
   }
 
   public async getUserEmail(userId: string): Promise<string | undefined> {
-    const user = await this.User.findById(userId, { email: 1 });
+    const user = await this._User.findById(userId, { email: 1 });
 
     return user?.email;
   }
 
   public async getUserByEmail(email: string): Promise<IUser | null> {
-    return await this.User.findOne({ email });
+    return await this._User.findOne({ email });
   }
 
   public async getUserByGoogleId(googleId: string): Promise<IUser | null> {
-    return await this.User.findOne({ googleId });
+    return await this._User.findOne({ googleId });
   }
 
   public async getUserBlockStatus(
     userId: string
   ): Promise<{ isBlocked: boolean } | null> {
-    return await this.User.findById(userId, { _id: 0, isBlocked: 1 });
+    return await this._User.findById(userId, { _id: 0, isBlocked: 1 });
   }
 
   public async getUsersCount(search: RegExp): Promise<number> {
-    return await this.User.countDocuments({
+    return await this._User.countDocuments({
       email: search,
       role: { $ne: "admin" },
     });
@@ -56,7 +57,7 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     userId: string,
     password: string
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(
+    return await this._User.findByIdAndUpdate(
       userId,
       { password: password },
       { new: true }
@@ -67,14 +68,14 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     userId: string,
     user: Partial<IUser>
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, user, { new: true });
+    return await this._User.findByIdAndUpdate(userId, user, { new: true });
   }
 
   public async updateProfileImage(
     userId: string,
     profileImage: string
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(
+    return await this._User.findByIdAndUpdate(
       userId,
       { profileImage },
       { new: true }
@@ -85,25 +86,25 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     userId: string,
     status: boolean
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { isBlocked: status });
+    return await this._User.findByIdAndUpdate(userId, { isBlocked: status });
   }
 
   public async changePremiumStatus(
     userId: string,
     status: boolean
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { isPremium: status });
+    return await this._User.findByIdAndUpdate(userId, { isPremium: status });
   }
 
   public async updateStripeAccountId(
     userId: string,
     stripeAccountId: string
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { stripeAccountId });
+    return await this._User.findByIdAndUpdate(userId, { stripeAccountId });
   }
 
   public async getUserProfileDetails(userId: string): Promise<IUser | null> {
-    const user = await this.User.aggregate([
+    const user = await this._User.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(userId),

@@ -29,7 +29,9 @@ class LessonController {
     try {
       const { courseId, moduleId } = req.params;
       const file = req.file;
-      const { title, description, type } = addLessonValidator(req.body);
+      const { title, description, type, duration } = addLessonValidator(
+        req.body
+      );
 
       if (!file) {
         return errorCreator(LessonMessage.NoFile, StatusCodes.BAD_REQUEST);
@@ -42,6 +44,7 @@ class LessonController {
         courseId: getObjectId(courseId),
         moduleId: getObjectId(moduleId),
         path: file.path,
+        duration,
       });
 
       res

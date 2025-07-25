@@ -20,8 +20,8 @@ import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses
  */
 class TransactionController {
   constructor(
-    private transactionService: ITransactionService,
-    private enrolledCourseService: IEnrolledCoursesService
+    private _transactionService: ITransactionService,
+    private _enrolledCourseService: IEnrolledCoursesService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -39,7 +39,7 @@ class TransactionController {
       const userId = req.userId!;
       const { page, size } = pageValidator(req.query);
 
-      const data = await this.transactionService.getUserTransactions(
+      const data = await this._transactionService.getUserTransactions(
         userId,
         page,
         size
@@ -64,7 +64,7 @@ class TransactionController {
     try {
       const { page, size } = pageValidator(req.query);
 
-      const data = await this.transactionService.getTransactions(page, size);
+      const data = await this._transactionService.getTransactions(page, size);
 
       res
         .status(StatusCodes.OK)
@@ -86,7 +86,7 @@ class TransactionController {
       const { page, size, filterType, startDate, endDate } =
         getAdminRevenueValidator(req.query);
 
-      const data = await this.transactionService.getAdminRevenue(
+      const data = await this._transactionService.getAdminRevenue(
         page,
         size,
         filterType,
@@ -117,7 +117,7 @@ class TransactionController {
       const { page, size, filterType, startDate, endDate } =
         getTrainerRevenueValidator(req.query);
 
-      const data = await this.transactionService.getTrainerRevenue(
+      const data = await this._transactionService.getTrainerRevenue(
         userId,
         page,
         size,
@@ -146,7 +146,7 @@ class TransactionController {
       const { filterType, startDate, endDate, exportType } =
         exportAdminRevenueValidator(req.query);
 
-      const exportData = await this.transactionService.exportAdminRevenue(
+      const exportData = await this._transactionService.exportAdminRevenue(
         filterType,
         startDate,
         endDate,
@@ -195,7 +195,7 @@ class TransactionController {
       const { filterType, startDate, endDate, exportType } =
         exportTrainerRevenueValidator(req.query);
 
-      const exportData = await this.transactionService.exportTrainerRevenue(
+      const exportData = await this._transactionService.exportTrainerRevenue(
         userId,
         filterType,
         startDate,
@@ -239,7 +239,7 @@ class TransactionController {
     next: NextFunction
   ) {
     try {
-      const data = await this.transactionService.getAdminRevenueGraphData();
+      const data = await this._transactionService.getAdminRevenueGraphData();
 
       res
         .status(StatusCodes.OK)
@@ -259,7 +259,7 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const data = await this.transactionService.getTrainerRevenueGraphData(
+      const data = await this._transactionService.getTrainerRevenueGraphData(
         userId
       );
 
@@ -279,7 +279,7 @@ class TransactionController {
     try {
       const { transactionId } = req.params;
 
-      await this.enrolledCourseService.cancelPurchase(transactionId);
+      await this._enrolledCourseService.cancelPurchase(transactionId);
 
       res.status(StatusCodes.OK).json(successResponse("Purchase canceled"));
     } catch (err) {

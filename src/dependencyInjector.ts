@@ -162,7 +162,8 @@ export const enrolledCoursesService = new EnrolledCoursesService(
   walletRepository,
   transactionRepository,
   chatRepository,
-  userRepository
+  userRepository,
+  lessonRepository
 );
 export const jwtService = new JWTService(refreshTokenRepository);
 export const lessonService = new LessonService(lessonRepository);

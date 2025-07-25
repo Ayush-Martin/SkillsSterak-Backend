@@ -7,17 +7,17 @@ class RefreshTokenRepository
   extends BaseRepository<IRefreshToken>
   implements IRefreshTokenRepository
 {
-  constructor(public RefreshToken: Model<IRefreshToken>) {
-    super(RefreshToken);
+  constructor(public _RefreshToken: Model<IRefreshToken>) {
+    super(_RefreshToken);
   }
 
   public async deleteToken(token: string): Promise<void> {
-    await this.RefreshToken.deleteOne({ token });
+    await this._RefreshToken.deleteOne({ token });
   }
 
   public async findToken(token: string): Promise<IRefreshToken | null> {
     
-    return await this.RefreshToken.findOne({ token });
+    return await this._RefreshToken.findOne({ token });
   }
 }
 

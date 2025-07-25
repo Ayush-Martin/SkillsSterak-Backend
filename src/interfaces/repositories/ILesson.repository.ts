@@ -17,4 +17,6 @@ export interface ILessonRepository extends IBaseRepository<ILesson> {
    * Supports direct lesson access and deep linking.
    */
   getLesson(lessonId: string): Promise<ILesson | null>;
+
+  getCourseLessonsDuration(courseId: string): Promise<number>;
 }

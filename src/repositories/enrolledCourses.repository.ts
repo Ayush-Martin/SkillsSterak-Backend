@@ -415,6 +415,102 @@ class EnrolledCoursesRepository
   ): Promise<void> {
     await this.EnrolledCourses.deleteOne({ userId, courseId });
   }
+
+  public async getEnrolledCourseCompletionStatus(
+    userId: string,
+    courseId: string
+  ): Promise<IEnrolledCourses | null> {
+    const data = await this.EnrolledCourses.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          courseId: new mongoose.Types.ObjectId(courseId),
+        },
+      },
+      {
+        $lookup: {
+          from: "lessons",
+          localField: "courseId",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $count: "totalLessons",
+            },
+          ],
+          as: "totalLessons",
+        },
+      },
+      {
+        $unwind: {
+          path: "$totalLessons",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "assignments",
+          localField: "courseId",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $count: "totalAssignments",
+            },
+          ],
+          as: "totalAssignments",
+        },
+      },
+      {
+        $unwind: {
+          path: "$totalAssignments",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "assignmentsubmissions",
+          localField: "courseId",
+          foreignField: "courseId",
+          pipeline: [
+            {
+              $match: {
+                userId: new mongoose.Types.ObjectId(userId),
+                courseId: new mongoose.Types.ObjectId(courseId),
+              },
+            },
+            {
+              $count: "completedAssignments",
+            },
+          ],
+          as: "completedAssignments",
+        },
+      },
+      {
+        $unwind: {
+          path: "$completedAssignments",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          totalLessons: {
+            $ifNull: ["$totalLessons.totalLessons", 0],
+          },
+          completedLessons: {
+            $size: "$completedLessons",
+          },
+          totalAssignments: {
+            $ifNull: ["$totalAssignments.totalAssignments", 0],
+          },
+          completedAssignments: {
+            $ifNull: ["$completedAssignments.completedAssignments", 0],
+          },
+        },
+      },
+    ]);
+
+    console.log(data);
+    return data[0];
+  }
 }
 
 export default EnrolledCoursesRepository;

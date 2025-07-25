@@ -192,24 +192,7 @@ class CourseRepository
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $lookup: {
-          from: "streams",
-          localField: "_id",
-          foreignField: "courseId",
-          pipeline: [
-            {
-              $project: {
-                title: 1,
-                thumbnail: 1,
-                isLive: 1,
-                isPublic: 1,
-              },
-            },
-          ],
-          as: "liveSessions",
-        },
-      },
+
       {
         $project: {
           _id: 1,
@@ -223,7 +206,6 @@ class CourseRepository
           trainer: 1,
           modules: 1,
           category: 1,
-          liveSessions: 1,
           noOfEnrolled: {
             $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
           },

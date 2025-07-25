@@ -7,7 +7,7 @@ import { StatusCodes } from "../constants/statusCodes";
 import { AuthMessage } from "../constants/responseMessages";
 
 class JWTService implements IJWTService {
-  constructor(private refreshTokenRepository: IRefreshTokenRepository) {}
+  constructor(private _refreshTokenRepository: IRefreshTokenRepository) {}
 
   public async createTokens(
     user: IUser
@@ -15,13 +15,13 @@ class JWTService implements IJWTService {
     const accessToken = generateAccessToken(user.toObject());
     const refreshToken = generateRefreshToken(user.toObject());
 
-    await this.refreshTokenRepository.create({ token: refreshToken });
+    await this._refreshTokenRepository.create({ token: refreshToken });
 
     return { accessToken, refreshToken };
   }
 
   public async getRefreshToken(token: string): Promise<string> {
-    const tokenObj = await this.refreshTokenRepository.findToken(token);
+    const tokenObj = await this._refreshTokenRepository.findToken(token);
     if (!tokenObj) {
       return errorCreator(
         AuthMessage.InvalidRefreshToken,
@@ -36,7 +36,7 @@ class JWTService implements IJWTService {
   }
 
   public async deleteRefreshToken(token: string): Promise<void> {
-    await this.refreshTokenRepository.deleteToken(token);
+    await this._refreshTokenRepository.deleteToken(token);
   }
 }
 

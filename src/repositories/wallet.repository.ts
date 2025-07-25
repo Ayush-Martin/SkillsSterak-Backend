@@ -7,12 +7,12 @@ class WalletRepository
   extends BaseRepository<IWallet>
   implements IWalletRepository
 {
-  constructor(private Wallet: Model<IWallet>) {
-    super(Wallet);
+  constructor(private _Wallet: Model<IWallet>) {
+    super(_Wallet);
   }
 
   public async creditWallet(userId: string, amount: number): Promise<IWallet> {
-    return await this.Wallet.findOneAndUpdate(
+    return await this._Wallet.findOneAndUpdate(
       { userId },
       { $inc: { balance: amount } },
       { new: true, upsert: true }
@@ -20,7 +20,7 @@ class WalletRepository
   }
 
   public async debitWallet(userId: string, amount: number): Promise<void> {
-    await this.Wallet.findOneAndUpdate(
+    await this._Wallet.findOneAndUpdate(
       { userId },
       { $inc: { balance: -amount } },
       { new: true }
@@ -28,7 +28,7 @@ class WalletRepository
   }
 
   public async redeemWallet(userId: string): Promise<IWallet | null> {
-    return await this.Wallet.findOneAndUpdate(
+    return await this._Wallet.findOneAndUpdate(
       { userId },
       { balance: 0 },
       { new: true }
@@ -36,7 +36,7 @@ class WalletRepository
   }
 
   public async getUserWalletInfo(userId: string): Promise<IWallet | null> {
-    return await this.Wallet.findOne({ userId });
+    return await this._Wallet.findOne({ userId });
   }
 }
 

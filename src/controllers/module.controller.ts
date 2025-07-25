@@ -15,7 +15,7 @@ import { GeneralMessage, ModuleMessage } from "../constants/responseMessages";
  * All methods are bound for safe Express routing.
  */
 class ModuleController {
-  constructor(private moduleService: IModuleService) {
+  constructor(private _moduleService: IModuleService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -28,7 +28,7 @@ class ModuleController {
       const { courseId } = req.params;
       const { title } = addModuleValidator(req.body);
 
-      const module = await this.moduleService.createModule({
+      const module = await this._moduleService.createModule({
         courseId: getObjectId(courseId),
         title,
       });
@@ -48,7 +48,7 @@ class ModuleController {
     try {
       const { courseId } = req.params;
 
-      const modules = await this.moduleService.getModules(courseId);
+      const modules = await this._moduleService.getModules(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -65,7 +65,7 @@ class ModuleController {
     try {
       const { moduleId } = req.params;
 
-      const module = await this.moduleService.getModule(moduleId);
+      const module = await this._moduleService.getModule(moduleId);
 
       res
         .status(StatusCodes.OK)
@@ -82,7 +82,7 @@ class ModuleController {
     try {
       const { moduleId } = req.params;
 
-      await this.moduleService.deleteModule(moduleId);
+      await this._moduleService.deleteModule(moduleId);
 
       res
         .status(StatusCodes.OK)
@@ -100,7 +100,7 @@ class ModuleController {
       const { moduleId } = req.params;
       const { title } = editModuleTitleValidator(req.body);
 
-      await this.moduleService.updateModuleTitle(moduleId, title);
+      await this._moduleService.updateModuleTitle(moduleId, title);
 
       res
         .status(StatusCodes.OK)

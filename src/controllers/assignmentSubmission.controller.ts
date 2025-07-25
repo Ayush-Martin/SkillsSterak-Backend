@@ -31,11 +31,12 @@ class AssignmentSubmissionController {
     try {
       const userId = req.userId!;
       const file = req.file;
-      const { assignmentId } = req.params;
+      const { assignmentId ,courseId} = req.params;
       const { type, content } = submitAssignmentValidator(req.body);
 
       const data = await this._assignmentSubmissionService.submitAssignment(
         userId,
+        courseId,
         assignmentId,
         type,
         content,

@@ -7,14 +7,14 @@ class SubscriptionRepository
   extends BaseRepository<ISubscription>
   implements ISubscriptionRepository
 {
-  constructor(private Subscription: Model<ISubscription>) {
-    super(Subscription);
+  constructor(private _Subscription: Model<ISubscription>) {
+    super(_Subscription);
   }
 
   public async getSubscriptionDetailByUserID(
     userId: string
   ): Promise<ISubscription | null> {
-    return await this.Subscription.findOne({ userId });
+    return await this._Subscription.findOne({ userId });
   }
 }
 

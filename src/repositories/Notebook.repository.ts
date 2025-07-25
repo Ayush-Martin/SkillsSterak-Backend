@@ -7,15 +7,15 @@ class NotebookRepository
   extends BaseRepository<INotebook>
   implements INotebookRepository
 {
-  constructor(private Notebook: Model<INotebook>) {
-    super(Notebook);
+  constructor(private _Notebook: Model<INotebook>) {
+    super(_Notebook);
   }
 
   public async getCourseNotebooks(
     courseId: string,
     userId: string
   ): Promise<INotebook[]> {
-    return await this.Notebook.find(
+    return await this._Notebook.find(
       { courseId, userId },
       { _id: 1, title: 1, notes: 1 }
     );

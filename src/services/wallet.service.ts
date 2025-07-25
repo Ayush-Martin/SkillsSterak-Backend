@@ -12,19 +12,19 @@ import { WalletMessage } from "../constants/responseMessages";
 
 class WalletService implements IWalletService {
   constructor(
-    private walletRepository: IWalletRepository,
-    private transactionRepository: ITransactionRepository,
-    private userRepository: IUserRepository
+    private _walletRepository: IWalletRepository,
+    private _transactionRepository: ITransactionRepository,
+    private _userRepository: IUserRepository
   ) {}
 
   public async getUserWalletInfo(userId: string): Promise<{
     balance: number;
   }> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
 
-    const wallet = await this.walletRepository.getUserWalletInfo(userId);
+    const wallet = await this._walletRepository.getUserWalletInfo(userId);
     if (!wallet) {
-      await this.walletRepository.create({
+      await this._walletRepository.create({
         userId: getObjectId(userId),
       });
     }
@@ -33,7 +33,7 @@ class WalletService implements IWalletService {
   }
 
   public async setUpStripeUserAccount(userId: string): Promise<string> {
-    const user = (await this.userRepository.findById(userId))!;
+    const user = (await this._userRepository.findById(userId))!;
     let stripeAccountId = user.stripeAccountId!;
 
     if (!stripeAccountId) {
@@ -45,7 +45,7 @@ class WalletService implements IWalletService {
 
       stripeAccountId = account.id;
 
-      await this.userRepository.updateStripeAccountId(userId, account.id);
+      await this._userRepository.updateStripeAccountId(userId, account.id);
     }
 
     const accountLink = await stripe.accountLinks.create({
@@ -59,8 +59,8 @@ class WalletService implements IWalletService {
   }
 
   public async redeem(userId: string): Promise<void> {
-    const wallet = (await this.walletRepository.getUserWalletInfo(userId))!;
-    const user = (await this.userRepository.findById(userId))!;
+    const wallet = (await this._walletRepository.getUserWalletInfo(userId))!;
+    const user = (await this._userRepository.findById(userId))!;
 
     if (!user.stripeAccountId) {
       throw errorCreator(
@@ -83,8 +83,8 @@ class WalletService implements IWalletService {
       description: "Wallet Redeem",
     });
 
-    await this.walletRepository.debitWallet(userId, wallet.balance);
-    await this.transactionRepository.create({
+    await this._walletRepository.debitWallet(userId, wallet.balance);
+    await this._transactionRepository.create({
       receiverId: getObjectId(userId),
       amount: wallet.balance,
       type: "wallet_redeem",
@@ -93,7 +93,7 @@ class WalletService implements IWalletService {
   }
 
   public async creditWallet(userId: string, amount: number): Promise<void> {
-    await this.walletRepository.creditWallet(userId, amount);
+    await this._walletRepository.creditWallet(userId, amount);
   }
 }
 

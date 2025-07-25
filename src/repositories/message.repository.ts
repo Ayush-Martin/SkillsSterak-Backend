@@ -8,12 +8,12 @@ class MessageRepository
   extends BaseRepository<IMessage>
   implements IMessageRepository
 {
-  constructor(private Message: Model<IMessage>) {
-    super(Message);
+  constructor(private _Message: Model<IMessage>) {
+    super(_Message);
   }
 
   public async getChatMessages(chatId: string): Promise<Array<IMessage>> {
-    return await this.Message.aggregate([
+    return await this._Message.aggregate([
       {
         $match: {
           chatId: new mongoose.Types.ObjectId(chatId),
@@ -53,12 +53,12 @@ class MessageRepository
     messageId: string,
     emoji: messageReactions
   ): Promise<IMessage | null> {
-    await this.Message.updateOne(
+    await this._Message.updateOne(
       { _id: messageId },
       { $pull: { reactions: { userId } } }
     );
 
-    await this.Message.updateOne(
+    await this._Message.updateOne(
       { _id: messageId },
       {
         $push: {
@@ -70,7 +70,7 @@ class MessageRepository
       }
     );
 
-    const updatedMessage = await this.Message.findById(messageId);
+    const updatedMessage = await this._Message.findById(messageId);
 
     return updatedMessage;
   }

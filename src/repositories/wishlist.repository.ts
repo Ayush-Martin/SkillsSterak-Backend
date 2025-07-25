@@ -7,13 +7,13 @@ class WishlistRepository
   extends BaseRepository<IWishlist>
   implements IWishlistRepository
 {
-  constructor(private Wishlist: Model<IWishlist>) {
-    super(Wishlist);
+  constructor(private _Wishlist: Model<IWishlist>) {
+    super(_Wishlist);
   }
 
   public async getUserWishlist(userId: string): Promise<Array<IWishlist>> {
     console.log(userId);
-    return await this.Wishlist.aggregate([
+    return await this._Wishlist.aggregate([
       {
         $match: {
           userId: new mongoose.Types.ObjectId(userId),
@@ -53,14 +53,14 @@ class WishlistRepository
     userId: string,
     courseId: string
   ): Promise<void> {
-    await this.Wishlist.deleteOne({ userId, courseId });
+    await this._Wishlist.deleteOne({ userId, courseId });
   }
 
   public async checkCourseAdded(
     userId: string,
     courseId: string
   ): Promise<boolean> {
-    const wishlist = await this.Wishlist.findOne({ userId, courseId });
+    const wishlist = await this._Wishlist.findOne({ userId, courseId });
 
     return !!wishlist;
   }

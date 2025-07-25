@@ -7,12 +7,12 @@ class TrainerRepository
   extends BaseRepository<IUser>
   implements ITrainerRepository
 {
-  constructor(private User: Model<IUser>) {
-    super(User);
+  constructor(private _User: Model<IUser>) {
+    super(_User);
   }
 
   public async getAllTrainers(): Promise<Array<IUser>> {
-    return await this.User.find({ role: "trainer" }, { username: 1 });
+    return await this._User.find({ role: "trainer" }, { username: 1 });
   }
 
   public async getTrainers(
@@ -20,13 +20,13 @@ class TrainerRepository
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
-    return await this.User.find({ email: search, role: "trainer" })
+    return await this._User.find({ email: search, role: "trainer" })
       .skip(skip)
       .limit(limit);
   }
 
   public async getTrainer(trainerId: string): Promise<IUser | null> {
-    const trainer = await this.User.aggregate([
+    const trainer = await this._User.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(trainerId),
@@ -183,21 +183,21 @@ class TrainerRepository
   }
 
   public async countTrainers(search: RegExp): Promise<number> {
-    return await this.User.countDocuments({ email: search });
+    return await this._User.countDocuments({ email: search });
   }
 
   public async changeRole(
     userId: string,
     role: "user" | "trainer"
   ): Promise<IUser | null> {
-    return await this.User.findByIdAndUpdate(userId, { role }, { new: true });
+    return await this._User.findByIdAndUpdate(userId, { role }, { new: true });
   }
 
   public async getTotalStudents(
     trainerId: string,
     search: RegExp
   ): Promise<number> {
-    const result = await this.User.aggregate([
+    const result = await this._User.aggregate([
       {
         $match: {
           role: { $ne: "admin" },
@@ -253,7 +253,7 @@ class TrainerRepository
   }
 
   public async getStudentsIds(trainerId: string): Promise<Array<string>> {
-    const users = await this.User.aggregate([
+    const users = await this._User.aggregate([
       {
         $match: {
           _id: {
@@ -299,7 +299,7 @@ class TrainerRepository
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
-    return await this.User.aggregate([
+    return await this._User.aggregate([
       {
         $match: {
           _id: {

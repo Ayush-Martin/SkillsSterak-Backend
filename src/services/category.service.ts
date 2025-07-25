@@ -7,10 +7,10 @@ import { StatusCodes } from "../constants/statusCodes";
 import { CategoryMessage } from "../constants/responseMessages";
 
 class CategoryService implements ICategoryService {
-  constructor(private categoryRepository: ICategoryRepository) {}
+  constructor(private _categoryRepository: ICategoryRepository) {}
 
   public async addCategory(categoryName: string): Promise<ICategory> {
-    const categoryExist = await this.categoryRepository.findByCategoryName(
+    const categoryExist = await this._categoryRepository.findByCategoryName(
       categoryName
     );
 
@@ -18,14 +18,14 @@ class CategoryService implements ICategoryService {
       errorCreator(CategoryMessage.CategoryExists, StatusCodes.CONFLICT);
     }
 
-    return await this.categoryRepository.create({ categoryName });
+    return await this._categoryRepository.create({ categoryName });
   }
 
   public async editCategoryName(
     categoryId: string,
     categoryName: string
   ): Promise<ICategory | null> {
-    const categoryExist = await this.categoryRepository.findByCategoryName(
+    const categoryExist = await this._categoryRepository.findByCategoryName(
       categoryName
     );
 
@@ -33,7 +33,7 @@ class CategoryService implements ICategoryService {
       errorCreator(CategoryMessage.CategoryExists, StatusCodes.CONFLICT);
     }
 
-    const category = await this.categoryRepository.updateById(categoryId, {
+    const category = await this._categoryRepository.updateById(categoryId, {
       categoryName,
     });
 
@@ -41,7 +41,7 @@ class CategoryService implements ICategoryService {
   }
 
   public async listUnListCategory(categoryId: string): Promise<boolean> {
-    const isListed = await this.categoryRepository.getCategoryListedStatus(
+    const isListed = await this._categoryRepository.getCategoryListedStatus(
       categoryId
     );
 
@@ -49,13 +49,13 @@ class CategoryService implements ICategoryService {
       errorCreator(CategoryMessage.CategoryNotFound, StatusCodes.BAD_REQUEST);
     }
 
-    await this.categoryRepository.changeListStatus(categoryId, !isListed);
+    await this._categoryRepository.changeListStatus(categoryId, !isListed);
 
     return !isListed;
   }
 
   public async getAllCategories(): Promise<Array<Partial<ICategory>>> {
-    return await this.categoryRepository.getAllCategories();
+    return await this._categoryRepository.getAllCategories();
   }
 
   public async getCategories(
@@ -69,13 +69,13 @@ class CategoryService implements ICategoryService {
   }> {
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
-    const categories = await this.categoryRepository.getCategories(
+    const categories = await this._categoryRepository.getCategories(
       searchRegex,
       skip,
       size
     );
 
-    const totalCategories = await this.categoryRepository.getCategoriesCount(
+    const totalCategories = await this._categoryRepository.getCategoriesCount(
       searchRegex
     );
     const totalPages = Math.ceil(totalCategories / size);

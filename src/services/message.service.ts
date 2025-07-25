@@ -7,8 +7,8 @@ import { getObjectId } from "../utils/objectId";
 
 class MessageService implements IMessageService {
   constructor(
-    private messageRepository: IMessageRepository,
-    private chatRepository: IChatRepository
+    private _messageRepository: IMessageRepository,
+    private _chatRepository: IChatRepository
   ) {}
 
   public async addNewMessage(
@@ -17,8 +17,8 @@ class MessageService implements IMessageService {
     message: string,
     messageType: "text" | "image"
   ): Promise<void> {
-    const members = await this.chatRepository.getChatMembers(chatId);
-    const newMessage = await this.messageRepository.create({
+    const members = await this._chatRepository.getChatMembers(chatId);
+    const newMessage = await this._messageRepository.create({
       sender: getObjectId(userId),
       chatId: getObjectId(chatId),
       message,
@@ -34,7 +34,7 @@ class MessageService implements IMessageService {
     messageId: string,
     reaction: messageReactions
   ): Promise<void> {
-    await this.messageRepository.reactMessage(userId, messageId, reaction);
+    await this._messageRepository.reactMessage(userId, messageId, reaction);
   }
 }
 

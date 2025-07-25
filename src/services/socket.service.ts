@@ -9,9 +9,9 @@ import { messageReactions } from "../types/messageTypes";
 
 class SocketService implements ISocketService {
   constructor(
-    private notificationService: INotificationService,
-    private streamService: IStreamService,
-    private chatService: IChatService
+    private _notificationService: INotificationService,
+    private _streamService: IStreamService,
+    private _chatService: IChatService
   ) {}
 
   public async socketConnectionHandler(
@@ -22,18 +22,18 @@ class SocketService implements ISocketService {
     socket.join(userId);
 
     socket.on(SocketEvents.NOTIFICATION_GET, async () => {
-      await this.notificationService.sendUserNotifications(userId);
+      await this._notificationService.sendUserNotifications(userId);
     });
 
     socket.on(SocketEvents.NOTIFICATION_MARK_READ, async (notificationId) => {
-      await this.notificationService.markAsRead(notificationId);
+      await this._notificationService.markAsRead(notificationId);
     });
 
     socket.on(
       SocketEvents.LIVE_CHAT_NEW_MESSAGE,
       async ({ roomId, message }: { roomId: string; message: string }) => {
         console.log("live chat", roomId, message);
-        await this.streamService.liveChat(roomId, userId, message);
+        await this._streamService.liveChat(roomId, userId, message);
       }
     );
 
@@ -48,7 +48,7 @@ class SocketService implements ISocketService {
         message: string;
         type?: "text" | "emoji";
       }) => {
-        await this.chatService.addNewMessage(
+        await this._chatService.addNewMessage(
           userId,
           chatId,
           message,
@@ -68,7 +68,7 @@ class SocketService implements ISocketService {
         chatId: string;
         emoji: messageReactions;
       }) => {
-        await this.chatService.reactMessage(userId, messageId, chatId, emoji);
+        await this._chatService.reactMessage(userId, messageId, chatId, emoji);
       }
     );
   }

@@ -25,8 +25,8 @@ const generateRoomId = (title: string) => {
 
 class StreamService implements IStreamService {
   constructor(
-    private streamRepository: IStreamRepository,
-    private userRepository: IUserRepository
+    private _streamRepository: IStreamRepository,
+    private _userRepository: IUserRepository
   ) {}
 
   public async startStream(
@@ -38,7 +38,7 @@ class StreamService implements IStreamService {
   ): Promise<{ stream: IStream; token: string }> {
     const roomId = generateRoomId(title);
 
-    const stream = await this.streamRepository.create({
+    const stream = await this._streamRepository.create({
       hostId: getObjectId(hostId),
       roomId,
       title,
@@ -67,13 +67,13 @@ class StreamService implements IStreamService {
       roomCreate: true,
     });
 
-    await this.streamRepository.initializeStreamRoom(stream.roomId, hostId);
+    await this._streamRepository.initializeStreamRoom(stream.roomId, hostId);
     return { stream: stream, token: await at.toJwt() };
   }
 
   public async endStream(roomId: string): Promise<void> {
-    await this.streamRepository.endStream(roomId);
-    const egressId = await this.streamRepository.getEgressId(roomId);
+    await this._streamRepository.endStream(roomId);
+    const egressId = await this._streamRepository.getEgressId(roomId);
     if (!egressId) {
       errorCreator(LiveStreamMessage.RecordingNotFound, StatusCodes.NOT_FOUND);
       return;
@@ -86,7 +86,7 @@ class StreamService implements IStreamService {
     userId: string,
     streamId: string
   ): Promise<{ stream: IStream; token: string } | void> {
-    const stream = await this.streamRepository.findById(streamId);
+    const stream = await this._streamRepository.findById(streamId);
     if (!stream) {
       errorCreator(LiveStreamMessage.StreamNotFound, StatusCodes.NOT_FOUND);
       return;
@@ -109,13 +109,13 @@ class StreamService implements IStreamService {
       canSubscribe: true,
     });
 
-    await this.streamRepository.addUserToRoom(stream.roomId, userId);
+    await this._streamRepository.addUserToRoom(stream.roomId, userId);
 
     return { stream: stream, token: await at.toJwt() };
   }
 
   public async getStreams(courseId: string): Promise<IStream[]> {
-    const streams = await this.streamRepository.getStreams(courseId);
+    const streams = await this._streamRepository.getStreams(courseId);
     return streams;
   }
 
@@ -124,13 +124,13 @@ class StreamService implements IStreamService {
     userId: string,
     message: string
   ): Promise<void> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
     if (!user) {
       errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
       return;
     }
 
-    const users = await this.streamRepository.getRoomUsers(roomId);
+    const users = await this._streamRepository.getRoomUsers(roomId);
 
     if (!users) {
       errorCreator(LiveStreamMessage.StreamNotFound, StatusCodes.NOT_FOUND);
@@ -185,7 +185,7 @@ class StreamService implements IStreamService {
       }
     );
 
-    await this.streamRepository.startRecording(
+    await this._streamRepository.startRecording(
       roomId,
       egressInfo.egressId,
       recordedSrc,

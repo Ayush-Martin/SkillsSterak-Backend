@@ -4,13 +4,13 @@ import { INotebook } from "../models/Notebook.model";
 import { getObjectId } from "../utils/objectId";
 
 class NotebookService implements INotebookService {
-  constructor(private notebookRepository: INotebookRepository) {}
+  constructor(private _notebookRepository: INotebookRepository) {}
 
   public async getCourseNotebooks(
     userId: string,
     courseId: string
   ): Promise<INotebook[]> {
-    return await this.notebookRepository.getCourseNotebooks(courseId, userId);
+    return await this._notebookRepository.getCourseNotebooks(courseId, userId);
   }
 
   public async addNoteBook(
@@ -18,7 +18,7 @@ class NotebookService implements INotebookService {
     courseId: string,
     title: string
   ): Promise<INotebook> {
-    return await this.notebookRepository.create({
+    return await this._notebookRepository.create({
       userId: getObjectId(userId),
       courseId: getObjectId(courseId),
       title,
@@ -27,7 +27,7 @@ class NotebookService implements INotebookService {
   }
 
   public async deleteNoteBook(noteBookId: string): Promise<void> {
-    await this.notebookRepository.deleteById(noteBookId);
+    await this._notebookRepository.deleteById(noteBookId);
   }
 
   public async updateNoteBook(
@@ -35,7 +35,7 @@ class NotebookService implements INotebookService {
     title: string,
     notes: string[]
   ): Promise<null | INotebook> {
-    return await this.notebookRepository.updateById(noteBookId, {
+    return await this._notebookRepository.updateById(noteBookId, {
       title,
       notes,
     });

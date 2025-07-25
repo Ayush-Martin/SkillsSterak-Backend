@@ -72,4 +72,9 @@ export interface IEnrolledCoursesService {
   getCompletionProgress(userId: string): Promise<IEnrolledCourses>;
 
   cancelPurchase(transactionId: string): Promise<void>;
+
+  getEnrolledCourseCompletionStatus(
+    userId: string,
+    courseId: string
+  ): Promise<IEnrolledCourses | null>;
 }

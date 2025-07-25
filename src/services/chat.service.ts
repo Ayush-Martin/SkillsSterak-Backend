@@ -11,16 +11,16 @@ import { messageReactions } from "../types/messageTypes";
 
 class ChatService implements IChatService {
   constructor(
-    private chatRepository: IChatRepository,
-    private messageRepository: IMessageRepository,
-    private userRepository: IUserRepository
+    private _chatRepository: IChatRepository,
+    private _messageRepository: IMessageRepository,
+    private _userRepository: IUserRepository
   ) {}
 
   public async createGroupChat(
     courseId: string,
     trainerId: string
   ): Promise<void> {
-    await this.chatRepository.create({
+    await this._chatRepository.create({
       chatType: "group",
       courseId: getObjectId(courseId),
       adminId: getObjectId(trainerId),
@@ -29,11 +29,11 @@ class ChatService implements IChatService {
   }
 
   public async joinChat(userId: string, courseId: string): Promise<void> {
-    await this.chatRepository.addMemberToChat(courseId, userId);
+    await this._chatRepository.addMemberToChat(courseId, userId);
   }
 
   public async getChats(userId: string): Promise<Array<IChat>> {
-    return await this.chatRepository.getChats(userId);
+    return await this._chatRepository.getChats(userId);
   }
 
   public async addNewMessage(
@@ -42,15 +42,15 @@ class ChatService implements IChatService {
     message: string,
     messageType: "text" | "image" | "emoji"
   ): Promise<void> {
-    const members = await this.chatRepository.getChatMembers(chatId);
-    const newMessage = await this.messageRepository.create({
+    const members = await this._chatRepository.getChatMembers(chatId);
+    const newMessage = await this._messageRepository.create({
       sender: getObjectId(userId),
       chatId: getObjectId(chatId),
       message,
       messageType,
     });
 
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
 
     io.to(members.map((x) => String(x))).emit(
       SocketEvents.CHAT_MESSAGE_BROADCAST,
@@ -77,24 +77,24 @@ class ChatService implements IChatService {
   }
 
   public async getMessages(chatId: string): Promise<Array<IMessage>> {
-    return await this.messageRepository.getChatMessages(chatId);
+    return await this._messageRepository.getChatMessages(chatId);
   }
 
   public async createIndividualChat(
     userId: string,
     trainerId: string
   ): Promise<IChat> {
-    const chat = await this.chatRepository.create({
+    const chat = await this._chatRepository.create({
       chatType: "individual",
       members: [getObjectId(userId), getObjectId(trainerId)],
     });
 
-    const userChat = await this.chatRepository.getIndividualChat(
+    const userChat = await this._chatRepository.getIndividualChat(
       chat.id,
       userId
     );
 
-    const trainerChat = await this.chatRepository.getIndividualChat(
+    const trainerChat = await this._chatRepository.getIndividualChat(
       chat.id,
       trainerId
     );
@@ -110,13 +110,13 @@ class ChatService implements IChatService {
     chatId: string,
     reaction: messageReactions
   ): Promise<void> {
-    const message = await this.messageRepository.reactMessage(
+    const message = await this._messageRepository.reactMessage(
       userId,
       messageId,
       reaction
     );
 
-    const members = await this.chatRepository.getChatMembers(chatId);
+    const members = await this._chatRepository.getChatMembers(chatId);
 
     io.to(members.map((x) => String(x))).emit(
       SocketEvents.CHAT_MESSAGE_REACTION_BROADCAST,
@@ -130,7 +130,7 @@ class ChatService implements IChatService {
   }
 
   public async getChatMembers(chatId: string): Promise<IChat> {
-    return await this.chatRepository.getChatMembersDetails(chatId);
+    return await this._chatRepository.getChatMembersDetails(chatId);
   }
 }
 

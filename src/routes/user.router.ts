@@ -103,6 +103,10 @@ router.get(
 
 router
   .route("/enrolledCourses/:courseId")
+  .get(enrolledCourseController.getEnrolledCourseCompletionStatus);
+
+router
+  .route("/enrolledCourses/:courseId/recorded")
   .get(enrolledCourseController.getEnrolledCourse);
 
 router

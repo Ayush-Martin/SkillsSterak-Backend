@@ -14,7 +14,7 @@ import {
  * All methods are bound for safe Express routing.
  */
 class NotebookController {
-  constructor(private notebookService: INotebookService) {
+  constructor(private _notebookService: INotebookService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -31,7 +31,7 @@ class NotebookController {
       const userId = req.userId!;
       const { courseId } = req.params;
 
-      const data = await this.notebookService.getCourseNotebooks(
+      const data = await this._notebookService.getCourseNotebooks(
         userId,
         courseId
       );
@@ -53,7 +53,7 @@ class NotebookController {
       const { courseId } = req.params;
       const { title } = addNoteBookValidator(req.body);
 
-      const data = await this.notebookService.addNoteBook(
+      const data = await this._notebookService.addNoteBook(
         userId,
         courseId,
         title
@@ -78,7 +78,7 @@ class NotebookController {
     try {
       const { notebookId } = req.params;
 
-      await this.notebookService.deleteNoteBook(notebookId);
+      await this._notebookService.deleteNoteBook(notebookId);
 
       res
         .status(StatusCodes.CREATED)
@@ -96,7 +96,7 @@ class NotebookController {
       const { notebookId } = req.params;
       const { title, notes } = updateNoteBookValidator(req.body);
 
-      const data = await this.notebookService.updateNoteBook(
+      const data = await this._notebookService.updateNoteBook(
         notebookId,
         title,
         notes

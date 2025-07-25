@@ -10,7 +10,7 @@ import { AuthMessage } from "../constants/responseMessages";
  * All methods are bound for safe Express routing.
  */
 class OTPController {
-  constructor(private OTPService: IOTPService) {
+  constructor(private _OTPService: IOTPService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -21,7 +21,7 @@ class OTPController {
   public async verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, OTP } = req.body;
-      await this.OTPService.verifyOTP(email, OTP);
+      await this._OTPService.verifyOTP(email, OTP);
       res.status(StatusCodes.OK).json(successResponse(AuthMessage.OtpVerified));
     } catch (error) {
       next(error);
@@ -34,7 +34,7 @@ class OTPController {
   public async resendOTP(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = req.params;
-      await this.OTPService.resendOTP(email);
+      await this._OTPService.resendOTP(email);
       res.status(StatusCodes.OK).json(successResponse(AuthMessage.OTPResent));
     } catch (error) {
       next(error);

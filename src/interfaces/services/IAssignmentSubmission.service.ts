@@ -3,6 +3,7 @@ import { IAssignmentSubmission } from "../../models/AssignmentSubmission.model";
 export interface IAssignmentSubmissionService {
   submitAssignment(
     userId: string,
+    courseId: string,
     assignmentId: string,
     type: "text" | "pdf" | "image",
     content?: string,

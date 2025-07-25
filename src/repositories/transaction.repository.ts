@@ -576,20 +576,21 @@ class TransactionRepository
   }
 
   public async updateOnProcessPurchaseTransactions(): Promise<ITransaction[]> {
-    const expiry = new Date();
-    expiry.setHours(expiry.getHours() - envConfig.COURSE_CANCELLATION_HOURS); // 5 hours ago
+    const now = new Date();
 
     const transactions = await this.Transaction.find({
       status: "on_process",
       type: "course_purchase",
-      createdAt: { $lte: expiry },
+      cancelTime: { $lt: now }, // expired
     });
+
+    console.log(transactions);
 
     await this.Transaction.updateMany(
       {
         status: "on_process",
         type: "course_purchase",
-        createdAt: { $lte: expiry },
+        cancelTime: { $lt: now },
       },
       {
         $set: { status: "completed" },

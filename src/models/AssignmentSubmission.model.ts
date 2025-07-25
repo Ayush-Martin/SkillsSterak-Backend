@@ -2,6 +2,7 @@ import { Document, Schema, model } from "mongoose";
 
 export interface IAssignmentSubmission extends Document {
   assignmentId: Schema.Types.ObjectId;
+  courseId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   status: "completed" | "pending" | "verified" | "redo";
   type: "text" | "pdf" | "image";
@@ -14,6 +15,11 @@ const AssignmentSubmissionSchema = new Schema<IAssignmentSubmission>({
   assignmentId: {
     type: Schema.Types.ObjectId,
     ref: "assignment",
+    required: true,
+  },
+  courseId: {
+    type: Schema.Types.ObjectId,
+    ref: "course",
     required: true,
   },
   userId: {

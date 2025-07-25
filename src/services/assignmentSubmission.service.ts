@@ -10,6 +10,7 @@ class AssignmentSubmissionService implements IAssignmentSubmissionService {
 
   public async submitAssignment(
     userId: string,
+    courseId: string,
     assignmentId: string,
     type: "text" | "pdf" | "image",
     content?: string,
@@ -17,6 +18,7 @@ class AssignmentSubmissionService implements IAssignmentSubmissionService {
   ): Promise<any> {
     return await this._AssignmentSubmissionRepository.create({
       userId: getObjectId(userId),
+      courseId: getObjectId(courseId),
       assignmentId: getObjectId(assignmentId),
       type,
       content,

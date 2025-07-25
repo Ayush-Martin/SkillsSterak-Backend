@@ -15,7 +15,7 @@ import { CategoryMessage, GeneralMessage } from "../constants/responseMessages";
  * All methods are bound to the instance for safe Express routing.
  */
 class CategoryController {
-  constructor(private categoryService: ICategoryService) {
+  constructor(private _categoryService: ICategoryService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -28,7 +28,7 @@ class CategoryController {
     try {
       const { categoryName } = addCategoryValidator(req.body);
 
-      const category = await this.categoryService.addCategory(categoryName);
+      const category = await this._categoryService.addCategory(categoryName);
 
       res
         .status(StatusCodes.CREATED)
@@ -47,7 +47,7 @@ class CategoryController {
 
       const { categoryName } = editCategoryValidator(req.body);
 
-      const category = await this.categoryService.editCategoryName(
+      const category = await this._categoryService.editCategoryName(
         categoryId,
         categoryName
       );
@@ -71,7 +71,7 @@ class CategoryController {
     try {
       const { categoryId } = req.params;
 
-      const isListed = await this.categoryService.listUnListCategory(
+      const isListed = await this._categoryService.listUnListCategory(
         categoryId
       );
 
@@ -100,7 +100,7 @@ class CategoryController {
     next: NextFunction
   ) {
     try {
-      const categories = await this.categoryService.getAllCategories();
+      const categories = await this._categoryService.getAllCategories();
 
       res
         .status(StatusCodes.OK)
@@ -117,7 +117,7 @@ class CategoryController {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.categoryService.getCategories(search, page, size);
+      const data = await this._categoryService.getCategories(search, page, size);
 
       res
         .status(StatusCodes.OK)

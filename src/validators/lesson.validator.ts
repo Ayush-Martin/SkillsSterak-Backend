@@ -10,6 +10,7 @@ export const addLessonValidator = (data: any) => {
     title: LessonTitleValidationRule,
     description: LessonDescriptionValidationRule,
     type: LessonTypeValidationRule,
+    duration: z.coerce.number(),
   });
 
   return schema.parse(data);

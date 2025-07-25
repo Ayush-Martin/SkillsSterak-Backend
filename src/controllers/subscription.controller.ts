@@ -10,7 +10,7 @@ import { GeneralMessage } from "../constants/responseMessages";
  * All methods are bound for safe Express routing.
  */
 class SubscriptionController {
-  constructor(private subscriptionService: ISubscriptionService) {
+  constructor(private _subscriptionService: ISubscriptionService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -27,7 +27,7 @@ class SubscriptionController {
     try {
       const userId = req.userId!;
       const { subscriptionPlanId } = req.params;
-      const order = await this.subscriptionService.createSubscriptionOrder(
+      const order = await this._subscriptionService.createSubscriptionOrder(
         userId,
         subscriptionPlanId
       );
@@ -51,7 +51,7 @@ class SubscriptionController {
     try {
       const userId = req.userId!;
 
-      const subscription = await this.subscriptionService.getSubscriptionDetail(
+      const subscription = await this._subscriptionService.getSubscriptionDetail(
         userId
       );
 

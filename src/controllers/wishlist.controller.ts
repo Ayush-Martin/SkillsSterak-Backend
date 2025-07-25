@@ -14,7 +14,7 @@ class WishlistController {
   /**
    * Binds all methods to the class instance to preserve context in Express routes.
    */
-  constructor(private wishlistService: IWishlistService) {
+  constructor(private _wishlistService: IWishlistService) {
     binder(this);
   }
 
@@ -29,7 +29,7 @@ class WishlistController {
   ) {
     try {
       const userId = req.userId!;
-      const data = await this.wishlistService.getUserWishlist(userId);
+      const data = await this._wishlistService.getUserWishlist(userId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
@@ -46,7 +46,7 @@ class WishlistController {
     try {
       const userId = req.userId!;
       const { courseId }: { courseId: string } = req.body;
-      await this.wishlistService.addToWishlist(userId, courseId);
+      await this._wishlistService.addToWishlist(userId, courseId);
       res
         .status(StatusCodes.CREATED)
         .json(successResponse(WishlistMessage.courseAdded));
@@ -66,7 +66,7 @@ class WishlistController {
   ) {
     try {
       const { wishlistId } = req.params;
-      await this.wishlistService.removeFromWishlist(wishlistId);
+      await this._wishlistService.removeFromWishlist(wishlistId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(WishlistMessage.courseRemoved));
@@ -87,7 +87,7 @@ class WishlistController {
     try {
       const userId = req.userId!;
       const { courseId } = req.params;
-      await this.wishlistService.removeCourseFromWishlist(userId, courseId);
+      await this._wishlistService.removeCourseFromWishlist(userId, courseId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(WishlistMessage.courseRemoved));
@@ -108,7 +108,7 @@ class WishlistController {
     try {
       const userId = req.userId!;
       const { courseId } = req.params;
-      const isAdded = await this.wishlistService.checkCourseAddedToWishlist(
+      const isAdded = await this._wishlistService.checkCourseAddedToWishlist(
         userId,
         courseId
       );

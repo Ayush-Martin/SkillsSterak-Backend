@@ -8,19 +8,19 @@ class NotificationRepository
   extends BaseRepository<INotification>
   implements INotificationRepository
 {
-  constructor(private Notification: Model<INotification>) {
-    super(Notification);
+  constructor(private _Notification: Model<INotification>) {
+    super(_Notification);
   }
 
   public async getAllNotifications(userId: string): Promise<INotification[]> {
-    return await this.Notification.find(
+    return await this._Notification.find(
       { userId, read: false },
       { message: 1 }
     ).sort({ createdAt: -1 });
   }
 
   public async markAsRead(notificationId: string): Promise<void> {
-    await this.Notification.findByIdAndUpdate(notificationId, { read: true });
+    await this._Notification.findByIdAndUpdate(notificationId, { read: true });
   }
 
   public async addNotifications(
@@ -32,14 +32,14 @@ class NotificationRepository
       message,
     }));
 
-    return await this.Notification.insertMany(notifications);
+    return await this._Notification.insertMany(notifications);
   }
 
   public async addNotification(
     userId: string,
     message: string
   ): Promise<INotification> {
-    const notification = new this.Notification({ userId, message });
+    const notification = new this._Notification({ userId, message });
 
     return await notification.save();
   }

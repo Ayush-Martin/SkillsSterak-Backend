@@ -8,16 +8,16 @@ import errorCreator from "../utils/customError";
 
 class TrainerService implements ITrainerService {
   constructor(
-    private trainerRepository: ITrainerRepository,
-    private trainerRequestRepository: ITrainerRequestRepository
+    private _trainerRepository: ITrainerRepository,
+    private _trainerRequestRepository: ITrainerRequestRepository
   ) {}
 
   public async getAllTrainers(): Promise<Array<IUser>> {
-    return await this.trainerRepository.getAllTrainers();
+    return await this._trainerRepository.getAllTrainers();
   }
 
   public async getTrainer(trainerId: string): Promise<IUser | null> {
-    return await this.trainerRepository.getTrainer(trainerId);
+    return await this._trainerRepository.getTrainer(trainerId);
   }
 
   public async getTrainerRequest(
@@ -29,12 +29,12 @@ class TrainerService implements ITrainerService {
     totalPages: number;
   }> {
     const skip = (page - 1) * size;
-    const users = await this.trainerRequestRepository.getRequestedUsers(
+    const users = await this._trainerRequestRepository.getRequestedUsers(
       skip,
       size
     );
     const totalUsers =
-      await this.trainerRequestRepository.getRequestedUserCount();
+      await this._trainerRequestRepository.getRequestedUserCount();
     const totalPages = Math.ceil(totalUsers / size);
 
     return {
@@ -49,7 +49,7 @@ class TrainerService implements ITrainerService {
     status: "approved" | "rejected",
     rejectedReason?: string
   ): Promise<ITrainerRequest | null> {
-    const res = await this.trainerRequestRepository.changeRequestStatus(
+    const res = await this._trainerRequestRepository.changeRequestStatus(
       trainerRequestId,
       status,
       rejectedReason
@@ -61,7 +61,7 @@ class TrainerService implements ITrainerService {
     }
 
     if (status == "approved") {
-      await this.trainerRepository.changeRole(String(res.userId), "trainer");
+      await this._trainerRepository.changeRole(String(res.userId), "trainer");
     }
 
     return res;
@@ -80,13 +80,13 @@ class TrainerService implements ITrainerService {
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
     const students =
-      await this.trainerRepository.getStudentsWithEnrolledCourses(
+      await this._trainerRepository.getStudentsWithEnrolledCourses(
         trainerId,
         searchRegex,
         skip,
         size
       );
-    const totalStudents = await this.trainerRepository.getTotalStudents(
+    const totalStudents = await this._trainerRepository.getTotalStudents(
       trainerId,
       searchRegex
     );
@@ -99,7 +99,7 @@ class TrainerService implements ITrainerService {
   }
 
   public async getStudentsCount(trainerId: string): Promise<number> {
-    return await this.trainerRepository.getTotalStudents(
+    return await this._trainerRepository.getTotalStudents(
       trainerId,
       new RegExp("")
     );

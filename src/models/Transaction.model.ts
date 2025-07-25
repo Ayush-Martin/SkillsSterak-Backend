@@ -23,6 +23,7 @@ export interface ITransaction extends Document {
   method?: "wallet" | "stripe";
   status: ITransactionStatus;
   courseId?: ObjectId;
+  cancelTime?: Date;
 }
 
 const TransactionSchema = new Schema<ITransaction>(
@@ -66,6 +67,10 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     adminCommission: {
       type: Number,
+      required: false,
+    },
+    cancelTime: {
+      type: Date,
       required: false,
     },
   },

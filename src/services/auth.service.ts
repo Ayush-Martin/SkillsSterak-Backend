@@ -14,8 +14,8 @@ import { AuthMessage, UserMessage } from "../constants/responseMessages";
 
 class AuthService implements IAuthService {
   constructor(
-    private userRepository: IUserRepository,
-    private OTPService: IOTPService
+    private _userRepository: IUserRepository,
+    private _OTPService: IOTPService
   ) {}
 
   public async register(
@@ -23,7 +23,7 @@ class AuthService implements IAuthService {
     email: string,
     password: string
   ): Promise<void> {
-    const userExist = await this.userRepository.getUserByEmail(email);
+    const userExist = await this._userRepository.getUserByEmail(email);
 
     if (userExist) {
       return errorCreator(AuthMessage.EmailExists, StatusCodes.CONFLICT);
@@ -31,7 +31,7 @@ class AuthService implements IAuthService {
 
     const hashedPassword = hashPassword(password);
 
-    const OTP = await this.OTPService.generateAndStoreOTP(email, {
+    const OTP = await this._OTPService.generateAndStoreOTP(email, {
       email,
       username,
       password: hashedPassword,
@@ -41,7 +41,7 @@ class AuthService implements IAuthService {
   }
 
   public async completeRegister(email: string): Promise<void> {
-    const storedData = await this.OTPService.getVerifiedOTPData(email);
+    const storedData = await this._OTPService.getVerifiedOTPData(email);
 
     if (!storedData) {
       return errorCreator(AuthMessage.OtpNotVerified, StatusCodes.UNAUTHORIZED);
@@ -49,18 +49,18 @@ class AuthService implements IAuthService {
 
     const registerData = storedData as any as IOTPRegisterSchema;
 
-    await this.userRepository.create({
+    await this._userRepository.create({
       username: registerData.username,
       email: email,
       password: registerData.password,
       socialLinks: {},
     });
 
-    await this.OTPService.deleteOTP(email);
+    await this._OTPService.deleteOTP(email);
   }
 
   public async login(email: string, password: string): Promise<IUser | void> {
-    const user = await this.userRepository.getUserByEmail(email);
+    const user = await this._userRepository.getUserByEmail(email);
 
     if (!user) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
@@ -92,10 +92,10 @@ class AuthService implements IAuthService {
     email: string,
     username: string
   ): Promise<IUser | void> {
-    let user = await this.userRepository.getUserByGoogleId(googleId);
+    let user = await this._userRepository.getUserByGoogleId(googleId);
 
     if (!user) {
-      user = await this.userRepository.create({
+      user = await this._userRepository.create({
         googleId,
         email,
         username,
@@ -110,13 +110,13 @@ class AuthService implements IAuthService {
   }
 
   public async forgetPassword(email: string): Promise<void> {
-    const user = await this.userRepository.getUserByEmail(email);
+    const user = await this._userRepository.getUserByEmail(email);
 
     if (!user) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.NOT_FOUND);
     }
 
-    const OTP = await this.OTPService.generateAndStoreOTP(email, {
+    const OTP = await this._OTPService.generateAndStoreOTP(email, {
       email,
       id: user.id,
     });
@@ -125,7 +125,7 @@ class AuthService implements IAuthService {
   }
 
   public async resetPassword(email: string, password: string): Promise<void> {
-    const data = await this.OTPService.getVerifiedOTPData(email);
+    const data = await this._OTPService.getVerifiedOTPData(email);
     if (!data) {
       return errorCreator(AuthMessage.OtpNotVerified, StatusCodes.UNAUTHORIZED);
     }
@@ -134,7 +134,7 @@ class AuthService implements IAuthService {
 
     const hashedPassword = hashPassword(password);
 
-    await this.userRepository.updatePassword(id, hashedPassword);
+    await this._userRepository.updatePassword(id, hashedPassword);
   }
 
   public async changePassword(
@@ -142,7 +142,7 @@ class AuthService implements IAuthService {
     currentPassword: string,
     newPassword: string
   ): Promise<void> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
 
     console.log(user);
 
@@ -152,11 +152,11 @@ class AuthService implements IAuthService {
 
     const hashedPassword = hashPassword(newPassword);
 
-    await this.userRepository.updatePassword(userId, hashedPassword);
+    await this._userRepository.updatePassword(userId, hashedPassword);
   }
 
   public async getUserById(userId: string): Promise<IUser | null> {
-    return await this.userRepository.findById(userId);
+    return await this._userRepository.findById(userId);
   }
 }
 

@@ -10,7 +10,7 @@ import { GeneralMessage, WalletMessage } from "../constants/responseMessages";
  * All methods are bound for safe Express routing.
  */
 class WalletController {
-  constructor(private walletService: IWalletService) {
+  constructor(private _walletService: IWalletService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -22,7 +22,7 @@ class WalletController {
     try {
       const userId = req.userId!;
 
-      const data = await this.walletService.getUserWalletInfo(userId);
+      const data = await this._walletService.getUserWalletInfo(userId);
 
       res
         .status(StatusCodes.OK)
@@ -43,7 +43,7 @@ class WalletController {
     try {
       const userId = req.userId!;
 
-      const data = await this.walletService.setUpStripeUserAccount(userId);
+      const data = await this._walletService.setUpStripeUserAccount(userId);
 
       res
         .status(StatusCodes.OK)
@@ -60,7 +60,7 @@ class WalletController {
     try {
       const userId = req.userId!;
 
-      await this.walletService.redeem(userId);
+      await this._walletService.redeem(userId);
 
       res.status(StatusCodes.OK).json(successResponse(WalletMessage.Redeemed));
     } catch (err) {

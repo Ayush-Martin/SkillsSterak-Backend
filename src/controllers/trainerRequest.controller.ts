@@ -18,8 +18,8 @@ import { userInfo } from "os";
  */
 class TrainerRequestController {
   constructor(
-    private trainerService: ITrainerService,
-    private notificationService: INotificationService
+    private _trainerService: ITrainerService,
+    private _notificationService: INotificationService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -37,7 +37,7 @@ class TrainerRequestController {
       const { page, size } = pageValidator(req.query);
 
       const { users, currentPage, totalPages } =
-        await this.trainerService.getTrainerRequest(page, size);
+        await this._trainerService.getTrainerRequest(page, size);
 
       res.status(StatusCodes.OK).json(
         successResponse(GeneralMessage.DataReturned, {
@@ -65,17 +65,17 @@ class TrainerRequestController {
     const { trainerRequestId } = req.params;
 
     const trainerRequest =
-      await this.trainerService.approveRejectTrainerRequest(
+      await this._trainerService.approveRejectTrainerRequest(
         trainerRequestId,
         status,
         rejectedReason
       );
 
     status == "approved"
-      ? this.notificationService.sendApproveTrainerRequestNotification(
+      ? this._notificationService.sendApproveTrainerRequestNotification(
           String(trainerRequest?.userId)
         )
-      : this.notificationService.sendRejectTrainerRequestNotification(
+      : this._notificationService.sendRejectTrainerRequestNotification(
           String(trainerRequest?.userId)
         );
 

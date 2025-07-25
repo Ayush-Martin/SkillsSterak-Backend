@@ -24,10 +24,10 @@ import errorCreator from "../utils/customError";
  */
 class CourseController {
   constructor(
-    private courseService: ICourseService,
-    private notificationService: NotificationService,
-    private aiChatService: IAiChatService,
-    private chatService: IChatService
+    private _courseService: ICourseService,
+    private _notificationService: NotificationService,
+    private _aiChatService: IAiChatService,
+    private _chatService: IChatService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -48,13 +48,13 @@ class CourseController {
         return;
       }
 
-      const course = await this.courseService.createCourse({
+      const course = await this._courseService.createCourse({
         ...courseData,
         trainerId,
         thumbnail: thumbnail.path,
       });
 
-      this.notificationService.sendCourseAddedNotification(
+      this._notificationService.sendCourseAddedNotification(
         req.userId!,
         course.title
       );
@@ -75,7 +75,7 @@ class CourseController {
       const { courseId } = req.params;
       const { message, history } = aiChatValidator(req.body);
 
-      const result = await this.aiChatService.courseChatHandler(
+      const result = await this._aiChatService.courseChatHandler(
         courseId,
         message,
         history
@@ -96,7 +96,7 @@ class CourseController {
     try {
       const { courseId } = req.params;
 
-      const course = await this.courseService.getCourse(courseId);
+      const course = await this._courseService.getCourse(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -116,7 +116,7 @@ class CourseController {
   ) {
     try {
       const { courseId } = req.params;
-      const isListed = await this.courseService.listUnListCourse(courseId);
+      const isListed = await this._courseService.listUnListCourse(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -147,17 +147,17 @@ class CourseController {
 
       const { status } = approveRejectCourseValidator(req.query);
 
-      await this.courseService.approveRejectCourse(courseId, status);
+      await this._courseService.approveRejectCourse(courseId, status);
 
       if (status === "approved") {
-        this.notificationService.sendCourseApprovedNotification(courseId);
-        const course = await this.courseService.findById(courseId);
-        await this.chatService.createGroupChat(
+        this._notificationService.sendCourseApprovedNotification(courseId);
+        const course = await this._courseService.findById(courseId);
+        await this._chatService.createGroupChat(
           courseId,
           course?.trainerId as unknown as string
         );
       } else {
-        this.notificationService.sendCourseRejectedNotification(courseId);
+        this._notificationService.sendCourseRejectedNotification(courseId);
       }
 
       res
@@ -186,7 +186,7 @@ class CourseController {
     try {
       const { courseId } = req.params;
 
-      const course = await this.courseService.getTrainerCourse(courseId);
+      const course = await this._courseService.getTrainerCourse(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -208,7 +208,7 @@ class CourseController {
       const { page, search, size } = paginatedGetDataValidator(req.query);
       const trainerId = req.userId!;
 
-      const data = await this.courseService.getTrainerCourses(
+      const data = await this._courseService.getTrainerCourses(
         trainerId,
         search,
         page,
@@ -234,7 +234,7 @@ class CourseController {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.courseService.getAdminCourses(search, page, size);
+      const data = await this._courseService.getAdminCourses(search, page, size);
 
       res
         .status(StatusCodes.OK)
@@ -252,7 +252,7 @@ class CourseController {
       const { page, search, category, difficulty, price, size, sort } =
         getCoursesValidator(req.query);
 
-      const data = await this.courseService.getCourses(
+      const data = await this._courseService.getCourses(
         search,
         page,
         size,
@@ -287,7 +287,7 @@ class CourseController {
         return;
       }
 
-      await this.courseService.changeCourseThumbnail(courseId, thumbnail.path);
+      await this._courseService.changeCourseThumbnail(courseId, thumbnail.path);
 
       res
         .status(StatusCodes.OK)
@@ -309,7 +309,7 @@ class CourseController {
       const { courseId } = req.params;
       const data = updateCourseBasicDetailsValidator(req.body);
 
-      await this.courseService.updateCourse(courseId, data);
+      await this._courseService.updateCourse(courseId, data);
 
       res
         .status(StatusCodes.OK)
@@ -328,7 +328,7 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const data = await this.courseService.getAdminCoursesCount();
+      const data = await this._courseService.getAdminCoursesCount();
 
       res
         .status(StatusCodes.OK)
@@ -348,7 +348,7 @@ class CourseController {
   ) {
     try {
       const userId = req.userId!;
-      const data = await this.courseService.getTrainerCoursesCount(userId);
+      const data = await this._courseService.getTrainerCoursesCount(userId);
 
       res
         .status(StatusCodes.OK)
@@ -368,7 +368,7 @@ class CourseController {
   ) {
     try {
       const userId = req.userId!;
-      const data = await this.courseService.getTrainerTop5Courses(userId);
+      const data = await this._courseService.getTrainerTop5Courses(userId);
 
       res
         .status(StatusCodes.OK)
@@ -387,7 +387,7 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const data = await this.courseService.getAdminTop5Courses();
+      const data = await this._courseService.getAdminTop5Courses();
 
       res
         .status(StatusCodes.OK)
@@ -400,7 +400,7 @@ class CourseController {
   public async getAdminCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
-      const data = await this.courseService.getAdminCourse(courseId);
+      const data = await this._courseService.getAdminCourse(courseId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));

@@ -11,23 +11,23 @@ import { ISubscriptionPlanRepository } from "../interfaces/repositories/ISubscri
 
 class SubscriptionService implements ISubscriptionService {
   constructor(
-    private subscriptionRepository: ISubscriptionRepository,
-    private transactionRepository: ITransactionRepository,
-    private userRepository: IUserRepository,
-    private subscriptionPlanRepository: ISubscriptionPlanRepository
+    private _subscriptionRepository: ISubscriptionRepository,
+    private _transactionRepository: ITransactionRepository,
+    private _userRepository: IUserRepository,
+    private _subscriptionPlanRepository: ISubscriptionPlanRepository
   ) {}
 
   public async createSubscriptionOrder(
     userId: string,
     planId: string
   ): Promise<string> {
-    const userEmail = await this.userRepository.getUserEmail(userId);
+    const userEmail = await this._userRepository.getUserEmail(userId);
 
-    const plan = (await this.subscriptionPlanRepository.findById(planId))!;
+    const plan = (await this._subscriptionPlanRepository.findById(planId))!;
 
     console.log(plan, planId);
 
-    const transaction = await this.transactionRepository.create({
+    const transaction = await this._transactionRepository.create({
       payerId: getObjectId(userId),
       amount: plan.price,
       type: "subscription",
@@ -69,9 +69,9 @@ class SubscriptionService implements ISubscriptionService {
     planId: string,
     transactionId: string
   ): Promise<void> {
-    const plan = (await this.subscriptionPlanRepository.findById(planId))!;
+    const plan = (await this._subscriptionPlanRepository.findById(planId))!;
 
-    await this.transactionRepository.changePaymentStatus(
+    await this._transactionRepository.changePaymentStatus(
       transactionId,
       "completed"
     );
@@ -79,7 +79,7 @@ class SubscriptionService implements ISubscriptionService {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + plan.duration);
 
-    await this.subscriptionRepository.create({
+    await this._subscriptionRepository.create({
       userId: getObjectId(userId),
       transactionId: getObjectId(transactionId),
       subscriptionPlanId: getObjectId(planId),
@@ -90,7 +90,7 @@ class SubscriptionService implements ISubscriptionService {
   public async getSubscriptionDetail(
     userId: string
   ): Promise<ISubscription | null> {
-    return await this.subscriptionRepository.getSubscriptionDetailByUserID(
+    return await this._subscriptionRepository.getSubscriptionDetailByUserID(
       userId
     );
   }

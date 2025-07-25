@@ -64,4 +64,9 @@ export interface IEnrolledCoursesRepository
   getProgress(userId: string): Promise<IEnrolledCourses>;
 
   deleteUserCourseEnrollment(userId: string, courseId: string): Promise<void>;
+
+  getEnrolledCourseCompletionStatus(
+    userId: string,
+    courseId: string
+  ): Promise<IEnrolledCourses | null>;
 }

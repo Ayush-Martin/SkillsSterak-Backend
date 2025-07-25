@@ -7,12 +7,12 @@ class ModuleRepository
   extends BaseRepository<IModule>
   implements IModuleRepository
 {
-  constructor(private Module: Model<IModule>) {
-    super(Module);
+  constructor(private _Module: Model<IModule>) {
+    super(_Module);
   }
 
   public async getModulesByCourseId(courseId: string): Promise<Array<IModule>> {
-    return await this.Module.aggregate([
+    return await this._Module.aggregate([
       {
         $match: {
           courseId: new mongoose.Types.ObjectId(courseId),
@@ -35,7 +35,7 @@ class ModuleRepository
   }
 
   public async getModule(moduleId: string): Promise<IModule> {
-    const module = await this.Module.aggregate([
+    const module = await this._Module.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(moduleId),

@@ -8,16 +8,16 @@ class StreamRepository
   extends BaseRepository<IStream>
   implements IStreamRepository
 {
-  constructor(private Stream: Model<IStream>) {
-    super(Stream);
+  constructor(private _Stream: Model<IStream>) {
+    super(_Stream);
   }
 
   public async getStreams(courseId: string): Promise<IStream[]> {
-    return await this.Stream.find({ courseId });
+    return await this._Stream.find({ courseId });
   }
 
   public async getStreamsCount(search: RegExp): Promise<number> {
-    return await this.Stream.countDocuments({ title: search, isLive: true });
+    return await this._Stream.countDocuments({ title: search, isLive: true });
   }
 
   public async getRoomUsers(roomId: string): Promise<string[] | null> {
@@ -27,7 +27,7 @@ class StreamRepository
   }
 
   public async endStream(roomId: string): Promise<void> {
-    await this.Stream.updateOne({ roomId }, { isLive: false });
+    await this._Stream.updateOne({ roomId }, { isLive: false });
   }
 
   public async initializeStreamRoom(
@@ -56,7 +56,7 @@ class StreamRepository
       JSON.stringify({ ...data, egressId })
     );
 
-    await this.Stream.updateOne(
+    await this._Stream.updateOne(
       { roomId },
       { isLive: true, recordedSrc, liveSrc }
     );

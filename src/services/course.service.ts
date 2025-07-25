@@ -12,32 +12,32 @@ import {
 import { CourseMessage } from "../constants/responseMessages";
 
 class CourseService implements ICourseService {
-  constructor(private courseRepository: ICourseRepository) {}
+  constructor(private _courseRepository: ICourseRepository) {}
 
   public async createCourse(course: Partial<ICourse>): Promise<ICourse> {
     const { title } = course;
-    const courseExist = await this.courseRepository.findCourseByTitle(title!);
+    const courseExist = await this._courseRepository.findCourseByTitle(title!);
 
     if (courseExist) {
       errorCreator(CourseMessage.CourseExists, StatusCodes.CONFLICT);
     }
 
-    return await this.courseRepository.create(course);
+    return await this._courseRepository.create(course);
   }
 
   public async getCourse(courseId: string): Promise<null | ICourse> {
-    return await this.courseRepository.getCourse(courseId);
+    return await this._courseRepository.getCourse(courseId);
   }
 
   public async listUnListCourse(courseId: string): Promise<boolean> {
-    const isListed = await this.courseRepository.getCourseListedStatus(
+    const isListed = await this._courseRepository.getCourseListedStatus(
       courseId
     );
     if (isListed == null) {
       errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
     }
 
-    await this.courseRepository.changeListStatus(courseId, !isListed);
+    await this._courseRepository.changeListStatus(courseId, !isListed);
     return !isListed;
   }
 
@@ -45,7 +45,7 @@ class CourseService implements ICourseService {
     courseId: string,
     status: "approved" | "rejected"
   ): Promise<void> {
-    await this.courseRepository.changeCourseStatus(courseId, status);
+    await this._courseRepository.changeCourseStatus(courseId, status);
   }
 
   public async getCourses(
@@ -108,7 +108,7 @@ class CourseService implements ICourseService {
 
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
-    const courses = await this.courseRepository.getCourses(
+    const courses = await this._courseRepository.getCourses(
       searchRegex,
       skip,
       size,
@@ -116,7 +116,7 @@ class CourseService implements ICourseService {
       sortQuery
     );
 
-    const totalCourses = await this.courseRepository.getCourseCount(
+    const totalCourses = await this._courseRepository.getCourseCount(
       searchRegex,
       filter
     );
@@ -129,7 +129,7 @@ class CourseService implements ICourseService {
   }
 
   public async getTrainerCourse(courseId: string): Promise<null | ICourse> {
-    return await this.courseRepository.getTrainerCourse(courseId);
+    return await this._courseRepository.getTrainerCourse(courseId);
   }
 
   public async getTrainerCourses(
@@ -144,14 +144,14 @@ class CourseService implements ICourseService {
   }> {
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
-    const courses = await this.courseRepository.getTrainerCourses(
+    const courses = await this._courseRepository.getTrainerCourses(
       trainerId,
       searchRegex,
       skip,
       size
     );
 
-    const totalCourses = await this.courseRepository.getTrainerCourseCount(
+    const totalCourses = await this._courseRepository.getTrainerCourseCount(
       trainerId,
       searchRegex
     );
@@ -174,13 +174,13 @@ class CourseService implements ICourseService {
   }> {
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
-    const courses = await this.courseRepository.getAdminCourses(
+    const courses = await this._courseRepository.getAdminCourses(
       searchRegex,
       skip,
       size
     );
 
-    const totalCourses = await this.courseRepository.getCourseCount(
+    const totalCourses = await this._courseRepository.getCourseCount(
       searchRegex,
       {}
     );
@@ -196,43 +196,43 @@ class CourseService implements ICourseService {
     courseId: string,
     thumbnail: string
   ): Promise<void> {
-    await this.courseRepository.changeThumbnail(courseId, thumbnail);
+    await this._courseRepository.changeThumbnail(courseId, thumbnail);
   }
 
   public async updateCourse(
     courseId: string,
     course: Partial<ICourse>
   ): Promise<void> {
-    await this.courseRepository.updateById(courseId, course);
+    await this._courseRepository.updateById(courseId, course);
   }
 
   public async findById(courseId: string): Promise<ICourse | null> {
-    return await this.courseRepository.findById(courseId);
+    return await this._courseRepository.findById(courseId);
   }
 
   public async getAdminCoursesCount(): Promise<number> {
-    return await this.courseRepository.getAdminCourseCount(new RegExp(""));
+    return await this._courseRepository.getAdminCourseCount(new RegExp(""));
   }
 
   public async getTrainerCoursesCount(trainerId: string): Promise<number> {
-    return await this.courseRepository.getTrainerCourseCount(
+    return await this._courseRepository.getTrainerCourseCount(
       trainerId,
       new RegExp("")
     );
   }
 
   public async getAdminTop5Courses(): Promise<Array<ICourse>> {
-    return await this.courseRepository.getAdminTop5Courses();
+    return await this._courseRepository.getAdminTop5Courses();
   }
 
   public async getTrainerTop5Courses(
     trainerId: string
   ): Promise<Array<ICourse>> {
-    return await this.courseRepository.getTrainerTop5Courses(trainerId);
+    return await this._courseRepository.getTrainerTop5Courses(trainerId);
   }
 
   public async getAdminCourse(courseId: string): Promise<ICourse | null> {
-    return await this.courseRepository.getAdminCourse(courseId);
+    return await this._courseRepository.getAdminCourse(courseId);
   }
 }
 

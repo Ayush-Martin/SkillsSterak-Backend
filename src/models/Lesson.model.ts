@@ -7,6 +7,7 @@ export interface ILesson extends Document {
   description: string;
   type: "video" | "pdf";
   path: string;
+  duration: number;
 }
 
 const LessonSchema = new Schema<ILesson>({
@@ -34,6 +35,10 @@ const LessonSchema = new Schema<ILesson>({
   },
   path: {
     type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
     required: true,
   },
 });

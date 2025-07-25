@@ -10,7 +10,7 @@ import { ChatMessage, GeneralMessage } from "../constants/responseMessages";
  * All methods are bound to the instance for safe Express routing.
  */
 class ChatController {
-  constructor(private chatService: IChatService) {
+  constructor(private _chatService: IChatService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -22,7 +22,7 @@ class ChatController {
   public async getChats(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId;
-      const chats = await this.chatService.getChats(userId!);
+      const chats = await this._chatService.getChats(userId!);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, chats));
@@ -43,7 +43,7 @@ class ChatController {
     try {
       const { chatId } = req.params;
 
-      const messages = await this.chatService.getMessages(chatId);
+      const messages = await this._chatService.getMessages(chatId);
 
       res
         .status(StatusCodes.OK)
@@ -64,7 +64,7 @@ class ChatController {
 
       const file = req.file!;
 
-      await this.chatService.addNewMessage(
+      await this._chatService.addNewMessage(
         userId,
         chatId,
         file.path,
@@ -88,7 +88,7 @@ class ChatController {
       const { trainerId } = req.params;
       const userId = req.userId!;
 
-      const chat = await this.chatService.createIndividualChat(
+      const chat = await this._chatService.createIndividualChat(
         userId,
         trainerId
       );
@@ -107,7 +107,7 @@ class ChatController {
     try {
       const { chatId } = req.params;
 
-      const members = await this.chatService.getChatMembers(chatId);
+      const members = await this._chatService.getChatMembers(chatId);
 
       res
         .status(StatusCodes.OK)

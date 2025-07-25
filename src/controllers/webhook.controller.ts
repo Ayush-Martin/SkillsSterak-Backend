@@ -17,11 +17,11 @@ import { ILiveSessionService } from "../interfaces/services/ILiveSession.service
 class WebHookController {
   constructor(
     private streamService: IStreamService,
-    private enrolledCourseService: IEnrolledCoursesService,
-    private chatService: IChatService,
-    private subscriptionService: ISubscriptionService,
-    private wishlistService: IWishlistService,
-    private liveSessionService: ILiveSessionService
+    private _enrolledCourseService: IEnrolledCoursesService,
+    private _chatService: IChatService,
+    private _subscriptionService: ISubscriptionService,
+    private _wishlistService: IWishlistService,
+    private _liveSessionService: ILiveSessionService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -52,11 +52,11 @@ class WebHookController {
           console.log("⏳ Waiting 1s before starting recording...");
           await new Promise((res) => setTimeout(res, 1000));
           // await this.streamService.startRecording(event.room?.name!);
-          await this.liveSessionService.startRecording(event.room?.name!);
+          await this._liveSessionService.startRecording(event.room?.name!);
           break;
         case "participant_left":
           // await this.streamService.endStream(event.room?.name!);
-          await this.liveSessionService.endLiveSession(event.room?.name!);
+          await this._liveSessionService.endLiveSession(event.room?.name!);
 
           break;
       }
@@ -88,20 +88,20 @@ class WebHookController {
           const session = event.data.object;
           const { userId, courseId, transactionId, planId } = session.metadata!;
           if (courseId) {
-            await this.enrolledCourseService.completePurchase(
+            await this._enrolledCourseService.completePurchase(
               userId,
               courseId,
               transactionId
             );
-            await this.chatService.joinChat(userId, courseId);
-            await this.wishlistService.removeCourseFromWishlist(
+            await this._chatService.joinChat(userId, courseId);
+            await this._wishlistService.removeCourseFromWishlist(
               userId,
               courseId
             );
           }
 
           if (planId) {
-            await this.subscriptionService.completeSubscription(
+            await this._subscriptionService.completeSubscription(
               userId,
               planId,
               transactionId

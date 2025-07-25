@@ -13,8 +13,8 @@ import { IUserService } from "../interfaces/services/IUser.service";
  */
 class TrainerController {
   constructor(
-    private trainerService: ITrainerService,
-    private userService: IUserService
+    private _trainerService: ITrainerService,
+    private _userService: IUserService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -25,7 +25,7 @@ class TrainerController {
    */
   public async getAllTrainers(req: Request, res: Response, next: NextFunction) {
     try {
-      const trainers = await this.trainerService.getAllTrainers();
+      const trainers = await this._trainerService.getAllTrainers();
 
       res
         .status(StatusCodes.OK)
@@ -42,7 +42,7 @@ class TrainerController {
     try {
       const { trainerId } = req.params;
 
-      const trainer = await this.userService.getUserProfileDetails(trainerId);
+      const trainer = await this._userService.getUserProfileDetails(trainerId);
 
       res
         .status(StatusCodes.OK)
@@ -64,7 +64,7 @@ class TrainerController {
       const trainerId = req.userId!;
       const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this.trainerService.getStudentsWithEnrolledCourses(
+      const data = await this._trainerService.getStudentsWithEnrolledCourses(
         trainerId,
         search,
         page,
@@ -89,7 +89,7 @@ class TrainerController {
   ) {
     try {
       const userId = req.userId!;
-      const data = await this.trainerService.getStudentsCount(userId);
+      const data = await this._trainerService.getStudentsCount(userId);
 
       res
         .status(StatusCodes.OK)

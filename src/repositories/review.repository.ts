@@ -7,12 +7,12 @@ class ReviewRepository
   extends BaseRepository<IReview>
   implements IReviewRepository
 {
-  constructor(private Review: Model<IReview>) {
-    super(Review);
+  constructor(private _Review: Model<IReview>) {
+    super(_Review);
   }
 
   public async getReviewsByCourseId(courseId: string): Promise<IReview[]> {
-    return await this.Review.find({ courseId })
+    return await this._Review.find({ courseId })
       .populate({
         path: "userId",
         select: "username profileImage",
@@ -24,7 +24,7 @@ class ReviewRepository
     courseId: string,
     userId: string
   ): Promise<boolean> {
-    const review = await this.Review.findOne({ userId, courseId });
+    const review = await this._Review.findOne({ userId, courseId });
 
     return !!review;
   }

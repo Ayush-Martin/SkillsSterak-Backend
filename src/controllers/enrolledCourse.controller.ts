@@ -205,7 +205,28 @@ class EnrolledCourses {
     }
   }
 
- 
+  public async getEnrolledCourseCompletionStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const { courseId } = req.params;
+      const status =
+        await this.enrolledCoursesService.getEnrolledCourseCompletionStatus(
+          userId,
+          courseId
+        );
+
+      console.log(status);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, status));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default EnrolledCourses;

@@ -13,8 +13,8 @@ import errorCreator from "../utils/customError";
 
 class AiChatService implements IAiChatService {
   constructor(
-    private courseRepository: ICourseRepository,
-    private aiChatRepository: IAiChatRepository
+    private _courseRepository: ICourseRepository,
+    private _aiChatRepository: IAiChatRepository
   ) {}
 
   public async courseChatHandler(
@@ -24,15 +24,15 @@ class AiChatService implements IAiChatService {
   ): Promise<string | null> {
     let courseOutlineData: ICourse | null;
 
-    courseOutlineData = await this.aiChatRepository.getCourseOutlineData(
+    courseOutlineData = await this._aiChatRepository.getCourseOutlineData(
       courseId
     );
 
     if (!courseOutlineData) {
-      const data = await this.courseRepository.getCourseOutline(courseId);
+      const data = await this._courseRepository.getCourseOutline(courseId);
 
       if (data) {
-        await this.aiChatRepository.setCourseOutlineData(courseId, data);
+        await this._aiChatRepository.setCourseOutlineData(courseId, data);
       }
 
       courseOutlineData = data;

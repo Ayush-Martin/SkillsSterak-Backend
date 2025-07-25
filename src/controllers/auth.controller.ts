@@ -28,9 +28,9 @@ class AuthController {
    * Binds all methods to the class instance.
    */
   constructor(
-    public authService: IAuthService,
-    public jwtService: IJWTService,
-    private googleAuthService: IGoogleAuthService
+    public _authService: IAuthService,
+    public _jwtService: IJWTService,
+    private _googleAuthService: IGoogleAuthService
   ) {
     binder(this);
   }
@@ -44,7 +44,7 @@ class AuthController {
     try {
       const { username, email, password } = registerUserValidator(req.body);
 
-      await this.authService.register(username, email, password);
+      await this._authService.register(username, email, password);
 
       res
         .status(StatusCodes.CREATED)
@@ -63,7 +63,7 @@ class AuthController {
     try {
       const { email } = completeRegisterValidator(req.query);
 
-      await this.authService.completeRegister(email);
+      await this._authService.completeRegister(email);
 
       res
         .status(StatusCodes.CREATED)
@@ -82,9 +82,9 @@ class AuthController {
     try {
       const { email, password } = loginUserValidator(req.body);
 
-      const user = await this.authService.login(email, password)!;
+      const user = await this._authService.login(email, password)!;
       if (!user) return errorCreator(UserMessage.UserNotFound);
-      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+      const { accessToken, refreshToken } = await this._jwtService.createTokens(
         user
       );
 
@@ -117,11 +117,11 @@ class AuthController {
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
-      const { sub, email, name } = await this.googleAuthService.getUser(token);
+      const { sub, email, name } = await this._googleAuthService.getUser(token);
 
-      const user = await this.authService.googleAuth(sub, email!, name!);
+      const user = await this._authService.googleAuth(sub, email!, name!);
       if (!user) return errorCreator(UserMessage.UserNotFound);
-      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+      const { accessToken, refreshToken } = await this._jwtService.createTokens(
         user
       );
 
@@ -147,7 +147,7 @@ class AuthController {
     try {
       const { email } = forgetPasswordValidator(req.body);
 
-      await this.authService.forgetPassword(email);
+      await this._authService.forgetPassword(email);
 
       res
         .clearCookie(REFRESH_TOKEN_COOKIE_NAME, RefreshTokenCookieOptions)
@@ -163,7 +163,7 @@ class AuthController {
     try {
       const { password, email } = resetPasswordValidator(req.body);
 
-      await this.authService.resetPassword(email, password);
+      await this._authService.resetPassword(email, password);
 
       res
         .status(StatusCodes.ACCEPTED)
@@ -181,7 +181,7 @@ class AuthController {
         req.body
       );
 
-      await this.authService.changePassword(
+      await this._authService.changePassword(
         userId,
         currentPassword,
         newPassword
@@ -199,13 +199,13 @@ class AuthController {
   public async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;
-      const user = await this.authService.getUserById(userId);
+      const user = await this._authService.getUserById(userId);
 
       if (!user) {
         return errorCreator(UserMessage.UserNotFound);
       }
 
-      const { accessToken, refreshToken } = await this.jwtService.createTokens(
+      const { accessToken, refreshToken } = await this._jwtService.createTokens(
         user
       );
 

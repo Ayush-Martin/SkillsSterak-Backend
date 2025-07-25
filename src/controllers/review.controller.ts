@@ -15,7 +15,7 @@ import { GeneralMessage, ReviewMessage } from "../constants/responseMessages";
  * All methods are bound for safe Express routing.
  */
 class ReviewController {
-  constructor(private reviewService: IReviewService) {
+  constructor(private _reviewService: IReviewService) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
   }
@@ -27,7 +27,7 @@ class ReviewController {
       const userId = req.userId!;
       const { courseId } = req.params;
       const { content, rating } = addReviewValidator(req.body);
-      const review = await this.reviewService.createReview(
+      const review = await this._reviewService.createReview(
         userId,
         courseId,
         rating,
@@ -49,7 +49,7 @@ class ReviewController {
     try {
       const { courseId } = req.params;
 
-      const reviews = await this.reviewService.getReviews(courseId);
+      const reviews = await this._reviewService.getReviews(courseId);
 
       res
         .status(StatusCodes.OK)
@@ -68,7 +68,7 @@ class ReviewController {
       const userId = req.userId!;
       const { content } = addReplyValidator(req.body);
 
-      const reply = await this.reviewService.addReply(
+      const reply = await this._reviewService.addReply(
         userId,
         reviewId,
         content
@@ -89,7 +89,7 @@ class ReviewController {
     try {
       const { reviewId } = req.params;
 
-      const replies = await this.reviewService.getReplies(reviewId);
+      const replies = await this._reviewService.getReplies(reviewId);
 
       res
         .status(StatusCodes.OK)
@@ -106,7 +106,7 @@ class ReviewController {
     try {
       const { reviewId } = req.params;
 
-      await this.reviewService.deleteReview(reviewId);
+      await this._reviewService.deleteReview(reviewId);
 
       res
         .status(StatusCodes.OK)
@@ -122,7 +122,7 @@ class ReviewController {
       const { reviewId } = req.params;
       const { content, rating } = updateReviewValidator(req.body);
 
-      await this.reviewService.updateReview(reviewId, rating, content);
+      await this._reviewService.updateReview(reviewId, rating, content);
 
       res
         .status(StatusCodes.OK)

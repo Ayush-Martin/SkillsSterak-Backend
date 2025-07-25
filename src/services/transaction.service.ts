@@ -15,8 +15,8 @@ import { IWalletRepository } from "../interfaces/repositories/IWallet.repository
 
 class TransactionService implements ITransactionService {
   constructor(
-    private transactionRepository: ITransactionRepository,
-    private walletRepository: IWalletRepository
+    private _transactionRepository: ITransactionRepository,
+    private _walletRepository: IWalletRepository
   ) {}
 
   public async getUserTransactions(
@@ -30,14 +30,14 @@ class TransactionService implements ITransactionService {
   }> {
     const skip = (page - 1) * size;
 
-    const transactions = await this.transactionRepository.getUserTransactions(
+    const transactions = await this._transactionRepository.getUserTransactions(
       userId,
       skip,
       size
     );
 
     const totalTransactions =
-      await this.transactionRepository.getUserTransactionCount(userId);
+      await this._transactionRepository.getUserTransactionCount(userId);
     const totalPages = Math.ceil(totalTransactions / size);
     return { transactions, currentPage: page, totalPages };
   }
@@ -51,12 +51,12 @@ class TransactionService implements ITransactionService {
     totalPages: number;
   }> {
     const skip = (page - 1) * size;
-    const transactions = await this.transactionRepository.getTransactions(
+    const transactions = await this._transactionRepository.getTransactions(
       skip,
       size
     );
     const totalTransactions =
-      await this.transactionRepository.getTransactionCount();
+      await this._transactionRepository.getTransactionCount();
 
     const totalPages = Math.ceil(totalTransactions / size);
 
@@ -103,14 +103,14 @@ class TransactionService implements ITransactionService {
       filter = { createdAt: { $gte: fromDate, $lte: toDate } };
     }
 
-    const revenue = await this.transactionRepository.getAdminRevenue(
+    const revenue = await this._transactionRepository.getAdminRevenue(
       filter,
       skip,
       size
     );
 
     const totalTransactions =
-      await this.transactionRepository.getAdminRevenueCount(filter);
+      await this._transactionRepository.getAdminRevenueCount(filter);
 
     const totalPages = Math.ceil(totalTransactions / size);
 
@@ -150,7 +150,7 @@ class TransactionService implements ITransactionService {
       filter = { createdAt: { $gte: fromDate, $lte: toDate } };
     }
 
-    const revenue = (await this.transactionRepository.getAdminRevenue(
+    const revenue = (await this._transactionRepository.getAdminRevenue(
       filter
     )) as unknown as {
       totalRevenue: number;
@@ -221,7 +221,7 @@ class TransactionService implements ITransactionService {
       filter = { createdAt: { $gte: fromDate, $lte: toDate } };
     }
 
-    const revenue = await this.transactionRepository.getTrainerRevenue(
+    const revenue = await this._transactionRepository.getTrainerRevenue(
       trainerId,
       filter,
       skip,
@@ -229,7 +229,7 @@ class TransactionService implements ITransactionService {
     );
 
     const totalTransactions =
-      await this.transactionRepository.getTrainerRevenueCount(
+      await this._transactionRepository.getTrainerRevenueCount(
         trainerId,
         filter
       );
@@ -273,7 +273,7 @@ class TransactionService implements ITransactionService {
       filter = { createdAt: { $gte: fromDate, $lte: toDate } };
     }
 
-    const revenue = (await this.transactionRepository.getTrainerRevenue(
+    const revenue = (await this._transactionRepository.getTrainerRevenue(
       trainerId,
       filter
     )) as unknown as {
@@ -311,13 +311,13 @@ class TransactionService implements ITransactionService {
   }
 
   public async getAdminRevenueGraphData(): Promise<ITransaction> {
-    return await this.transactionRepository.getAdminRevenueGraphData();
+    return await this._transactionRepository.getAdminRevenueGraphData();
   }
 
   public async getTrainerRevenueGraphData(
     trainerId: string
   ): Promise<ITransaction> {
-    return await this.transactionRepository.getTrainerRevenueGraphData(
+    return await this._transactionRepository.getTrainerRevenueGraphData(
       trainerId
     );
   }
@@ -325,7 +325,7 @@ class TransactionService implements ITransactionService {
   public async completeTransaction(
     transactionId: string
   ): Promise<ITransaction | null> {
-    return await this.transactionRepository.changePaymentStatus(
+    return await this._transactionRepository.changePaymentStatus(
       transactionId,
       "completed"
     );
@@ -335,13 +335,13 @@ class TransactionService implements ITransactionService {
     userId: string,
     transactionId: string
   ): Promise<ITransaction | null> {
-    const transaction = await this.transactionRepository.findById(
+    const transaction = await this._transactionRepository.findById(
       transactionId
     );
 
-    await this.walletRepository.creditWallet(userId, transaction?.amount!);
+    await this._walletRepository.creditWallet(userId, transaction?.amount!);
 
-    return await this.transactionRepository.changePaymentStatus(
+    return await this._transactionRepository.changePaymentStatus(
       transactionId,
       "canceled"
     );
@@ -350,7 +350,7 @@ class TransactionService implements ITransactionService {
   public async failedTransaction(
     transactionId: string
   ): Promise<ITransaction | null> {
-    return await this.transactionRepository.changePaymentStatus(
+    return await this._transactionRepository.changePaymentStatus(
       transactionId,
       "failed"
     );
@@ -359,7 +359,7 @@ class TransactionService implements ITransactionService {
   public async updateOnProcessPurchaseTransactions(): Promise<
     Array<ITransaction>
   > {
-    return await this.transactionRepository.updateOnProcessPurchaseTransactions();
+    return await this._transactionRepository.updateOnProcessPurchaseTransactions();
   }
 }
 
