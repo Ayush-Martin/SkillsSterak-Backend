@@ -1,0 +1,24 @@
+services:
+  app:
+    image: ayushmartin/skills_streak_backend
+    container_name: skill_streak_backend
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
+    container_name: skill_streak_redis
+    volumes:
+      - redis_data_volume:/data
+    ports:
+      - 6379:6379
+
+volumes:
+  redis_data_volume:
+    driver: local

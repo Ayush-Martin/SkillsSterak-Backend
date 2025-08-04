@@ -1,11 +1,21 @@
-import corn from "node-cron";
+import cron from "node-cron";
 import {
   walletService,
   transactionService,
   userService,
 } from "../dependencyInjector";
 
-corn.schedule("* * * * *", async () => {
+let isRunning = false;
+
+cron.schedule("* * * * *", async () => {
+  if (isRunning) {
+    console.warn("[⏳ Cron Skipped]: Previous execution still in progress.");
+    return;
+  }
+
+  isRunning = true;
+  const startTime = Date.now();
+
   try {
     console.info("[⏱️ Cron]: Checking for expired on_process transactions");
 
@@ -14,30 +24,39 @@ corn.schedule("* * * * *", async () => {
     const transactions =
       await transactionService.updateOnProcessPurchaseTransactions();
 
-    transactions.forEach(async (transaction) => {
-      const trainerRevenueAmount =
-        transaction.amount - transaction.adminCommission!;
+    await Promise.all(
+      transactions.map(async (transaction) => {
+        const trainerRevenueAmount =
+          transaction.amount - transaction.adminCommission!;
 
-      await walletService.creditWallet(
-        String(transaction.receiverId),
-        trainerRevenueAmount
-      );
+        await walletService.creditWallet(
+          String(transaction.receiverId),
+          trainerRevenueAmount
+        );
 
-      await walletService.creditWallet(admin?.id, transaction.adminCommission!);
+        await walletService.creditWallet(
+          admin?.id,
+          transaction.adminCommission!
+        );
 
-      await transactionService.createTransaction({
-        payerId: transaction.receiverId,
-        receiverId: admin?.id,
-        amount: transaction.adminCommission!,
-        type: "commission",
-        status: "completed",
-      });
-    });
+        await transactionService.createTransaction({
+          payerId: transaction.receiverId,
+          receiverId: admin?.id,
+          amount: transaction.adminCommission!,
+          type: "commission",
+          status: "completed",
+        });
+      })
+    );
 
     console.info(
-      `[📦 Cron] complete — ${transactions.length} transaction(s) finalized`
+      `[📦 Cron]: Completed — ${
+        transactions.length
+      } transaction(s) finalized in ${Date.now() - startTime}ms`
     );
   } catch (err) {
-    console.log(err);
+    console.error("[❌ Cron Error]:", err);
+  } finally {
+    isRunning = false;
   }
 });

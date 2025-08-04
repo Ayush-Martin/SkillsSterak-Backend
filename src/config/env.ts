@@ -12,6 +12,9 @@ const envConfig = {
   NODE_ENV:
     (process.env.NODE_ENV as "development" | "production") || "development",
 
+  //redis
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
+
   //mongoDb
   MONGO_URI: process.env.MONGO_URI!,
 
