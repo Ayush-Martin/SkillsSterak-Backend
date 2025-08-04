@@ -1,6 +1,8 @@
 import { EgressClient, WebhookReceiver } from "livekit-server-sdk";
 import envConfig from "./env";
 
+console.log("live kit api secret", envConfig.LIVEKIT_API_SECRET);
+
 /**
  * LiveKit WebhookReceiver for handling webhook events from LiveKit server.
  */
