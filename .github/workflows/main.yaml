@@ -2,10 +2,10 @@ name: CI CD Pipeline
 
 on:
   push:
-    branches: [production]
+    branches: [main]
 
 env:
-  IMAGE_NAME: ayushmartin/skillstreak-backend:latest
+  IMAGE_NAME: ayushmartin/skills_streak-backend:latest
 
 jobs:
   build:
@@ -29,6 +29,14 @@ jobs:
       - name: Build project
         run: npm run build
 
+  pushToDockerHub:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -40,3 +48,34 @@ jobs:
 
       - name: Push Docker image
         run: docker push $IMAGE_NAME
+
+  deployToEC2:
+    needs: pushToDockerHub
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Write .env file from GitHub Secrets
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Copy deployment files to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yaml,.env,deploy.sh"
+          target: "~/skills_streak"
+
+      - name: Run deploy.sh on EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/skills_streak
+            chmod +x deploy.sh
+            ./deploy.sh
