@@ -38,7 +38,7 @@ class WebHookController {
     try {
       const authHeader = req.headers["authorization"] as string;
 
-      const event = await receiver.receive(req.body, authHeader);
+      const event = await receiver.receive(req.body.toString(), authHeader);
       console.log("✅ Webhook event:", event.event, event.room?.name);
 
       if (event.participant?.name !== "host") {

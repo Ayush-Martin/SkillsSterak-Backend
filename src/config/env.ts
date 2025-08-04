@@ -5,7 +5,6 @@ config();
 const envConfig = {
   //general
   PORT: process.env.PORT || 5000,
-  FRONTEND_PORT: process.env.FRONTEND_PORT || 4000,
   FRONTEND_DOMAIN: process.env.FRONTEND_DOMAIN || "http://localhost:4000",
   APP_NAME: process.env.APP_NAME || "SkillsStreak",
   COURSE_CANCELLATION_HOURS: Number(process.env.COURSE_CANCELLATION_HOURS) || 5,

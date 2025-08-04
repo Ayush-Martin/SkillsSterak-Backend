@@ -19,7 +19,12 @@ app.use(morgan("dev"));
 app.use(nocache());
 app.use(cors);
 
+app.get("/", (req, res) => {
+    res.send("Server is running");
+});
+
 app.use("/api", express.json(), express.urlencoded({ extended: true }), router);
+
 
 app.use(errorHandler);
 
