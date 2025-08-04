@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: ayushmartin/skills_streak-backend:latest
+  IMAGE_NAME: ayushmartin/skills_streak_backend:latest
 
 jobs:
   build:
