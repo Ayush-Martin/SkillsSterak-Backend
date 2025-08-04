@@ -106,6 +106,10 @@ router
   .get(enrolledCourseController.getEnrolledCourseCompletionStatus);
 
 router
+  .route("/enrolledCourses/:courseId/certificate")
+  .get(courseController.getCourseCertificateDetails);
+
+router
   .route("/enrolledCourses/:courseId/recorded")
   .get(enrolledCourseController.getEnrolledCourse);
 
@@ -190,6 +194,7 @@ router
   .get(walletController.getWalletInfo)
   .patch(walletController.redeem);
 router.route("/wallet/account").patch(walletController.setUpStripeAccount);
+router.route("/wallet/history").get(transactionController.getUserWalletHistory);
 
 router
   .route("/wishlist")

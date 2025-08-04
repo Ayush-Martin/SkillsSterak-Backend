@@ -36,7 +36,6 @@ class EnrolledCourses implements IEnrolledCoursesService {
     const courseDuration =
       await this._lessonsRepository.getCourseLessonsDuration(courseId);
 
-    console.log(courseDuration);
 
     const cancelTime = new Date();
     cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);

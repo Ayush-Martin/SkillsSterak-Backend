@@ -10,7 +10,6 @@ import { socketAuthMiddleware } from "../middlewares/socketAuth.middleware";
 import SocketService from "../services/socket.service";
 import {
   chatService,
-  messageService,
   notificationService,
   streamService,
 } from "../dependencyInjector";

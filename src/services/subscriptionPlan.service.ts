@@ -18,11 +18,12 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
       description,
       price,
       duration,
+      isListed: true,
     });
   }
 
   public async getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
-    return await this._subscriptionPlanRepository.findAll();
+    return await this._subscriptionPlanRepository.getAllListedSubscriptionPlans();
   }
 
   public async changeSubscriptionPlanListingStatus(

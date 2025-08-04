@@ -59,9 +59,7 @@ class AssignmentSubmissionRepository
       },
       {
         $match: {
-          "assignment.course.trainerId": new mongoose.Types.ObjectId(
-            "6870a97eeed4025dbc859ecf"
-          ),
+          "assignment.course.trainerId": new mongoose.Types.ObjectId(trainerId),
         },
       },
       {

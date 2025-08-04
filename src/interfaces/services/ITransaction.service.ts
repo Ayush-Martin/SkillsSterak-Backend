@@ -100,4 +100,8 @@ export interface ITransactionService {
   failedTransaction(transactionId: string): Promise<ITransaction | null>;
 
   updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
+
+  createTransaction(transaction: Partial<ITransaction>): Promise<ITransaction>;
+
+  getUserWalletHistory(userId: string): Promise<ITransaction[]>;
 }

@@ -24,6 +24,14 @@ corn.schedule("* * * * *", async () => {
       );
 
       await walletService.creditWallet(admin?.id, transaction.adminCommission!);
+
+      await transactionService.createTransaction({
+        payerId: transaction.receiverId,
+        receiverId: admin?.id,
+        amount: transaction.adminCommission!,
+        type: "commission",
+        status: "completed",
+      });
     });
 
     console.info(

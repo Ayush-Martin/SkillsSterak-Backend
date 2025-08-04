@@ -104,6 +104,8 @@ class TrainerService implements ITrainerService {
       new RegExp("")
     );
   }
+
+  
 }
 
 export default TrainerService;

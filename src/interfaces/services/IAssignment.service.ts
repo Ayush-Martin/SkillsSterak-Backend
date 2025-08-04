@@ -19,8 +19,4 @@ export interface IAssignmentService {
     userId: string,
     courseId: string
   ) => Promise<IAssignment[]>;
-  //   getAssignments: (data: any) => Promise<any>;
-  //   getAssignment: (data: any) => Promise<any>;
-  //   updateAssignment: (data: any) => Promise<any>;
-  //   deleteAssignment: (data: any) => Promise<any>;
 }

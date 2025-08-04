@@ -7,26 +7,26 @@ class CourseRepository
   extends BaseRepository<ICourse>
   implements ICourseRepository
 {
-  constructor(private Course: Model<ICourse>) {
-    super(Course);
+  constructor(private _Course: Model<ICourse>) {
+    super(_Course);
   }
 
   public async findCourseByTitle(title: string): Promise<ICourse | null> {
-    return await this.Course.findOne({ title: new RegExp(title, "i") });
+    return await this._Course.findOne({ title: new RegExp(title, "i") });
   }
 
   public async changeListStatus(
     courseId: string,
     isListed: boolean
   ): Promise<ICourse | null> {
-    return await this.Course.findByIdAndUpdate(courseId, { isListed });
+    return await this._Course.findByIdAndUpdate(courseId, { isListed });
   }
 
   public async changeCourseStatus(
     courseId: string,
     status: string
   ): Promise<ICourse | null> {
-    return await this.Course.findByIdAndUpdate(
+    return await this._Course.findByIdAndUpdate(
       courseId,
       { status },
       { new: true }
@@ -36,13 +36,13 @@ class CourseRepository
   public async getCourseListedStatus(
     categoryId: string
   ): Promise<boolean | null> {
-    const data = await this.Course.findOne({ _id: categoryId });
+    const data = await this._Course.findOne({ _id: categoryId });
     if (!data) return null;
     return data.isListed!;
   }
 
   public async getCourseOutline(courseId: string): Promise<ICourse | null> {
-    const course = await this.Course.aggregate([
+    const course = await this._Course.aggregate([
       {
         $match: { _id: new mongoose.Types.ObjectId(courseId) },
       },
@@ -93,7 +93,7 @@ class CourseRepository
   }
 
   public async getCourse(courseId: string): Promise<ICourse | null> {
-    const data = await this.Course.aggregate([
+    const data = await this._Course.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(courseId),
@@ -217,11 +217,11 @@ class CourseRepository
   }
 
   public async getAdminCourseCount(search: RegExp): Promise<number> {
-    return await this.Course.countDocuments({ title: search });
+    return await this._Course.countDocuments({ title: search });
   }
 
   public async getTrainerCourse(courseId: string): Promise<ICourse | null> {
-    return await this.Course.findById(courseId);
+    return await this._Course.findById(courseId);
   }
 
   public async getCourses(
@@ -235,134 +235,136 @@ class CourseRepository
     },
     sortQuery: { createdAt?: -1; price?: -1 | 1; title?: -1 | 1 }
   ): Promise<Array<ICourse>> {
-    return await this.Course.aggregate([
-      {
-        $match: {
-          isListed: true,
-          title: search,
-          status: "approved",
-          ...filter,
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categoryId",
-          foreignField: "_id",
-          pipeline: [
-            {
-              $match: {
-                isListed: true,
-              },
-            },
-            {
-              $project: {
-                _id: 1,
-                categoryName: 1,
-              },
-            },
-          ],
-          as: "category",
-        },
-      },
-      {
-        $unwind: "$category",
-      },
-      {
-        $lookup: {
-          from: "modules",
-          localField: "_id",
-          foreignField: "courseId",
-          pipeline: [
-            {
-              $count: "moduleCount",
-            },
-          ],
-          as: "moduleCount",
-        },
-      },
-      {
-        $unwind: {
-          path: "$moduleCount",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "enrolledcourses",
-          localField: "_id",
-          foreignField: "courseId",
-          pipeline: [
-            {
-              $count: "noOfEnrolled",
-            },
-          ],
-          as: "noOfEnrolled",
-        },
-      },
-      {
-        $unwind: {
-          path: "$noOfEnrolled",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "reviews",
-          localField: "_id",
-          foreignField: "courseId",
-          pipeline: [
-            {
-              $group: {
-                _id: "$courseId",
-                averageRating: { $avg: "$rating" },
-              },
-            },
-          ],
-          as: "reviews_summary",
-        },
-      },
-      {
-        $unwind: {
-          path: "$reviews_summary",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $addFields: {
-          averageRating: {
-            $ifNull: ["$reviews_summary.averageRating", 0],
+    return await this._Course
+      .aggregate([
+        {
+          $match: {
+            isListed: true,
+            title: search,
+            status: "approved",
+            ...filter,
           },
         },
-      },
-      {
-        $project: {
-          averageRating: 1,
-          _id: 1,
-          trainerId: 1,
-          title: 1,
-          price: 1,
-          difficulty: 1,
-          thumbnail: 1,
-          category: 1,
-          moduleCount: {
-            $ifNull: ["$moduleCount.moduleCount", 0],
-          },
-          noOfEnrolled: {
-            $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $match: {
+                  isListed: true,
+                },
+              },
+              {
+                $project: {
+                  _id: 1,
+                  categoryName: 1,
+                },
+              },
+            ],
+            as: "category",
           },
         },
-      },
-      {
-        $sort: sortQuery,
-      },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: limit,
-      },
-    ]).collation({ locale: "en", strength: 2 });
+        {
+          $unwind: "$category",
+        },
+        {
+          $lookup: {
+            from: "modules",
+            localField: "_id",
+            foreignField: "courseId",
+            pipeline: [
+              {
+                $count: "moduleCount",
+              },
+            ],
+            as: "moduleCount",
+          },
+        },
+        {
+          $unwind: {
+            path: "$moduleCount",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "enrolledcourses",
+            localField: "_id",
+            foreignField: "courseId",
+            pipeline: [
+              {
+                $count: "noOfEnrolled",
+              },
+            ],
+            as: "noOfEnrolled",
+          },
+        },
+        {
+          $unwind: {
+            path: "$noOfEnrolled",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "courseId",
+            pipeline: [
+              {
+                $group: {
+                  _id: "$courseId",
+                  averageRating: { $avg: "$rating" },
+                },
+              },
+            ],
+            as: "reviews_summary",
+          },
+        },
+        {
+          $unwind: {
+            path: "$reviews_summary",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $addFields: {
+            averageRating: {
+              $ifNull: ["$reviews_summary.averageRating", 0],
+            },
+          },
+        },
+        {
+          $project: {
+            averageRating: 1,
+            _id: 1,
+            trainerId: 1,
+            title: 1,
+            price: 1,
+            difficulty: 1,
+            thumbnail: 1,
+            category: 1,
+            moduleCount: {
+              $ifNull: ["$moduleCount.moduleCount", 0],
+            },
+            noOfEnrolled: {
+              $ifNull: ["$noOfEnrolled.noOfEnrolled", 0],
+            },
+          },
+        },
+        {
+          $sort: sortQuery,
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+      ])
+      .collation({ locale: "en", strength: 2 });
   }
 
   public async getAdminCourses(
@@ -370,20 +372,21 @@ class CourseRepository
     skip: number,
     limit: number
   ): Promise<Array<ICourse>> {
-    return await this.Course.find(
-      { title: search },
-      {
-        _id: 1,
-        title: 1,
-        thumbnail: 1,
-        categoryId: 1,
-        trainerId: 1,
-        price: 1,
-        isListed: 1,
-        difficulty: 1,
-        status: 1,
-      }
-    )
+    return await this._Course
+      .find(
+        { title: search },
+        {
+          _id: 1,
+          title: 1,
+          thumbnail: 1,
+          categoryId: 1,
+          trainerId: 1,
+          price: 1,
+          isListed: 1,
+          difficulty: 1,
+          status: 1,
+        }
+      )
       .sort({ createdAt: -1 })
       .populate("trainerId", "_id email")
       .populate("categoryId", "_id categoryName")
@@ -397,20 +400,21 @@ class CourseRepository
     skip: number,
     limit: number
   ): Promise<Array<ICourse>> {
-    return await this.Course.find(
-      { title: search, trainerId },
-      {
-        thumbnail: 1,
-        price: 1,
-        difficulty: 1,
-        title: 1,
-        _id: 1,
-        categoryId: 1,
-        createdAt: 1,
-        isListed: 1,
-        status: 1,
-      }
-    )
+    return await this._Course
+      .find(
+        { title: search, trainerId },
+        {
+          thumbnail: 1,
+          price: 1,
+          difficulty: 1,
+          title: 1,
+          _id: 1,
+          categoryId: 1,
+          createdAt: 1,
+          isListed: 1,
+          status: 1,
+        }
+      )
       .skip(skip)
       .limit(limit)
       .populate("categoryId");
@@ -424,7 +428,7 @@ class CourseRepository
       price?: { $eq: 0 } | { $ne: 0 };
     }
   ): Promise<number> {
-    return await this.Course.countDocuments({
+    return await this._Course.countDocuments({
       title: search,
       isListed: true,
       status: "approved",
@@ -436,18 +440,18 @@ class CourseRepository
     trainerId: string,
     search: RegExp
   ): Promise<number> {
-    return await this.Course.countDocuments({ title: search, trainerId });
+    return await this._Course.countDocuments({ title: search, trainerId });
   }
 
   public async changeThumbnail(
     courseId: string,
     thumbnail: string
   ): Promise<ICourse | null> {
-    return await this.Course.findByIdAndUpdate(courseId, { thumbnail });
+    return await this._Course.findByIdAndUpdate(courseId, { thumbnail });
   }
 
   public async getAdminTop5Courses(): Promise<Array<ICourse>> {
-    return await this.Course.aggregate([
+    return await this._Course.aggregate([
       {
         $lookup: {
           from: "enrolledcourses",
@@ -489,7 +493,7 @@ class CourseRepository
   public async getTrainerTop5Courses(
     trainerId: string
   ): Promise<Array<ICourse>> {
-    return await this.Course.aggregate([
+    return await this._Course.aggregate([
       {
         $match: {
           trainerId: new mongoose.Types.ObjectId(trainerId),
@@ -534,7 +538,7 @@ class CourseRepository
   }
 
   public async getAdminCourse(courseId: string): Promise<ICourse | null> {
-    const course = await this.Course.aggregate([
+    const course = await this._Course.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(courseId),
@@ -657,6 +661,14 @@ class CourseRepository
     ]);
 
     return course[0];
+  }
+
+  public async getCourseCertificateInfo(
+    courseId: string
+  ): Promise<ICourse | null> {
+    return await this._Course
+      .findOne({ _id: courseId }, { title: 1, trainerId: 1 })
+      .populate("trainerId", "username");
   }
 }
 

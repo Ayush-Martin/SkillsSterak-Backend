@@ -58,7 +58,7 @@ export const CourseDifficultyValidationRule = z.enum(
 export const CourseDescriptionValidationRule = z
   .string()
   .min(10, "description must have 10 or more character")
-  .max(100, "description must be within 100 characters");
+  .max(2000, "description must be within 2000 characters");
 
 export const CourseCategoryIdValidationRule = z
   .string()

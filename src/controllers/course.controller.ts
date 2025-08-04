@@ -234,7 +234,11 @@ class CourseController {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);
 
-      const data = await this._courseService.getAdminCourses(search, page, size);
+      const data = await this._courseService.getAdminCourses(
+        search,
+        page,
+        size
+      );
 
       res
         .status(StatusCodes.OK)
@@ -401,6 +405,24 @@ class CourseController {
     try {
       const { courseId } = req.params;
       const data = await this._courseService.getAdminCourse(courseId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getCourseCertificateDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { courseId } = req.params;
+      const data = await this._courseService.getCourseCertificateDetails(
+        courseId
+      );
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));

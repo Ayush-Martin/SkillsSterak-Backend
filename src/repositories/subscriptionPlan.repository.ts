@@ -38,6 +38,10 @@ class SubscriptionPlanRepository
   ): Promise<ISubscriptionPlan | null> {
     return await this._SubscriptionPlan.findById(id);
   }
+
+  public async getAllListedSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
+    return await this._SubscriptionPlan.find({ isListed: true });
+  }
 }
 
 export default SubscriptionPlanRepository;

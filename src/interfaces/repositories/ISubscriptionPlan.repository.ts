@@ -11,4 +11,5 @@ export interface ISubscriptionPlanRepository
     limit: number
   ): Promise<ISubscriptionPlan[]>;
   getSubscriptionPlanById(id: string): Promise<ISubscriptionPlan | null>;
+  getAllListedSubscriptionPlans(): Promise<ISubscriptionPlan[]>;
 }
