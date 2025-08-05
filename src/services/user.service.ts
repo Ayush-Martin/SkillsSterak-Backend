@@ -40,6 +40,7 @@ class UserService implements IUserService {
     await this._userRepository.updateProfileImage(userId, profileImage);
   }
 
+
   public async getUsers(
     search: string,
     page: number,

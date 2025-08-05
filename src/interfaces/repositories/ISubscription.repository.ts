@@ -11,4 +11,12 @@ export interface ISubscriptionRepository extends BaseRepository<ISubscription> {
    * Enables access checks and personalized subscription management.
    */
   getSubscriptionDetailByUserID(userId: string): Promise<ISubscription | null>;
+
+  getSubscribedUsersCount(search: RegExp): Promise<number>;
+
+  getSubscribedUsers(
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ISubscription>>;
 }

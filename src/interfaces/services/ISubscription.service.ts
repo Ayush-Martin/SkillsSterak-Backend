@@ -19,4 +19,14 @@ export interface ISubscriptionService {
    * Retrieves the current subscription details for a user. Used to display status, renewal, and plan information.
    */
   getSubscriptionDetail(userId: string): Promise<ISubscription | null>;
+
+  getSubscribedUsers(
+    search: string,
+    page: number,
+    size: number
+  ): Promise<{
+    subscribedUsers: Array<ISubscription>;
+    currentPage: number;
+    totalPages: number;
+  }>;
 }

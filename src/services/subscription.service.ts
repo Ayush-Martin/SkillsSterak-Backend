@@ -83,6 +83,7 @@ class SubscriptionService implements ISubscriptionService {
       userId: getObjectId(userId),
       transactionId: getObjectId(transactionId),
       subscriptionPlanId: getObjectId(planId),
+      startDate: new Date(),
       endDate,
     });
   }
@@ -93,6 +94,33 @@ class SubscriptionService implements ISubscriptionService {
     return await this._subscriptionRepository.getSubscriptionDetailByUserID(
       userId
     );
+  }
+
+  public async getSubscribedUsers(
+    search: string,
+    page: number,
+    size: number
+  ): Promise<{
+    subscribedUsers: Array<ISubscription>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const searchRegex = new RegExp(search, "i");
+    const skip = (page - 1) * size;
+    const subscribedUsers =
+      await this._subscriptionRepository.getSubscribedUsers(
+        searchRegex,
+        skip,
+        size
+      );
+    const totalSubscribedUsers =
+      await this._subscriptionRepository.getSubscribedUsersCount(searchRegex);
+    const totalPages = Math.ceil(totalSubscribedUsers / size);
+    return {
+      subscribedUsers,
+      currentPage: page,
+      totalPages,
+    };
   }
 }
 

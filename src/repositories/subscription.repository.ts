@@ -16,6 +16,117 @@ class SubscriptionRepository
   ): Promise<ISubscription | null> {
     return await this._Subscription.findOne({ userId });
   }
+
+  public async getSubscribedUsersCount(search: RegExp): Promise<number> {
+    const count = await this._Subscription.aggregate([
+      {
+        $match: {
+          endDate: { $gte: new Date() }, // Active subscriptions only
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                email: search,
+              },
+            },
+          ],
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+        },
+      },
+    ]);
+
+    return count[0]?.count || 0;
+  }
+
+  public async getSubscribedUsers(
+    search: RegExp,
+    skip: number,
+    limit: number
+  ): Promise<Array<ISubscription>> {
+    return await this._Subscription.aggregate([
+      {
+        $match: {
+          endDate: { $gte: new Date() },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                email: search,
+              },
+            },
+            {
+              $project: {
+                username: 1,
+                email: 1,
+              },
+            },
+          ],
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $lookup: {
+          from: "subscriptionplans",
+          localField: "subscriptionPlanId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                price: 1,
+              },
+            },
+          ],
+          as: "subscriptionPlan",
+        },
+      },
+      {
+        $unwind: "$subscriptionPlan",
+      },
+      {
+        $project: {
+          startDate: 1,
+          endDate: 1,
+          user: 1,
+          subscriptionPlan: 1,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+  }
 }
 
 export default SubscriptionRepository;

@@ -4,6 +4,7 @@ const router = Router();
 import {
   categoryController,
   courseController,
+  subscriptionController,
   subscriptionPlanController,
   trainerRequestController,
   transactionController,
@@ -77,5 +78,7 @@ router
   .route("/subscriptionPlans/:subscriptionPlanId")
   .put(subscriptionPlanController.editSubscriptionPlan)
   .patch(subscriptionPlanController.listUnlistSubscriptionPlan);
+
+router.route("/subscriptions").get(subscriptionController.getSubscribedUsers);
 
 export default router;

@@ -4,6 +4,7 @@ import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
 import { GeneralMessage } from "../constants/responseMessages";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
 /**
  * Handles user subscription creation and retrieval.
@@ -51,13 +52,34 @@ class SubscriptionController {
     try {
       const userId = req.userId!;
 
-      const subscription = await this._subscriptionService.getSubscriptionDetail(
-        userId
-      );
+      const subscription =
+        await this._subscriptionService.getSubscriptionDetail(userId);
 
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, subscription));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getSubscribedUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { search, page, size } = paginatedGetDataValidator(req.query);
+
+      const data = await this._subscriptionService.getSubscribedUsers(
+        search,
+        page,
+        size
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }
