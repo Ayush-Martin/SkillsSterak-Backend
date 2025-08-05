@@ -514,3 +514,4 @@ class EnrolledCoursesRepository
 }
 
 export default EnrolledCoursesRepository;
+   
