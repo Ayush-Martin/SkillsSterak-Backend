@@ -41,7 +41,6 @@ cron.schedule("* * * * *", async () => {
 
         await transactionService.createTransaction({
           payerId: transaction.receiverId,
-          receiverId: admin?.id,
           amount: transaction.adminCommission!,
           type: "commission",
           status: "completed",
