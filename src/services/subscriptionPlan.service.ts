@@ -86,12 +86,19 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
     price: number,
     duration: number
   ): Promise<ISubscriptionPlan | null> {
-    return this._subscriptionPlanRepository.updateById(subscriptionPlanId, {
-      title,
-      description,
-      price,
-      duration,
-    });
+    return await this._subscriptionPlanRepository.updateById(
+      subscriptionPlanId,
+      {
+        title,
+        description,
+        price,
+        duration,
+      }
+    );
+  }
+
+  public async getSubscriptionPlanTitles(): Promise<ISubscriptionPlan[]> {
+    return await this._subscriptionPlanRepository.getAllSubscriptionPlans();
   }
 }
 

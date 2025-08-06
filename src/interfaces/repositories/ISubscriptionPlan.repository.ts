@@ -12,4 +12,5 @@ export interface ISubscriptionPlanRepository
   ): Promise<ISubscriptionPlan[]>;
   getSubscriptionPlanById(id: string): Promise<ISubscriptionPlan | null>;
   getAllListedSubscriptionPlans(): Promise<ISubscriptionPlan[]>;
+  getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]>;
 }

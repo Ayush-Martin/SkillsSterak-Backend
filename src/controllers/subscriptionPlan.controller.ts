@@ -10,7 +10,7 @@ import {
 import {
   createSubscriptionPlanIdValidator,
   editSubscriptionPlanIdValidator,
-} from "../validators/subscriptionPlan.validator";
+} from "../validators/subscription.validator";
 import binder from "../utils/binder";
 
 class SubscriptionPlanController {
@@ -134,6 +134,23 @@ class SubscriptionPlanController {
             { subscriptionPlanId, isListed }
           )
         );
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getSubscriptionPlanTitles(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const data =
+        await this._subscriptionPlanService.getSubscriptionPlanTitles();
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (err) {
       next(err);
     }

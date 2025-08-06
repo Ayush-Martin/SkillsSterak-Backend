@@ -32,4 +32,6 @@ export interface ITrainerRequestRepository
   getUserPreviousRequestDetails(
     userId: string
   ): Promise<ITrainerRequest | null>;
+
+  resendTrainerRequest(userId: string): Promise<void>;
 }

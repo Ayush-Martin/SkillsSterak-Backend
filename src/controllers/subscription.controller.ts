@@ -4,7 +4,7 @@ import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
 import binder from "../utils/binder";
 import { GeneralMessage } from "../constants/responseMessages";
-import { paginatedGetDataValidator } from "../validators/pagination.validator";
+import { getSubscribedUsersValidator } from "../validators/subscription.validator";
 
 /**
  * Handles user subscription creation and retrieval.
@@ -69,12 +69,14 @@ class SubscriptionController {
     next: NextFunction
   ) {
     try {
-      const { search, page, size } = paginatedGetDataValidator(req.query);
+      const { search, page, size, subscriptionPlanId } =
+        getSubscribedUsersValidator(req.query);
 
       const data = await this._subscriptionService.getSubscribedUsers(
         search,
         page,
-        size
+        size,
+        subscriptionPlanId
       );
 
       res

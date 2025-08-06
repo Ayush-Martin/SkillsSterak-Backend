@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { ISubscription } from "../models/Subscription.model";
 import BaseRepository from "./Base.repository";
 import { ISubscriptionRepository } from "../interfaces/repositories/ISubscription.repository";
@@ -17,7 +17,16 @@ class SubscriptionRepository
     return await this._Subscription.findOne({ userId });
   }
 
-  public async getSubscribedUsersCount(search: RegExp): Promise<number> {
+  public async getSubscribedUsersCount(
+    search: RegExp,
+    subscriptionPlanId: string | undefined
+  ): Promise<number> {
+    const filter: { _id?: mongoose.Types.ObjectId } = {};
+
+    if (subscriptionPlanId) {
+      filter._id = new mongoose.Types.ObjectId(subscriptionPlanId);
+    }
+
     const count = await this._Subscription.aggregate([
       {
         $match: {
@@ -41,6 +50,29 @@ class SubscriptionRepository
       },
       { $unwind: "$user" },
       {
+        $lookup: {
+          from: "subscriptionplans",
+          localField: "subscriptionPlanId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                ...filter,
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+              },
+            },
+          ],
+          as: "subscriptionPlan",
+        },
+      },
+      {
+        $unwind: "$subscriptionPlan",
+      },
+      {
         $group: {
           _id: null,
           count: { $sum: 1 },
@@ -60,8 +92,15 @@ class SubscriptionRepository
   public async getSubscribedUsers(
     search: RegExp,
     skip: number,
-    limit: number
+    limit: number,
+    subscriptionPlanId: string | undefined
   ): Promise<Array<ISubscription>> {
+    const filter: { _id?: mongoose.Types.ObjectId } = {};
+
+    if (subscriptionPlanId) {
+      filter._id = new mongoose.Types.ObjectId(subscriptionPlanId);
+    }
+
     return await this._Subscription.aggregate([
       {
         $match: {
@@ -98,6 +137,11 @@ class SubscriptionRepository
           localField: "subscriptionPlanId",
           foreignField: "_id",
           pipeline: [
+            {
+              $match: {
+                ...filter,
+              },
+            },
             {
               $project: {
                 title: 1,

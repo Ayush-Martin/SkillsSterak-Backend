@@ -128,6 +128,25 @@ class UserController {
     }
   }
 
+  public async resendTrainerRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+
+      await this._userService.resendTrainerRequest(userId);
+      this._notificationService.sendTrainerRequestNotification(userId);
+
+      res
+        .status(200)
+        .json(successResponse(TrainerRequestMessage.TrainerRequestSent));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async getPreviousTrainerRequestDetails(
     req: Request,
     res: Response,

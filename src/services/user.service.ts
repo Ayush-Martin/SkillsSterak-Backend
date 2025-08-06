@@ -40,7 +40,6 @@ class UserService implements IUserService {
     await this._userRepository.updateProfileImage(userId, profileImage);
   }
 
-
   public async getUsers(
     search: string,
     page: number,
@@ -63,7 +62,10 @@ class UserService implements IUserService {
     if (!blockStatus) {
       return errorCreator(UserMessage.UserNotFound, StatusCodes.BAD_REQUEST);
     }
-    await this._userRepository.changeBlockStatus(userId, !blockStatus.isBlocked);
+    await this._userRepository.changeBlockStatus(
+      userId,
+      !blockStatus.isBlocked
+    );
     return !blockStatus.isBlocked;
   }
 
@@ -127,6 +129,10 @@ class UserService implements IUserService {
 
   public async getUserProfileDetails(userId: string): Promise<IUser | null> {
     return await this._userRepository.getUserProfileDetails(userId);
+  }
+
+  public async resendTrainerRequest(userId: string): Promise<void> {
+    await this._trainerRequestRepository.resendTrainerRequest(userId);
   }
 }
 

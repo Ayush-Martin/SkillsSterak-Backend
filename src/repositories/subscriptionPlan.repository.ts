@@ -42,6 +42,10 @@ class SubscriptionPlanRepository
   public async getAllListedSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
     return await this._SubscriptionPlan.find({ isListed: true });
   }
+
+  public async getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
+    return await this._SubscriptionPlan.find({}, { title: 1 });
+  }
 }
 
 export default SubscriptionPlanRepository;

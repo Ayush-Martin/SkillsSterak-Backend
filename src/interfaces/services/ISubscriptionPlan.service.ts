@@ -27,4 +27,5 @@ export interface ISubscriptionPlanService {
   changeSubscriptionPlanListingStatus(
     subscriptionPlanId: string
   ): Promise<boolean>;
+  getSubscriptionPlanTitles(): Promise<ISubscriptionPlan[]>;
 }

@@ -80,5 +80,8 @@ router
   .patch(subscriptionPlanController.listUnlistSubscriptionPlan);
 
 router.route("/subscriptions").get(subscriptionController.getSubscribedUsers);
+router
+  .route("/subscriptions/plans")
+  .get(subscriptionPlanController.getAllSubscriptionPlans);
 
 export default router;

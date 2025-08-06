@@ -54,6 +54,13 @@ class TrainerRequestRepository
         createdAt: -1,
       });
   }
+
+  public async resendTrainerRequest(userId: string): Promise<void> {
+    await this._TrainerRequest.updateOne(
+      { userId },
+      { status: "pending", rejectedReason: "" }
+    );
+  }
 }
 
 export default TrainerRequestRepository;

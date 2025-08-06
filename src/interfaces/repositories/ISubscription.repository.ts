@@ -12,11 +12,15 @@ export interface ISubscriptionRepository extends BaseRepository<ISubscription> {
    */
   getSubscriptionDetailByUserID(userId: string): Promise<ISubscription | null>;
 
-  getSubscribedUsersCount(search: RegExp): Promise<number>;
+  getSubscribedUsersCount(
+    search: RegExp,
+    subscriptionPlanId: string | undefined
+  ): Promise<number>;
 
   getSubscribedUsers(
     search: RegExp,
     skip: number,
-    limit: number
+    limit: number,
+    subscriptionPlanId: string | undefined
   ): Promise<Array<ISubscription>>;
 }

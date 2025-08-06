@@ -1,7 +1,6 @@
 import { ISubscriptionRepository } from "../interfaces/repositories/ISubscription.repository";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
-import { getNextMonth } from "../utils/date";
 import { ISubscription } from "../models/Subscription.model";
 import { getObjectId } from "../utils/objectId";
 import stripe from "../config/stripe";
@@ -99,7 +98,8 @@ class SubscriptionService implements ISubscriptionService {
   public async getSubscribedUsers(
     search: string,
     page: number,
-    size: number
+    size: number,
+    subscriptionPlanId: string | undefined
   ): Promise<{
     subscribedUsers: Array<ISubscription>;
     currentPage: number;
@@ -111,10 +111,14 @@ class SubscriptionService implements ISubscriptionService {
       await this._subscriptionRepository.getSubscribedUsers(
         searchRegex,
         skip,
-        size
+        size,
+        subscriptionPlanId
       );
     const totalSubscribedUsers =
-      await this._subscriptionRepository.getSubscribedUsersCount(searchRegex);
+      await this._subscriptionRepository.getSubscribedUsersCount(
+        searchRegex,
+        subscriptionPlanId
+      );
     const totalPages = Math.ceil(totalSubscribedUsers / size);
     return {
       subscribedUsers,

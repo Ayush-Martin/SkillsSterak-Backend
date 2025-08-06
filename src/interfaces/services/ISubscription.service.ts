@@ -23,7 +23,8 @@ export interface ISubscriptionService {
   getSubscribedUsers(
     search: string,
     page: number,
-    size: number
+    size: number,
+    subscriptionPlanId: string | undefined
   ): Promise<{
     subscribedUsers: Array<ISubscription>;
     currentPage: number;

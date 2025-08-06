@@ -53,4 +53,6 @@ export interface IUserService {
   checkCompleteProfile(userId: string): Promise<boolean>;
 
   getUserProfileDetails(userId: string): Promise<IUser | null>;
+
+  resendTrainerRequest(userId: string): Promise<void>;
 }

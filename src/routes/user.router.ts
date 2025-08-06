@@ -147,6 +147,7 @@ router.patch(
 //trainer request
 router
   .route("/trainerRequest")
+  .put(userController.resendTrainerRequest)
   .post(userController.sendTrainerRequest)
   .get(userController.getPreviousTrainerRequestDetails);
 
