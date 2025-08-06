@@ -13,7 +13,7 @@ router
   .route("/register")
   .post(authController.register)
   .get(authController.completeRegister);
-
+ 
 //router.post("/register", authController.register);
 
 router.post("/login", authController.login);
