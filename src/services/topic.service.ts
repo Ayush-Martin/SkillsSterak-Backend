@@ -19,7 +19,7 @@ class TopicService implements ITopicService {
     }
 
     return await this._topicRepository.updateById(topicId, {
-      title: topicName,
+      topicName: topicName,
     });
   }
 
@@ -60,7 +60,7 @@ class TopicService implements ITopicService {
       errorCreator(TopicMessage.TopicExists, StatusCodes.CONFLICT);
     }
 
-    return await this._topicRepository.create({ title: topicName });
+    return await this._topicRepository.create({ topicName: topicName });
   }
 }
 

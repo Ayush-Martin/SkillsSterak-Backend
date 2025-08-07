@@ -14,9 +14,9 @@ class TopicController {
 
   public async addTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const { title } = addTopicValidator(req.body);
+      const { topicName } = addTopicValidator(req.body);
 
-      const data = await this._topicService.addTopic(title);
+      const data = await this._topicService.addTopic(topicName);
 
       res
         .status(StatusCodes.CREATED)
@@ -29,9 +29,9 @@ class TopicController {
   public async editTopic(req: Request, res: Response, next: NextFunction) {
     try {
       const { topicId } = req.params;
-      const { title } = addTopicValidator(req.body);
+      const { topicName } = addTopicValidator(req.body);
 
-      const data = await this._topicService.editTopicName(topicId, title);
+      const data = await this._topicService.editTopicName(topicId, topicName);
 
       res
         .status(StatusCodes.OK)

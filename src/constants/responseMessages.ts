@@ -242,3 +242,15 @@ export enum TopicMessage {
   TopicAdded = "Topic added",
   TopicUpdated = "Topic updated",
 }
+
+export enum QuizMessage {
+  //Error Messages
+  QuizExists = "Quiz already exists",
+  QuizNotFound = "Quiz not found",
+
+  //Success Messages
+  QuizAdded = "Quiz added",
+  QuizUpdated = "Quiz updated",
+  QuizListed = "Quiz listed",
+  QuizUnlisted = "Quiz unlisted",
+}

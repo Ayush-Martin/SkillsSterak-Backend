@@ -4,6 +4,7 @@ const router = Router();
 import {
   categoryController,
   courseController,
+  quizController,
   subscriptionController,
   subscriptionPlanController,
   topicController,
@@ -89,7 +90,16 @@ router
   .route("/topics")
   .get(topicController.getTopics)
   .post(topicController.addTopic);
-  
+
 router.route("/topics/:topicId").put(topicController.editTopic);
+
+router
+  .route("/quizzes")
+  .post(quizController.addQuiz)
+  .get(quizController.getAdminQuizzes);
+router
+  .route("/quizzes/:quizId")
+  .put(quizController.editQuiz)
+  .patch(quizController.listUnlistQuiz);
 
 export default router;

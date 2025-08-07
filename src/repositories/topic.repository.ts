@@ -16,15 +16,15 @@ class TopicRepository
     skip: number,
     limit: number
   ): Promise<Array<ITopic>> {
-    return await this._Topic.find({ title: search }).skip(skip).limit(limit);
+    return await this._Topic.find({ topicName: search }).skip(skip).limit(limit);
   }
 
   public async getTopicsCount(search: RegExp): Promise<number> {
-    return await this._Topic.countDocuments({ title: search });
+    return await this._Topic.countDocuments({ topicName: search });
   }
 
   public async getTopicByName(topicName: string): Promise<ITopic | null> {
-    return await this._Topic.findOne({ title: topicName });
+    return await this._Topic.findOne({ topicName: topicName });
   }
 }
 

@@ -1,12 +1,12 @@
 import { Document, Schema, model } from "mongoose";
 
 export interface ITopic extends Document {
-  title: string;
+  topicName: string;
 }
 
 const TopicSchema = new Schema<ITopic>(
   {
-    title: {
+    topicName: {
       type: String,
       required: true,
     },
