@@ -233,3 +233,12 @@ export enum SubscriptionPlanMessage {
   SubscriptionListed = "Subscription plan listed",
   SubscriptionUnlisted = "Subscription plan unlisted",
 }
+
+export enum TopicMessage {
+  //Error Messages
+  TopicExists = "Topic already exists",
+  TopicNotFound = "Topic not found",
+  //Success Messages
+  TopicAdded = "Topic added",
+  TopicUpdated = "Topic updated",
+}

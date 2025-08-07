@@ -6,6 +6,7 @@ import {
   courseController,
   subscriptionController,
   subscriptionPlanController,
+  topicController,
   trainerRequestController,
   transactionController,
   userController,
@@ -83,5 +84,12 @@ router.route("/subscriptions").get(subscriptionController.getSubscribedUsers);
 router
   .route("/subscriptions/plans")
   .get(subscriptionPlanController.getAllSubscriptionPlans);
+
+router
+  .route("/topics")
+  .get(topicController.getTopics)
+  .post(topicController.addTopic);
+  
+router.route("/topics/:topicId").put(topicController.editTopic);
 
 export default router;

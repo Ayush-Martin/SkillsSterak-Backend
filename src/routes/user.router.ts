@@ -22,6 +22,7 @@ import {
   assignmentController,
   assignmentSubmissionController,
   subscriptionPlanController,
+  topicController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -30,6 +31,8 @@ import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import upload from "../config/multer";
 
 router.get("/categories", categoryController.getAllCategories);
+
+router.get("/topics", topicController.getAllTopics);
 //course
 router.get("/courses", courseController.getCourses);
 
