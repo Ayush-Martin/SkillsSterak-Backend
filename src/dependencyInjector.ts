@@ -32,6 +32,7 @@ import AssignmentSubmissionModel from "./models/AssignmentSubmission.model";
 import SubscriptionPlanModel from "./models/SubscriptionPlan.model";
 import TopicModel from "./models/Topic.model";
 import QuizModel from "./models/Quiz.model";
+import QuestionModel from "./models/Question.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -63,6 +64,7 @@ import AssignmentSubmissionRepository from "./repositories/assignmentSubmission.
 import SubscriptionPlanRepository from "./repositories/subscriptionPlan.repository";
 import TopicRepository from "./repositories/topic.repository";
 import QuizRepository from "./repositories/quiz.repository";
+import QuestionRepository from "./repositories/question.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -93,6 +95,7 @@ import AssignmentSubmissionService from "./services/assignmentSubmission.service
 import SubscriptionPlanService from "./services/subscriptionPlan.service";
 import TopicService from "./services/topic.service";
 import QuizService from "./services/quiz.service";
+import QuestionService from "./services/question.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -121,6 +124,7 @@ import AssignmentSubmissionController from "./controllers/assignmentSubmission.c
 import SubscriptionPlanController from "./controllers/subscriptionPlan.controller";
 import TopicController from "./controllers/topic.controller";
 import QuizController from "./controllers/quiz.controller";
+import QuestionController from "./controllers/question.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -160,6 +164,7 @@ const subscriptionPlanRepository = new SubscriptionPlanRepository(
 );
 const topicRepository = new TopicRepository(TopicModel);
 const quizRepository = new QuizRepository(QuizModel);
+const questionRepository = new QuestionRepository(QuestionModel);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -245,6 +250,7 @@ export const subscriptionPlanService = new SubscriptionPlanService(
 );
 export const topicService = new TopicService(topicRepository);
 export const quizService = new QuizService(quizRepository);
+export const questionService = new QuestionService(questionRepository);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -311,3 +317,4 @@ export const subscriptionPlanController = new SubscriptionPlanController(
 );
 export const topicController = new TopicController(topicService);
 export const quizController = new QuizController(quizService);
+export const questionController = new QuestionController(questionService);

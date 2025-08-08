@@ -82,6 +82,10 @@ class QuizService implements IQuizService {
       totalPages,
     };
   }
+
+  public async getAdminQuiz(quizId: string): Promise<IQuiz | null> {
+    return await this._quizRepository.findById(quizId);
+  }
 }
 
 export default QuizService;

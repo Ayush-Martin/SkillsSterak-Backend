@@ -24,4 +24,5 @@ export interface IQuizService {
     currentPage: number;
     totalPages: number;
   }>;
+  getAdminQuiz(quizId: string): Promise<IQuiz | null>;
 }

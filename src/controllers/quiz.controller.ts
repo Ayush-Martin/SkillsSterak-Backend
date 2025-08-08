@@ -95,6 +95,18 @@ class QuizController {
       next(error);
     }
   }
+
+  public async getAdminQuiz(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { quizId } = req.params;
+      const data = await this._quizService.getAdminQuiz(quizId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default QuizController;

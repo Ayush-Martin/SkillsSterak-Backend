@@ -254,3 +254,13 @@ export enum QuizMessage {
   QuizListed = "Quiz listed",
   QuizUnlisted = "Quiz unlisted",
 }
+
+export enum QuestionMessage {
+  //Error Messages
+  QuestionExists = "Question already exists",
+  QuestionNotFound = "Question not found",
+  //Success Messages
+  QuestionAdded = "Question added",
+  QuestionUpdated = "Question updated",
+  QuestionDeleted = "Questions deleted",
+}
