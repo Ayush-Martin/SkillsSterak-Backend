@@ -7,4 +7,7 @@ export interface IQuizSubmissionRepository
     userId: string,
     quizId: string
   ): Promise<IQuizSubmission | null>;
+  getUserQuizSubmissionsProgress(
+    userId: string
+  ): Promise<IQuizSubmission | null>;
 }

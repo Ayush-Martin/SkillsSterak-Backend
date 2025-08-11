@@ -229,6 +229,9 @@ router
   .delete(discussionController.deleteDiscussion);
 
 router.route("/quizzes").get(quizController.getUserQuizzes);
+router
+  .route("/quizzes/progress")
+  .get(quizSubmissionController.getUserQuizSubmissionsProgress);
 router.route("/quizzes/:quizId").get(quizController.getUserQuiz);
 router
   .route("/quizzes/:quizId/submissions")

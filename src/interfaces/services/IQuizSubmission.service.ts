@@ -21,4 +21,8 @@ export interface IQuizSubmissionService {
     userId: string,
     quizId: string
   ): Promise<IQuizSubmission | null>;
+
+  getUserQuizSubmissionsProgress(
+    userId: string
+  ): Promise<IQuizSubmission | null>;
 }

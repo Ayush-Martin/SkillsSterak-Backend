@@ -73,13 +73,37 @@ class QuizSubmissionController {
       const userId = req.userId!;
       const { quizId } = req.params;
       const quizSubmission =
-        await this._quizSubmissionService.getQuizSubmission(
-          userId,
-          quizId
-        );
+        await this._quizSubmissionService.getQuizSubmission(userId, quizId);
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, quizSubmission));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUserQuizSubmissionsProgress(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const progress =
+        await this._quizSubmissionService.getUserQuizSubmissionsProgress(
+          userId
+        );
+
+      res.status(StatusCodes.OK).json(
+        successResponse(
+          GeneralMessage.DataReturned,
+          progress || {
+            quizzesTaken: 0,
+            totalQuestions: 0,
+            totalScore: 0,
+          }
+        )
+      );
     } catch (error) {
       next(error);
     }

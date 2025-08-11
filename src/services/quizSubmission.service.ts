@@ -74,6 +74,14 @@ class QuizSubmissionService implements IQuizSubmissionService {
       quizId
     );
   }
+
+  public async getUserQuizSubmissionsProgress(
+    userId: string
+  ): Promise<IQuizSubmission | null> {
+    return await this._quizSubmissionRepository.getUserQuizSubmissionsProgress(
+      userId
+    );
+  }
 }
 
 export default QuizSubmissionService;
