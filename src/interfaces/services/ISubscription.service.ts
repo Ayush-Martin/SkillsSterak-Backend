@@ -36,4 +36,5 @@ export interface ISubscriptionService {
     currentPage: number;
     totalPages: number;
   }>;
+  
 }

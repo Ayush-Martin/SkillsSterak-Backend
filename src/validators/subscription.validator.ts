@@ -30,6 +30,18 @@ export const createSubscriptionPlanIdValidator = (data: any) => {
 export const editSubscriptionPlanIdValidator =
   createSubscriptionPlanIdValidator;
 
+export const checkUserAccessToFeatureValidator = (data: any) => {
+  const schema = z.object({
+    featureId: z.enum(
+      Object.values(SUBSCRIPTION_FEATURE_IDS) as [
+        ISubscriptionFeatureId,
+        ...ISubscriptionFeatureId[]
+      ]
+    ),
+  });
+  return schema.parse(data);
+};
+
 export const getSubscribedUsersValidator = (data: any) => {
   const schema = z.object({
     page: PageValidationRule,
