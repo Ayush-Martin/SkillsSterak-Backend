@@ -233,3 +233,43 @@ export enum SubscriptionPlanMessage {
   SubscriptionListed = "Subscription plan listed",
   SubscriptionUnlisted = "Subscription plan unlisted",
 }
+
+export enum TopicMessage {
+  //Error Messages
+  TopicExists = "Topic already exists",
+  TopicNotFound = "Topic not found",
+  //Success Messages
+  TopicAdded = "Topic added",
+  TopicUpdated = "Topic updated",
+}
+
+export enum QuizMessage {
+  //Error Messages
+  QuizExists = "Quiz already exists",
+  QuizNotFound = "Quiz not found",
+
+  //Success Messages
+  QuizAdded = "Quiz added",
+  QuizUpdated = "Quiz updated",
+  QuizListed = "Quiz listed",
+  QuizUnlisted = "Quiz unlisted",
+}
+
+export enum QuestionMessage {
+  //Error Messages
+  QuestionExists = "Question already exists",
+  QuestionNotFound = "Question not found",
+  //Success Messages
+  QuestionAdded = "Question added",
+  QuestionUpdated = "Question updated",
+  QuestionDeleted = "Questions deleted",
+}
+
+export enum QuizSubmissionMessage {
+  //Error Messages
+  QuizSubmissionExists = "QuizSubmission already exists",
+  QuizSubmissionNotFound = "QuizSubmission not found",
+  //Success Messages
+  QuizSubmissionAdded = "QuizSubmission added",
+  QuizSubmissionUpdated = "QuizSubmission updated",
+}

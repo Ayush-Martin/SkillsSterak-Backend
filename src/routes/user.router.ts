@@ -22,6 +22,9 @@ import {
   assignmentController,
   assignmentSubmissionController,
   subscriptionPlanController,
+  topicController,
+  quizController,
+  quizSubmissionController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -30,6 +33,8 @@ import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import upload from "../config/multer";
 
 router.get("/categories", categoryController.getAllCategories);
+
+router.get("/topics", topicController.getAllTopics);
 //course
 router.get("/courses", courseController.getCourses);
 
@@ -222,5 +227,18 @@ router
   .post(discussionController.addReply)
   .patch(discussionController.editDiscussion)
   .delete(discussionController.deleteDiscussion);
+
+router.route("/quizzes").get(quizController.getUserQuizzes);
+router
+  .route("/quizzes/progress")
+  .get(quizSubmissionController.getUserQuizSubmissionsProgress);
+router.route("/quizzes/:quizId").get(quizController.getUserQuiz);
+router
+  .route("/quizzes/:quizId/submissions")
+  .get(quizSubmissionController.getQuizSubmission)
+  .post(quizSubmissionController.submitQuiz);
+router
+  .route("/quizzes/:quizId/submissions/:quizSubmissionId")
+  .put(quizSubmissionController.resubmitQuiz);
 
 export default router;

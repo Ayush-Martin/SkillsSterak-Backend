@@ -4,8 +4,11 @@ const router = Router();
 import {
   categoryController,
   courseController,
+  questionController,
+  quizController,
   subscriptionController,
   subscriptionPlanController,
+  topicController,
   trainerRequestController,
   transactionController,
   userController,
@@ -83,5 +86,32 @@ router.route("/subscriptions").get(subscriptionController.getSubscribedUsers);
 router
   .route("/subscriptions/plans")
   .get(subscriptionPlanController.getAllSubscriptionPlans);
+
+router
+  .route("/topics")
+  .get(topicController.getTopics)
+  .post(topicController.addTopic);
+
+router.route("/topics/:topicId").put(topicController.editTopic);
+
+router
+  .route("/quizzes")
+  .post(quizController.addQuiz)
+  .get(quizController.getAdminQuizzes);
+router
+  .route("/quizzes/:quizId")
+  .get(quizController.getAdminQuiz)
+  .put(quizController.editQuiz)
+  .patch(quizController.listUnlistQuiz);
+
+router
+  .route("/quizzes/:quizId/questions")
+  .get(questionController.getQuestions)
+  .post(questionController.addQuestion);
+
+router
+  .route("/quizzes/:quizId/questions/:questionId")
+  .put(questionController.editQuestion)
+  .delete(questionController.deleteQuestion);
 
 export default router;

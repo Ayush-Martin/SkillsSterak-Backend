@@ -30,6 +30,10 @@ import LiveSessionModel from "./models/LiveSession.model";
 import DiscussionModel from "./models/Discussion.model";
 import AssignmentSubmissionModel from "./models/AssignmentSubmission.model";
 import SubscriptionPlanModel from "./models/SubscriptionPlan.model";
+import TopicModel from "./models/Topic.model";
+import QuizModel from "./models/Quiz.model";
+import QuestionModel from "./models/Question.model";
+import QuizSubmissionModel from "./models/QuizSubmission.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -59,6 +63,10 @@ import LiveSessionRepository from "./repositories/liveSession.repository";
 import DiscussionRepository from "./repositories/discussion.repository";
 import AssignmentSubmissionRepository from "./repositories/assignmentSubmission.repository";
 import SubscriptionPlanRepository from "./repositories/subscriptionPlan.repository";
+import TopicRepository from "./repositories/topic.repository";
+import QuizRepository from "./repositories/quiz.repository";
+import QuestionRepository from "./repositories/question.repository";
+import QuizSubmissionRepository from "./repositories/quizSubmission.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -87,6 +95,10 @@ import LiveSessionService from "./services/liveSession.service";
 import DiscussionService from "./services/discussion.service";
 import AssignmentSubmissionService from "./services/assignmentSubmission.service";
 import SubscriptionPlanService from "./services/subscriptionPlan.service";
+import TopicService from "./services/topic.service";
+import QuizService from "./services/quiz.service";
+import QuestionService from "./services/question.service";
+import QuizSubmissionService from "./services/quizSubmission.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -113,6 +125,10 @@ import LiveSessionController from "./controllers/liveSession.controller";
 import DiscussionController from "./controllers/discussion.controller";
 import AssignmentSubmissionController from "./controllers/assignmentSubmission.controller";
 import SubscriptionPlanController from "./controllers/subscriptionPlan.controller";
+import TopicController from "./controllers/topic.controller";
+import QuizController from "./controllers/quiz.controller";
+import QuestionController from "./controllers/question.controller";
+import QuizSubmissionController from "./controllers/quizSubmission.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -149,6 +165,12 @@ const assignmentSubmissionRepository = new AssignmentSubmissionRepository(
 );
 const subscriptionPlanRepository = new SubscriptionPlanRepository(
   SubscriptionPlanModel
+);
+const topicRepository = new TopicRepository(TopicModel);
+const quizRepository = new QuizRepository(QuizModel);
+const questionRepository = new QuestionRepository(QuestionModel);
+const quizSubmissionRepository = new QuizSubmissionRepository(
+  QuizSubmissionModel
 );
 
 // Instantiate Services
@@ -233,6 +255,13 @@ export const assignmentSubmissionService = new AssignmentSubmissionService(
 export const subscriptionPlanService = new SubscriptionPlanService(
   subscriptionPlanRepository
 );
+export const topicService = new TopicService(topicRepository);
+export const quizService = new QuizService(quizRepository);
+export const questionService = new QuestionService(questionRepository);
+export const quizSubmissionService = new QuizSubmissionService(
+  quizSubmissionRepository,
+  questionRepository
+);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -296,4 +325,10 @@ export const assignmentSubmissionController =
   new AssignmentSubmissionController(assignmentSubmissionService);
 export const subscriptionPlanController = new SubscriptionPlanController(
   subscriptionPlanService
+);
+export const topicController = new TopicController(topicService);
+export const quizController = new QuizController(quizService);
+export const questionController = new QuestionController(questionService);
+export const quizSubmissionController = new QuizSubmissionController(
+  quizSubmissionService
 );
