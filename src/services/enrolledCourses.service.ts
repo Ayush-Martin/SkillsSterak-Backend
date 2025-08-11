@@ -14,6 +14,7 @@ import envConfig from "../config/env";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { CourseMessage, WalletMessage } from "../constants/responseMessages";
 import { ILessonRepository } from "../interfaces/repositories/ILesson.repository";
+import { IWalletHistoryRepository } from "../interfaces/repositories/IWalletHistory.repository";
 
 class EnrolledCourses implements IEnrolledCoursesService {
   constructor(
@@ -23,7 +24,8 @@ class EnrolledCourses implements IEnrolledCoursesService {
     private _transactionRepository: ITransactionRepository,
     private _chatRepository: IChatRepository,
     private _userRepository: IUserRepository,
-    private _lessonsRepository: ILessonRepository
+    private _lessonsRepository: ILessonRepository,
+    private _walletHistoryRepository: IWalletHistoryRepository
   ) {}
 
   public async enrollCourse(
@@ -35,7 +37,6 @@ class EnrolledCourses implements IEnrolledCoursesService {
     const user = await this._userRepository.findById(userId);
     const courseDuration =
       await this._lessonsRepository.getCourseLessonsDuration(courseId);
-
 
     const cancelTime = new Date();
     cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);
@@ -88,6 +89,12 @@ class EnrolledCourses implements IEnrolledCoursesService {
       });
 
       await this._walletRepository.debitWallet(userId, course.price);
+
+      await this._walletHistoryRepository.create({
+        userId: getObjectId(userId),
+        amount: course.price,
+        type: "debit",
+      });
 
       await this._chatRepository.addMemberToChat(courseId, userId);
 
@@ -329,6 +336,12 @@ class EnrolledCourses implements IEnrolledCoursesService {
       String(transaction.payerId),
       transaction.amount
     );
+
+    await this._walletHistoryRepository.create({
+      userId: transaction.payerId!,
+      amount: transaction.amount,
+      type: "credit",
+    });
   }
 
   public async getEnrolledCourseCompletionStatus(

@@ -35,6 +35,7 @@ import QuizModel from "./models/Quiz.model";
 import QuestionModel from "./models/Question.model";
 import QuizSubmissionModel from "./models/QuizSubmission.model";
 import SubscriptionFeatureModel from "./models/SubscriptionFeatures.model";
+import WalletHistoryModel from "./models/WalletHistory.model";
 
 //repositories
 import CategoryRepository from "./repositories/category.repository";
@@ -69,6 +70,7 @@ import QuizRepository from "./repositories/quiz.repository";
 import QuestionRepository from "./repositories/question.repository";
 import QuizSubmissionRepository from "./repositories/quizSubmission.repository";
 import SubscriptionFeatureRepository from "./repositories/subscriptionFeature.repository";
+import WalletHistoryRepository from "./repositories/walletHistory.repository";
 
 //services
 import AuthService from "./services/auth.service";
@@ -102,6 +104,7 @@ import QuizService from "./services/quiz.service";
 import QuestionService from "./services/question.service";
 import QuizSubmissionService from "./services/quizSubmission.service";
 import SubscriptionFeatureService from "./services/subscriptionFeature.service";
+import WalletHistoryService from "./services/walletHistory.service";
 
 //controllers
 import AuthController from "./controllers/auth.controller";
@@ -133,6 +136,7 @@ import QuizController from "./controllers/quiz.controller";
 import QuestionController from "./controllers/question.controller";
 import QuizSubmissionController from "./controllers/quizSubmission.controller";
 import SubscriptionFeatureController from "./controllers/subscriptionFeature.controller";
+import WalletHistoryController from "./controllers/walletHistory.controller";
 
 // Instantiate Repositories
 const categoryRepository = new CategoryRepository(CategoryModel);
@@ -179,6 +183,7 @@ const quizSubmissionRepository = new QuizSubmissionRepository(
 const subscriptionFeatureRepository = new SubscriptionFeatureRepository(
   SubscriptionFeatureModel
 );
+const walletHistoryRepository = new WalletHistoryRepository(WalletHistoryModel);
 
 // Instantiate Services
 export const otpService = new OTPService(otpRepository);
@@ -192,7 +197,8 @@ export const enrolledCoursesService = new EnrolledCoursesService(
   transactionRepository,
   chatRepository,
   userRepository,
-  lessonRepository
+  lessonRepository,
+  walletHistoryRepository
 );
 export const jwtService = new JWTService(refreshTokenRepository);
 export const lessonService = new LessonService(lessonRepository);
@@ -272,6 +278,9 @@ export const quizSubmissionService = new QuizSubmissionService(
 export const subscriptionFeatureService = new SubscriptionFeatureService(
   subscriptionFeatureRepository
 );
+export const walletHistoryService = new WalletHistoryService(
+  walletHistoryRepository
+);
 
 // Instantiate Controllers
 export const otpController = new OTPController(otpService);
@@ -344,4 +353,7 @@ export const quizSubmissionController = new QuizSubmissionController(
 );
 export const subscriptionFeatureController = new SubscriptionFeatureController(
   subscriptionFeatureService
+);
+export const walletHistoryController = new WalletHistoryController(
+  walletHistoryService
 );

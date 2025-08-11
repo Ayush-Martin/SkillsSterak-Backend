@@ -102,6 +102,4 @@ export interface ITransactionService {
   updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
 
   createTransaction(transaction: Partial<ITransaction>): Promise<ITransaction>;
-
-  getUserWalletHistory(userId: string): Promise<ITransaction[]>;
 }

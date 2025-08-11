@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
 import BaseRepository from "./Base.repository";
 import { IWallet } from "../models/Wallet.model";
@@ -36,7 +36,7 @@ class WalletRepository
   }
 
   public async getUserWalletInfo(userId: string): Promise<IWallet | null> {
-    return await this._Wallet.findOne({ userId });
+    return await this._Wallet.findOne({ userId: new mongoose.Types.ObjectId(userId) });
   }
 }
 
