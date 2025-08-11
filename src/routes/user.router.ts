@@ -31,6 +31,7 @@ import {
 import multerUpload from "../config/multer";
 import { accessTokenValidator } from "../middlewares/userAuth.middleware";
 import upload from "../config/multer";
+import { checkUserSubscribed } from "../middlewares/subscription.middleware";
 
 router.get("/categories", categoryController.getAllCategories);
 
@@ -76,7 +77,10 @@ router.get("/courses/:courseId/access", enrolledCourseController.checkEnrolled);
 
 router
   .route("/courses/:courseId/liveSessions")
-  .get(liveSessionController.getLiveSessions);
+  .get(
+    checkUserSubscribed("live_session"),
+    liveSessionController.getLiveSessions
+  );
 
 router
   .route("/courses/:courseId/assignments")
@@ -181,7 +185,9 @@ router
 router.route("/chats").get(chatController.getChats);
 // .get(subscriptionValidator, chatController.getUserChats)
 
-router.route("/chats/new/:trainerId").get(chatController.chat);
+router
+  .route("/chats/new/:trainerId")
+  .get(checkUserSubscribed("trainer_chat"), chatController.chat);
 
 router
   .route("/chats/:chatId")

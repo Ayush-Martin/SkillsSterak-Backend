@@ -63,14 +63,15 @@ class SubscriptionPlanController {
     next: NextFunction
   ) {
     try {
-      const { description, duration, price, title } =
+      const { description, duration, price, title, features } =
         createSubscriptionPlanIdValidator(req.body);
 
       const data = await this._subscriptionPlanService.createSubscriptionPlan(
         title,
         description,
         price,
-        duration
+        duration,
+        features
       );
 
       res
@@ -90,7 +91,7 @@ class SubscriptionPlanController {
   ) {
     try {
       const { subscriptionPlanId } = req.params;
-      const { description, duration, price, title } =
+      const { description, duration, price, title, features } =
         editSubscriptionPlanIdValidator(req.body);
 
       const data = await this._subscriptionPlanService.editSubscriptionPlan(
@@ -98,7 +99,8 @@ class SubscriptionPlanController {
         title,
         description,
         price,
-        duration
+        duration,
+        features
       );
 
       res

@@ -1,3 +1,4 @@
+import { ISubscriptionFeatureId } from "../constants/general";
 import { ISubscriptionPlanRepository } from "../interfaces/repositories/ISubscriptionPlan.repository";
 import { ISubscriptionPlanService } from "../interfaces/services/ISubscriptionPlan.service";
 import { ISubscriptionPlan } from "../models/SubscriptionPlan.model";
@@ -11,7 +12,8 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
     title: string,
     description: string,
     price: number,
-    duration: number
+    duration: number,
+    features: ISubscriptionFeatureId[]
   ): Promise<ISubscriptionPlan> {
     return await this._subscriptionPlanRepository.create({
       title,
@@ -19,6 +21,7 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
       price,
       duration,
       isListed: true,
+      features,
     });
   }
 
@@ -84,7 +87,8 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
     title: string,
     description: string,
     price: number,
-    duration: number
+    duration: number,
+    features: ISubscriptionFeatureId[]
   ): Promise<ISubscriptionPlan | null> {
     return await this._subscriptionPlanRepository.updateById(
       subscriptionPlanId,
@@ -93,6 +97,7 @@ class SubscriptionPlanService implements ISubscriptionPlanService {
         description,
         price,
         duration,
+        features,
       }
     );
   }
