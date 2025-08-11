@@ -22,13 +22,31 @@ class SubscriptionService implements ISubscriptionService {
   ): Promise<string> {
     const userEmail = await this._userRepository.getUserEmail(userId);
 
-    const plan = (await this._subscriptionPlanRepository.findById(planId))!;
+    const subscribedPlan =
+      await this._subscriptionRepository.getSubscriptionDetailByUserID(userId);
 
-    console.log(plan, planId);
+    const plan = (await this._subscriptionPlanRepository.findById(planId))!;
+    let amount = plan.price;
+
+    if (subscribedPlan) {
+      const totalDays =
+        (new Date(subscribedPlan.endDate).getTime() -
+          new Date(subscribedPlan.startDate).getTime()) /
+        (1000 * 60 * 60 * 24);
+
+      const remainingDays =
+        (new Date(subscribedPlan.endDate).getTime() - Date.now()) /
+        (1000 * 60 * 60 * 24);
+
+      const dailyCurrentPrice = subscribedPlan.amount / totalDays;
+      const creditAmount = dailyCurrentPrice * remainingDays;
+
+      amount = Math.floor(Math.max(amount - creditAmount, 0));
+    }
 
     const transaction = await this._transactionRepository.create({
       payerId: getObjectId(userId),
-      amount: plan.price,
+      amount,
       type: "subscription",
       status: "pending",
       method: "stripe",
@@ -44,7 +62,7 @@ class SubscriptionService implements ISubscriptionService {
               name: plan.title,
               description: plan.description,
             },
-            unit_amount: plan.price * 100,
+            unit_amount: amount * 100,
           },
           quantity: 1,
         },
@@ -69,11 +87,17 @@ class SubscriptionService implements ISubscriptionService {
     transactionId: string
   ): Promise<void> {
     const plan = (await this._subscriptionPlanRepository.findById(planId))!;
+    const subscribedPlan =
+      await this._subscriptionRepository.getSubscriptionDetailByUserID(userId);
 
     await this._transactionRepository.changePaymentStatus(
       transactionId,
       "completed"
     );
+
+    if (subscribedPlan) {
+      await this._subscriptionRepository.deleteById(subscribedPlan.id);
+    }
 
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + plan.duration);
@@ -84,6 +108,8 @@ class SubscriptionService implements ISubscriptionService {
       subscriptionPlanId: getObjectId(planId),
       startDate: new Date(),
       endDate,
+      features: plan.features,
+      amount: plan.price,
     });
   }
 

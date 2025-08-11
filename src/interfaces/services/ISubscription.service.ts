@@ -6,6 +6,12 @@ export interface ISubscriptionService {
    */
   createSubscriptionOrder(userId: string, planId: string): Promise<string>;
 
+  // createUpgradeSubscriptionOrder(
+  //   userId: string,
+  //   previousPlanId: string,
+  //   planId: string
+  // ): Promise<string>;
+
   /**
    * Finalizes a subscription purchase after successful payment. Used to activate premium features for the user.
    */

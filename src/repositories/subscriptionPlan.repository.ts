@@ -40,7 +40,18 @@ class SubscriptionPlanRepository
   }
 
   public async getAllListedSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
-    return await this._SubscriptionPlan.find({ isListed: true });
+    // return await this._SubscriptionPlan.find({ isListed: true });
+    return await this._SubscriptionPlan.aggregate([
+      { $match: { isListed: true } },
+      {
+        $lookup: {
+          from: "subscriptionfeatures",
+          localField: "features",
+          foreignField: "id",
+          as: "features",
+        },
+      },
+    ]);
   }
 
   public async getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
