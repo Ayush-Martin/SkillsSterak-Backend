@@ -25,4 +25,18 @@ export interface IQuizService {
     totalPages: number;
   }>;
   getAdminQuiz(quizId: string): Promise<IQuiz | null>;
+  getUserQuizzes(
+    userId: string,
+    search: string,
+    page: number,
+    size: number,
+    topics: Array<ObjectId> | "all",
+    difficulty: "beginner" | "intermediate" | "advance" | "all"
+  ): Promise<{
+    quizzes: Array<IQuiz>;
+    currentPage: number;
+    totalPages: number;
+  }>;
+
+  getUserQuiz(quizId: string): Promise<IQuiz | null>;
 }

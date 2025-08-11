@@ -264,3 +264,12 @@ export enum QuestionMessage {
   QuestionUpdated = "Question updated",
   QuestionDeleted = "Questions deleted",
 }
+
+export enum QuizSubmissionMessage {
+  //Error Messages
+  QuizSubmissionExists = "QuizSubmission already exists",
+  QuizSubmissionNotFound = "QuizSubmission not found",
+  //Success Messages
+  QuizSubmissionAdded = "QuizSubmission added",
+  QuizSubmissionUpdated = "QuizSubmission updated",
+}

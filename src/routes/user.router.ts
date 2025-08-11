@@ -23,6 +23,8 @@ import {
   assignmentSubmissionController,
   subscriptionPlanController,
   topicController,
+  quizController,
+  quizSubmissionController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -225,5 +227,15 @@ router
   .post(discussionController.addReply)
   .patch(discussionController.editDiscussion)
   .delete(discussionController.deleteDiscussion);
+
+router.route("/quizzes").get(quizController.getUserQuizzes);
+router.route("/quizzes/:quizId").get(quizController.getUserQuiz);
+router
+  .route("/quizzes/:quizId/submissions")
+  .get(quizSubmissionController.getQuizSubmission)
+  .post(quizSubmissionController.submitQuiz);
+router
+  .route("/quizzes/:quizId/submissions/:quizSubmissionId")
+  .put(quizSubmissionController.resubmitQuiz);
 
 export default router;

@@ -14,4 +14,16 @@ export interface IQuizRepository extends IBaseRepository<IQuiz> {
     limit: number
   ): Promise<Array<IQuiz>>;
   getAdminQuizzesCount(search: RegExp): Promise<number>;
+  getUserQuizzes(
+    userId: string,
+    search: RegExp,
+    skip: number,
+    limit: number,
+    filter: Record<string, any>
+  ): Promise<Array<IQuiz>>;
+  getUserQuizzesCount(
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<number>;
+  getUserQuiz(quizId: string): Promise<IQuiz | null>;
 }

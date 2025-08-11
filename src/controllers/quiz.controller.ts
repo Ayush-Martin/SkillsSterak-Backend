@@ -4,6 +4,7 @@ import binder from "../utils/binder";
 import {
   addQuizValidator,
   editQuizValidator,
+  getUserQuizzesValidator,
 } from "../validators/quiz.validator";
 import { StatusCodes } from "../constants/statusCodes";
 import { successResponse } from "../utils/responseCreators";
@@ -100,6 +101,42 @@ class QuizController {
     try {
       const { quizId } = req.params;
       const data = await this._quizService.getAdminQuiz(quizId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUserQuizzes(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { search, page, size, topics, difficulty } =
+        getUserQuizzesValidator(req.query);
+      const userId = req.userId!;
+      console.log(topics);
+      const data = await this._quizService.getUserQuizzes(
+        userId,
+        search,
+        page,
+        size,
+        topics,
+        difficulty
+      );
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUserQuiz(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { quizId } = req.params;
+
+      const data = await this._quizService.getUserQuiz(quizId);
+      
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));

@@ -83,9 +83,57 @@ class QuizService implements IQuizService {
     };
   }
 
+  public async getUserQuizzes(
+    userId: string,
+    search: string,
+    page: number,
+    size: number,
+    topics: Array<ObjectId> | "all",
+    difficulty: "beginner" | "intermediate" | "advance" | "all"
+  ): Promise<{
+    quizzes: Array<IQuiz>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const filter: any = {};
+    if (topics !== "all") {
+      filter.topics = { $in: topics };
+    }
+    if (difficulty !== "all") {
+      filter.difficulty = difficulty;
+    }
+
+    const searchRegex = new RegExp(search, "i");
+    const skip = (page - 1) * size;
+    const quizzes = await this._quizRepository.getUserQuizzes(
+      userId,
+      searchRegex,
+      skip,
+      size,
+      filter
+    );
+
+    const totalQuizzes = await this._quizRepository.getUserQuizzesCount(
+      searchRegex,
+      filter
+    );
+    const totalPages = Math.ceil(totalQuizzes / size);
+    return {
+      quizzes,
+      currentPage: page,
+      totalPages,
+    };
+  }
+
   public async getAdminQuiz(quizId: string): Promise<IQuiz | null> {
     return await this._quizRepository.findById(quizId);
   }
+
+  public async getUserQuiz(quizId: string): Promise<IQuiz | null> {
+    return await this._quizRepository.getUserQuiz(quizId);
+  }
+
+  
 }
 
 export default QuizService;
