@@ -25,6 +25,7 @@ import {
   topicController,
   quizController,
   quizSubmissionController,
+  walletHistoryController,
 } from "../dependencyInjector";
 
 //middlewares
@@ -206,7 +207,7 @@ router
   .get(walletController.getWalletInfo)
   .patch(walletController.redeem);
 router.route("/wallet/account").patch(walletController.setUpStripeAccount);
-router.route("/wallet/history").get(transactionController.getUserWalletHistory);
+router.route("/wallet/history").get(walletHistoryController.getWalletHistory);
 
 router
   .route("/wishlist")

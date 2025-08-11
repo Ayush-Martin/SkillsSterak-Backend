@@ -599,19 +599,6 @@ class TransactionRepository
 
     return transactions;
   }
-
-  public async getUserWalletHistory(userId: string): Promise<ITransaction[]> {
-    return await this.Transaction.find({
-      $and: [
-        {
-          $or: [{ payerId: userId }, { receiverId: userId }],
-        },
-        {
-          $or: [{ status: "canceled" }, { method: "wallet" }],
-        },
-      ],
-    }).sort({ createdAt: -1 });
-  }
 }
 
 export default TransactionRepository;

@@ -367,10 +367,6 @@ class TransactionService implements ITransactionService {
   ): Promise<ITransaction> {
     return await this._transactionRepository.create(transaction);
   }
-
-  public async getUserWalletHistory(userId: string): Promise<ITransaction[]> {
-    return await this._transactionRepository.getUserWalletHistory(userId);
-  }
 }
 
 export default TransactionService;

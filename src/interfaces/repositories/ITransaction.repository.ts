@@ -58,6 +58,4 @@ export interface ITransactionRepository extends IBaseRepository<ITransaction> {
   ): Promise<ITransaction | null>;
 
   updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
-
-  getUserWalletHistory(userId: string): Promise<ITransaction[]>;
 }
