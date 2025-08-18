@@ -38,9 +38,6 @@ class WebHookController {
     try {
       const authHeader = req.headers["authorization"] as string;
 
-      console.log("Webhook headers:", req.headers);
-      console.log("Webhook body:", req.body); 
-
       const event = await receiver.receive(req.body.toString(), authHeader);
       console.log("✅ Webhook event:", event.event, event.room?.name);
 
