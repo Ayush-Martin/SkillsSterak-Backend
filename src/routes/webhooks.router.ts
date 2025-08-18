@@ -5,7 +5,7 @@ const router = Router();
 
 router.post(
   "/livekit",
-  express.raw({ type: ["application/webhook+json", "application/json"] }),
+  express.raw({ type: "application/webhook+json" }),
   webhookController.liveKit
 );
 router.post(
