@@ -286,23 +286,6 @@ class TransactionController {
       next(err);
     }
   }
-
-  public async getUserWalletHistory(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const userId = req.userId!;
-      const data = await this._transactionService.getUserWalletHistory(userId);
-
-      res
-        .status(StatusCodes.OK)
-        .json(successResponse(GeneralMessage.DataReturned, data));
-    } catch (err) {
-      next(err);
-    }
-  }
 }
 
 export default TransactionController;

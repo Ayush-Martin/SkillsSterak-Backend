@@ -1,3 +1,4 @@
+import { ISubscriptionFeatureId } from "../../constants/general";
 import { ISubscriptionPlan } from "../../models/SubscriptionPlan.model";
 
 export interface ISubscriptionPlanService {
@@ -5,14 +6,16 @@ export interface ISubscriptionPlanService {
     title: string,
     description: string,
     price: number,
-    duration: number
+    duration: number,
+    features: ISubscriptionFeatureId[]
   ): Promise<ISubscriptionPlan>;
   editSubscriptionPlan(
     subscriptionPlanId: string,
     title: string,
     description: string,
     price: number,
-    duration: number
+    duration: number,
+    features: ISubscriptionFeatureId[]
   ): Promise<ISubscriptionPlan | null>;
   getSubscriptionPlans(
     search: string,

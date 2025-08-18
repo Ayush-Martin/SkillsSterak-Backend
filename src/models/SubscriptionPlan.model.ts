@@ -1,4 +1,8 @@
 import { Document, Schema, model } from "mongoose";
+import {
+  ISubscriptionFeatureId,
+  SUBSCRIPTION_FEATURE_IDS,
+} from "../constants/general";
 
 export interface ISubscriptionPlan extends Document {
   title: string;
@@ -6,6 +10,7 @@ export interface ISubscriptionPlan extends Document {
   description: string;
   duration: number;
   isListed: boolean;
+  features: ISubscriptionFeatureId[];
 }
 
 const SubscriptionPlanSchema = new Schema<ISubscriptionPlan>({
@@ -29,6 +34,13 @@ const SubscriptionPlanSchema = new Schema<ISubscriptionPlan>({
     type: Boolean,
     default: false,
   },
+  features: [
+    {
+      type: String,
+      enum: Object.values(SUBSCRIPTION_FEATURE_IDS),
+      required: true,
+    },
+  ],
 });
 
 export default model<ISubscriptionPlan>(

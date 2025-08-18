@@ -37,7 +37,6 @@ class WebHookController {
   ): Promise<any> {
     try {
       const authHeader = req.headers["authorization"] as string;
-
       const event = await receiver.receive(req.body.toString(), authHeader);
       console.log("✅ Webhook event:", event.event, event.room?.name);
 
@@ -85,8 +84,10 @@ class WebHookController {
 
       switch (event.type) {
         case "checkout.session.completed": {
+          console.log("triggered");
           const session = event.data.object;
-          const { userId, courseId, transactionId, planId } = session.metadata!;
+          const { userId, courseId, transactionId, planId } =
+            session.metadata!;
           if (courseId) {
             await this._enrolledCourseService.completePurchase(
               userId,
@@ -104,7 +105,7 @@ class WebHookController {
             await this._subscriptionService.completeSubscription(
               userId,
               planId,
-              transactionId
+              transactionId,
             );
           }
           break;

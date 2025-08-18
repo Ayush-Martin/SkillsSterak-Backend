@@ -7,6 +7,7 @@ import {
   questionController,
   quizController,
   subscriptionController,
+  subscriptionFeatureController,
   subscriptionPlanController,
   topicController,
   trainerRequestController,
@@ -71,6 +72,10 @@ router
   .get(courseController.getAdminCourse);
 
 router.patch("/courses/:courseId/status", courseController.approveRejectCourse);
+
+router
+  .route("/subscriptionFeatures")
+  .get(subscriptionFeatureController.getAllSubscriptionFeatures);
 
 router
   .route("/subscriptionPlans")
