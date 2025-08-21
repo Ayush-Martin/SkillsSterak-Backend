@@ -9,17 +9,31 @@ export interface ITransactionRepository extends IBaseRepository<ITransaction> {
   getUserTransactions(
     userId: string,
     skip: number,
-    limit: number
+    limit: number,
+    search: RegExp,
+    filter: Record<string, any>
   ): Promise<Array<ITransaction>>;
 
   /** Get user transaction count */
-  getUserTransactionCount(userId: string): Promise<number>;
+  getUserTransactionCount(
+    userId: string,
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<number>;
 
   /** Get all transactions */
-  getTransactions(skip: number, limit: number): Promise<Array<ITransaction>>;
+  getTransactions(
+    skip: number,
+    limit: number,
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<Array<ITransaction>>;
 
   /** Get total transaction count */
-  getTransactionCount(): Promise<number>;
+  getTransactionCount(
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<number>;
 
   /**
    * Retrieves admin revenue transactions with optional filtering and pagination.

@@ -1,5 +1,9 @@
 import { Buffer } from "exceljs";
-import { ITransaction } from "../../models/Transaction.model";
+import {
+  ITransaction,
+  ITransactionStatus,
+  ITransactionType,
+} from "../../models/Transaction.model";
 import { IFilterType } from "../../types/revenueType";
 
 export interface ITransactionService {
@@ -8,8 +12,11 @@ export interface ITransactionService {
    */
   getUserTransactions(
     userId: string,
+    search: string,
     page: number,
-    size: number
+    size: number,
+    type: ITransactionType | "all",
+    status: ITransactionStatus | "all"
   ): Promise<{
     transactions: Array<ITransaction>;
     currentPage: number;
@@ -20,8 +27,11 @@ export interface ITransactionService {
    * Returns a paginated list of all transactions in the system. Used for admin financial oversight and reporting.
    */
   getTransactions(
+    search: string,
     page: number,
-    size: number
+    size: number,
+    type: ITransactionType | "all",
+    status: ITransactionStatus | "all"
   ): Promise<{
     transactions: Array<ITransaction>;
     currentPage: number;
