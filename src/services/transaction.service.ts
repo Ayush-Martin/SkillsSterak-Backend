@@ -1,6 +1,10 @@
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
-import { ITransaction, ITransactionStatus } from "../models/Transaction.model";
+import {
+  ITransaction,
+  ITransactionStatus,
+  ITransactionType,
+} from "../models/Transaction.model";
 import { IFilterType } from "../types/revenueType";
 import { Buffer } from "exceljs";
 import {
@@ -21,44 +25,83 @@ class TransactionService implements ITransactionService {
 
   public async getUserTransactions(
     userId: string,
+    search: string,
     page: number,
-    size: number
+    size: number,
+    type: ITransactionType | "all",
+    status: ITransactionStatus | "all"
   ): Promise<{
     transactions: Array<ITransaction>;
     currentPage: number;
     totalPages: number;
   }> {
     const skip = (page - 1) * size;
+    const searchRegex = new RegExp(search, "i");
+    let filter: Record<string, any> = {};
+
+    if (type !== "all") {
+      filter.type = type;
+    }
+
+    if (status !== "all") {
+      filter.status = status;
+    }
 
     const transactions = await this._transactionRepository.getUserTransactions(
       userId,
       skip,
-      size
+      size,
+      searchRegex,
+      filter
     );
 
     const totalTransactions =
-      await this._transactionRepository.getUserTransactionCount(userId);
+      await this._transactionRepository.getUserTransactionCount(
+        userId,
+        searchRegex,
+        filter
+      );
     const totalPages = Math.ceil(totalTransactions / size);
     return { transactions, currentPage: page, totalPages };
   }
 
   public async getTransactions(
+    search: string,
     page: number,
-    size: number
+    size: number,
+    type: ITransactionType | "all",
+    status: ITransactionStatus | "all"
   ): Promise<{
     transactions: Array<ITransaction>;
     currentPage: number;
     totalPages: number;
   }> {
+    let filter: Record<string, any> = {};
+    const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
+
+    if (type !== "all") {
+      filter.type = type;
+    }
+
+    if (status !== "all") {
+      filter.status = status;
+    }
+
     const transactions = await this._transactionRepository.getTransactions(
       skip,
-      size
+      size,
+      searchRegex,
+      filter
     );
     const totalTransactions =
-      await this._transactionRepository.getTransactionCount();
+      await this._transactionRepository.getTransactionCount(
+        searchRegex,
+        filter
+      );
 
-    const totalPages = Math.ceil(totalTransactions / size);
+    const totalPages =
+      Math.ceil(totalTransactions / size) || transactions.length ? 1 : 0;
 
     return { transactions, currentPage: page, totalPages };
   }

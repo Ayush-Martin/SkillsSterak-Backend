@@ -2,6 +2,7 @@ import z from "zod";
 import {
   PageRecordSizeValidationRule,
   PageValidationRule,
+  SearchValidationRule,
 } from "./rules/pagination.validationRule";
 import {
   TransactionRevenueExportType,
@@ -35,3 +36,28 @@ export const exportAdminRevenueValidator = (data: any) => {
 
 export const getTrainerRevenueValidator = getAdminRevenueValidator;
 export const exportTrainerRevenueValidator = exportAdminRevenueValidator;
+
+export const getTransactionValidator = (data: any) => {
+  const schema = z.object({
+    page: PageValidationRule,
+    size: PageRecordSizeValidationRule,
+    search: SearchValidationRule,
+    status: z.enum([
+      "all",
+      "pending",
+      "completed",
+      "canceled",
+      "failed",
+      "on_process",
+    ]),
+    type: z.enum([
+      "all",
+      "course_purchase",
+      "commission",
+      "subscription",
+      "wallet_redeem",
+    ]),
+  });
+
+  return schema.parse(data);
+};

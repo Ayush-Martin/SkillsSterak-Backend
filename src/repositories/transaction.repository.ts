@@ -15,18 +15,10 @@ class TransactionRepository
   public async getUserTransactions(
     userId: string,
     skip: number,
-    limit: number
+    limit: number,
+    search: RegExp,
+    filter: Record<string, any>
   ): Promise<Array<ITransaction>> {
-    // return await this.Transaction.find({
-    //   $or: [{ payerId: userId }, { receiverId: userId }],
-    // })
-    //   .sort({ createdAt: -1 })
-    //   .skip(skip)
-    //   .limit(limit)
-    //   .populate("payerId", "email _id role")
-    //   .populate("receiverId", "email _id role")
-    //   .populate("courseId", "title _id");
-
     return await this.Transaction.aggregate([
       {
         $match: {
@@ -34,6 +26,7 @@ class TransactionRepository
             { payerId: new mongoose.Types.ObjectId(userId) },
             { receiverId: new mongoose.Types.ObjectId(userId) },
           ],
+          ...filter,
         },
       },
       {
@@ -44,7 +37,6 @@ class TransactionRepository
           pipeline: [
             {
               $project: {
-                _id: 1,
                 email: 1,
                 role: 1,
               },
@@ -61,7 +53,6 @@ class TransactionRepository
           pipeline: [
             {
               $project: {
-                _id: 1,
                 email: 1,
                 role: 1,
               },
@@ -78,13 +69,27 @@ class TransactionRepository
           pipeline: [
             {
               $project: {
-                _id: 1,
                 title: 1,
                 thumbnail: 1,
               },
             },
           ],
           as: "course",
+        },
+      },
+      {
+        $lookup: {
+          from: "subscriptionplans",
+          localField: "subscriptionPlanId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                title: 1,
+              },
+            },
+          ],
+          as: "subscription",
         },
       },
       {
@@ -106,22 +111,33 @@ class TransactionRepository
         },
       },
       {
-        $sort: { createdAt: -1 },
+        $unwind: {
+          path: "$subscription",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [{ "payer.email": search }, { "receiver.email": search }],
+        },
       },
       {
         $project: {
-          _id: 1,
-          payer: 1,
-          receiver: 1,
           amount: 1,
           type: 1,
           method: 1,
           status: 1,
-          course: 1,
           adminCommission: 1,
+          payer: 1,
+          receiver: 1,
+          course: 1,
+          subscription: 1,
+          createdAt: 1,
         },
       },
-
+      {
+        $sort: { createdAt: -1 },
+      },
       {
         $skip: skip,
       },
@@ -131,27 +147,279 @@ class TransactionRepository
     ]);
   }
 
-  public async getUserTransactionCount(userId: string): Promise<number> {
-    return await this.Transaction.countDocuments({
-      $or: [{ payerId: userId }, { receiverId: userId }],
-    });
+  public async getUserTransactionCount(
+    userId: string,
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<number> {
+    const count = await this.Transaction.aggregate([
+      {
+        $match: {
+          $or: [
+            { payerId: new mongoose.Types.ObjectId(userId) },
+            { receiverId: new mongoose.Types.ObjectId(userId) },
+          ],
+          ...filter,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "payerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+              },
+            },
+          ],
+          as: "payer",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receiverId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+              },
+            },
+          ],
+          as: "receiver",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$receiver",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [{ "payer.email": search }, { "receiver.email": search }],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return count[0]?.count ?? 0;
   }
 
   public async getTransactions(
     skip: number,
-    limit: number
+    limit: number,
+    search: RegExp,
+    filter: Record<string, any>
   ): Promise<Array<ITransaction>> {
-    return await this.Transaction.find()
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("payerId", "email _id role")
-      .populate("receiverId", "email _id role")
-      .populate("courseId", "title _id");
+    return await this.Transaction.aggregate([
+      {
+        $match: {
+          ...filter,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "payerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+                role: 1,
+              },
+            },
+          ],
+          as: "payer",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receiverId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+                role: 1,
+              },
+            },
+          ],
+          as: "receiver",
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                thumbnail: 1,
+              },
+            },
+          ],
+          as: "course",
+        },
+      },
+      {
+        $lookup: {
+          from: "subscriptionplans",
+          localField: "subscriptionPlanId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $match: {
+                title: 1,
+              },
+            },
+          ],
+          as: "subscription",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$receiver",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$subscription",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [{ "payer.email": search }, { "receiver.email": search }],
+        },
+      },
+      {
+        $project: {
+          amount: 1,
+          type: 1,
+          method: 1,
+          status: 1,
+          adminCommission: 1,
+          payer: 1,
+          receiver: 1,
+          course: 1,
+          subscription: 1,
+          createdAt: 1,
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
   }
 
-  public async getTransactionCount(): Promise<number> {
-    return await this.Transaction.countDocuments();
+  public async getTransactionCount(
+    search: RegExp,
+    filter: Record<string, any>
+  ): Promise<number> {
+    // return await this.Transaction.countDocuments();
+
+    const count = await this.Transaction.aggregate([
+      {
+        $match: {
+          ...filter,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "payerId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+              },
+            },
+          ],
+          as: "payer",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receiverId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $project: {
+                email: 1,
+              },
+            },
+          ],
+          as: "reciever",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$reciever",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [{ "payer.email": search }, { "receiver.email": search }],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return count[0]?.count ?? 0;
   }
 
   public async getAdminRevenueCount(
