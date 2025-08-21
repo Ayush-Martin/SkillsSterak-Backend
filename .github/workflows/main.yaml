@@ -66,8 +66,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           source: "docker-compose.yaml,.env,deploy.sh"
           target: "~/skills_streak"
+          debug: true
 
       - name: Run deploy.sh on EC2
         uses: appleboy/ssh-action@v0.1.6
