@@ -11,8 +11,7 @@ export type ITransactionType =
   | "course_purchase"
   | "commission"
   | "subscription"
-  | "wallet_redeem"
-  | "wallet_add";
+  | "wallet_redeem";
 
 export interface ITransaction extends Document {
   payerId?: ObjectId;
@@ -23,6 +22,7 @@ export interface ITransaction extends Document {
   method?: "wallet" | "stripe";
   status: ITransactionStatus;
   courseId?: ObjectId;
+  subscriptionPlanId?: ObjectId;
   cancelTime?: Date;
 }
 
@@ -42,18 +42,17 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     type: {
       type: String,
-      enum: [
-        "course_purchase",
-        "commission",
-        "subscription",
-        "wallet_redeem",
-        "wallet_add",
-      ],
+      enum: ["course_purchase", "commission", "subscription", "wallet_redeem"],
       required: true,
     },
     courseId: {
       type: Schema.Types.ObjectId,
       ref: "course",
+      required: false,
+    },
+    subscriptionPlanId: {
+      type: Schema.Types.ObjectId,
+      ref: "subscriptionPlan",
       required: false,
     },
     method: {

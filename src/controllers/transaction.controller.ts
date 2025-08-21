@@ -10,6 +10,7 @@ import {
   exportAdminRevenueValidator,
   exportTrainerRevenueValidator,
   getAdminRevenueValidator,
+  getTransactionValidator,
   getTrainerRevenueValidator,
 } from "../validators/transaction.validator";
 import { IEnrolledCoursesService } from "../interfaces/services/IEnrolledCourses.service";
@@ -37,12 +38,17 @@ class TransactionController {
   ) {
     try {
       const userId = req.userId!;
-      const { page, size } = pageValidator(req.query);
+      const { page, size, search, status, type } = getTransactionValidator(
+        req.query
+      );
 
       const data = await this._transactionService.getUserTransactions(
         userId,
+        search,
         page,
-        size
+        size,
+        type,
+        status
       );
 
       res
@@ -62,9 +68,19 @@ class TransactionController {
     next: NextFunction
   ) {
     try {
-      const { page, size } = pageValidator(req.query);
+      const { page, size, search, status, type } = getTransactionValidator(
+        req.query
+      );
 
-      const data = await this._transactionService.getTransactions(page, size);
+      const data = await this._transactionService.getTransactions(
+        search,
+        page,
+        size,
+        type,
+        status
+      );
+
+      console.log(data);
 
       res
         .status(StatusCodes.OK)
