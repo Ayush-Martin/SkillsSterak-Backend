@@ -8,7 +8,10 @@ cd $APP_DIR || { echo "❌ Directory not found"; exit 1; }
 echo "🧹 Stopping old containers..."
 docker-compose down
 
-echo "🐳 Pulling latest Docker image..."
+echo "🧽 Cleaning up unused Docker resources..."
+docker system prune -af --volumes
+
+echo "🐳 Pulling latest Docker images..."
 docker-compose pull
 
 echo "🚀 Restarting Docker containers..."

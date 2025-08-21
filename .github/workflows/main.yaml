@@ -61,12 +61,13 @@ jobs:
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Copy deployment files to EC2
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" \
-            docker-compose.yaml .env deploy.sh \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/skills_streak/
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yaml,.env,deploy.sh"
+          target: "~/skills_streak"
 
       - name: Run deploy.sh on EC2
         uses: appleboy/ssh-action@v0.1.6
