@@ -25,4 +25,14 @@ export interface IQuizSubmissionService {
   getUserQuizSubmissionsProgress(
     userId: string
   ): Promise<IQuizSubmission | null>;
+
+  getAdminQuizSubmissions(
+    search: string,
+    page: number,
+    size: number
+  ): Promise<{
+    quizSubmissions: Array<IQuizSubmission>;
+    currentPage: number;
+    totalPages: number;
+  }>;
 }

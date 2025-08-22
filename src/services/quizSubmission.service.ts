@@ -82,6 +82,36 @@ class QuizSubmissionService implements IQuizSubmissionService {
       userId
     );
   }
+
+  public async getAdminQuizSubmissions(
+    search: string,
+    page: number,
+    size: number
+  ): Promise<{
+    quizSubmissions: Array<IQuizSubmission>;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * size;
+    const searchRegex = new RegExp(search, "i");
+    const quizSubmissions =
+      await this._quizSubmissionRepository.getAdminQuizSubmissions(
+        skip,
+        size,
+        searchRegex
+      );
+    const totalQuizSubmissionsCount =
+      await this._quizSubmissionRepository.getAdminQuizSubmissionsCount(
+        searchRegex
+      );
+    const totalPages = Math.ceil(totalQuizSubmissionsCount / size);
+    
+    return {
+      quizSubmissions,
+      currentPage: page,
+      totalPages,
+    };
+  }
 }
 
 export default QuizSubmissionService;

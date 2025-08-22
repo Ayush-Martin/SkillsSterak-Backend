@@ -6,6 +6,7 @@ import {
   courseController,
   questionController,
   quizController,
+  quizSubmissionController,
   subscriptionController,
   subscriptionFeatureController,
   subscriptionPlanController,
@@ -118,5 +119,9 @@ router
   .route("/quizzes/:quizId/questions/:questionId")
   .put(questionController.editQuestion)
   .delete(questionController.deleteQuestion);
+
+router
+  .route("/quizSubmissions")
+  .get(quizSubmissionController.getAdminQuizSubmissions);
 
 export default router;

@@ -10,4 +10,10 @@ export interface IQuizSubmissionRepository
   getUserQuizSubmissionsProgress(
     userId: string
   ): Promise<IQuizSubmission | null>;
+  getAdminQuizSubmissions(
+    skip: number,
+    limit: number,
+    search: RegExp
+  ): Promise<IQuizSubmission[]>;
+  getAdminQuizSubmissionsCount(search: RegExp): Promise<number>;
 }
