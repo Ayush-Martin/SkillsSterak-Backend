@@ -9,6 +9,7 @@ import {
 import { successResponse } from "../utils/responseCreators";
 import { StatusCodes } from "../constants/statusCodes";
 import { submitQuizValidator } from "../validators/quizSubmission.validator";
+import { paginatedGetDataValidator } from "../validators/pagination.validator";
 
 class QuizSubmissionController {
   constructor(private _quizSubmissionService: IQuizSubmissionService) {
@@ -104,6 +105,28 @@ class QuizSubmissionController {
           }
         )
       );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAdminQuizSubmissions(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { search, page, size } = paginatedGetDataValidator(req.query);
+      const data = await this._quizSubmissionService.getAdminQuizSubmissions(
+        search,
+        page,
+        size
+      );
+      console.log(data);
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
     } catch (error) {
       next(error);
     }
