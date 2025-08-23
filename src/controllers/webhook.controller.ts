@@ -8,6 +8,7 @@ import { IChatService } from "../interfaces/services/IChat.service";
 import { ISubscriptionService } from "../interfaces/services/ISubscription.service";
 import { IWishlistService } from "../interfaces/services/IWishlist.service";
 import { ILiveSessionService } from "../interfaces/services/ILiveSession.service";
+import { ITransactionService } from "../interfaces/services/ITransaction.service";
 
 /**
  * Handles third-party webhook events (LiveKit, Stripe) for real-time updates and automation.
@@ -19,7 +20,8 @@ class WebHookController {
     private _chatService: IChatService,
     private _subscriptionService: ISubscriptionService,
     private _wishlistService: IWishlistService,
-    private _liveSessionService: ILiveSessionService
+    private _liveSessionService: ILiveSessionService,
+    private _transactionService: ITransactionService
   ) {
     // Ensures 'this' context is preserved for all methods
     binder(this);
@@ -82,10 +84,8 @@ class WebHookController {
 
       switch (event.type) {
         case "checkout.session.completed": {
-          console.log("triggered");
           const session = event.data.object;
-          const { userId, courseId, transactionId, planId } =
-            session.metadata!;
+          const { userId, courseId, transactionId, planId } = session.metadata!;
           if (courseId) {
             await this._enrolledCourseService.completePurchase(
               userId,
@@ -103,14 +103,30 @@ class WebHookController {
             await this._subscriptionService.completeSubscription(
               userId,
               planId,
-              transactionId,
+              transactionId
             );
           }
           break;
         }
-      }
 
-      res.json({ received: true });
+        case "payment_intent.payment_failed": {
+          const session = event.data.object;
+          const { transactionId } = session.metadata!;
+          if (transactionId) {
+            await this._transactionService.handlePaymentFailure(transactionId);
+          }
+          break;
+        }
+
+        case "checkout.session.async_payment_failed": {
+          const session = event.data.object;
+          const { transactionId } = session.metadata!;
+          if (transactionId) {
+            await this._transactionService.handlePaymentFailure(transactionId);
+          }
+          break;
+        }
+      }
     } catch (err) {
       next(err);
     }

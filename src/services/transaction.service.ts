@@ -390,9 +390,10 @@ class TransactionService implements ITransactionService {
     );
   }
 
-  public async failedTransaction(
+  public async handlePaymentFailure(
     transactionId: string
   ): Promise<ITransaction | null> {
+    console.log("Handling payment failure for transaction:", transactionId);
     return await this._transactionRepository.changePaymentStatus(
       transactionId,
       "failed"

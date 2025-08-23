@@ -322,7 +322,8 @@ export const webhookController = new WebHookController(
   chatService,
   subscriptionService,
   wishlistService,
-  liveSessionService
+  liveSessionService,
+  transactionService
 );
 export const wishlistController = new WishlistController(wishlistService);
 export const assignmentController = new AssignmentController(assignmentService);

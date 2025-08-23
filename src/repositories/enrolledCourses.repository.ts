@@ -475,6 +475,7 @@ class EnrolledCoursesRepository
               $match: {
                 userId: new mongoose.Types.ObjectId(userId),
                 courseId: new mongoose.Types.ObjectId(courseId),
+                status: "verified",
               },
             },
             {
