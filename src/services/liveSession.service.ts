@@ -10,11 +10,15 @@ import { getObjectId } from "../utils/objectId";
 import { ILiveSessionService } from "./../interfaces/services/ILiveSession.service";
 import { ICourseRepository } from "../interfaces/repositories/ICourse.repository";
 import { egressClient } from "../config/liveKit";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
+import { io } from "..";
+import { SocketEvents } from "../constants/socketEvents";
 
 class LiveSessionService implements ILiveSessionService {
   constructor(
     private _liveSessionRepository: ILiveSessionRepository,
-    private _courseRepository: ICourseRepository
+    private _courseRepository: ICourseRepository,
+    private _userRepository: IUserRepository
   ) {}
 
   public async scheduleLiveSession(
@@ -89,6 +93,10 @@ class LiveSessionService implements ILiveSessionService {
 
       token = await at.toJwt();
       await this._liveSessionRepository.startLiveSession(liveSessionId);
+      await this._liveSessionRepository.addUserToLiveSession(
+        liveSessionId,
+        String(course?.trainerId!)
+      );
     }
 
     return { liveSession, token };
@@ -142,6 +150,37 @@ class LiveSessionService implements ILiveSessionService {
   public async endLiveSession(roomId: string): Promise<void> {
     const egressId = await this._liveSessionRepository.endLiveSession(roomId);
     await egressClient.stopEgress(egressId);
+  }
+
+  public async userJoinLiveSession(
+    liveSessionId: string,
+    userId: string
+  ): Promise<void> {
+    await this._liveSessionRepository.addUserToLiveSession(
+      liveSessionId,
+      userId
+    );
+  }
+
+  public async liveChat(
+    liveSessionId: string,
+    userId: string,
+    message: string
+  ): Promise<void> {
+    console.log(message);
+    const user = await this._userRepository.findById(userId);
+    if (!user) return;
+    const liveMembers = await this._liveSessionRepository.getLiveSessionUsers(
+      liveSessionId
+    );
+    console.log(liveMembers);
+    if (!liveMembers) return;
+    io.to(liveMembers).emit(SocketEvents.LIVE_CHAT_MESSAGE_BROADCAST, {
+      userId,
+      message,
+      username: user.username,
+      profileImage: user.profileImage,
+    });
   }
 }
 

@@ -9,7 +9,6 @@ import {
   lessonController,
   chatController,
   reviewController,
-  streamController,
   subscriptionController,
   trainerController,
   transactionController,
@@ -81,6 +80,13 @@ router
   .get(
     checkUserSubscribed("live_session"),
     liveSessionController.getLiveSessions
+  );
+
+router
+  .route("/courses/:courseId/liveSessions/:liveSessionId")
+  .get(
+    checkUserSubscribed("live_session"),
+    liveSessionController.joinLiveSession
   );
 
 router
@@ -197,10 +203,6 @@ router
 
 router.route("/chats/:chatId/members").get(chatController.getChatMembers);
 // .get(chatController.getMessages);
-
-//stream
-router.route("/streams").get(streamController.getStreams);
-router.route("/streams/:streamId").get(streamController.viewStream);
 
 router
   .route("/wallet")

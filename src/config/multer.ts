@@ -4,6 +4,9 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import path from "path";
 import envConfig from "./env";
 
+/**
+ * Configure Cloudinary client using environment variables.
+ */
 cloudinary.config({
   cloud_name: envConfig.CLOUDINARY_CLOUD_NAME,
   api_key: envConfig.CLOUDINARY_API_KEY,
@@ -11,8 +14,14 @@ cloudinary.config({
 });
 
 /**
- * Cloudinary storage configuration for multer, dynamically sets folder and resource type
- * based on file mimetype (image, video, or PDF document).
+ * CloudinaryStorage configuration for multer.
+ *
+ * Dynamically determines folder and resource type based on file MIME type:
+ * - Images → "images" folder, type "image"
+ * - Videos → "videos" folder, type "video"
+ * - PDFs → "documents" folder, type "raw"
+ *
+ * Generates unique public IDs and restricts allowed formats per type.
  */
 const storage = new CloudinaryStorage({
   cloudinary,
@@ -32,7 +41,7 @@ const storage = new CloudinaryStorage({
     }
 
     return {
-      folder: folder,
+      folder,
       resource_type: resourceType,
       public_id: `${Date.now()}-${Math.round(
         Math.random() * 1e9
@@ -47,7 +56,9 @@ const storage = new CloudinaryStorage({
   },
 });
 
+/**
+ * Multer middleware for handling file uploads with Cloudinary storage.
+ */
 const upload = multer({ storage });
 
-/** multer middleware to handle file upload */
 export default upload;

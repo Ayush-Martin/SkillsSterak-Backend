@@ -1,33 +1,20 @@
 import z from "zod";
 import {
-  AiChatHistoryValidationRule,
-  AiChatMessageValidationRule,
-  CourseCategoryIdValidationRule,
-  CourseDescriptionValidationRule,
-  CourseDifficultyValidationRule,
-  CoursePriceFilterValidationRule,
-  CoursePriceValidationRule,
-  CourseRequirementsValidationRule,
-  CourseSkillsCoveredValidationRule,
-  CourseSortValidationRule,
-  CourseTitleValidationRule,
-} from "./rules/course.validationRule";
-
-import {
-  PageRecordSizeValidationRule,
-  PageValidationRule,
-  SearchValidationRule,
-} from "./rules/pagination.validationRule";
+  AiChatValidationRule,
+  CourseFilterSortValidationRule,
+  CourseValidationRule,
+  PaginationValidationRule,
+} from "../constants/validationRule";
 
 export const createCourseValidator = (data: any) => {
   const schema = z.object({
-    title: CourseTitleValidationRule,
-    price: CoursePriceValidationRule,
-    skillsCovered: CourseSkillsCoveredValidationRule,
-    requirements: CourseRequirementsValidationRule,
-    difficulty: CourseDifficultyValidationRule,
-    description: CourseDescriptionValidationRule,
-    categoryId: CourseCategoryIdValidationRule,
+    title: CourseValidationRule.title,
+    price: CourseValidationRule.price,
+    skillsCovered: CourseValidationRule.skillsCovered,
+    requirements: CourseValidationRule.requirements,
+    difficulty: CourseValidationRule.difficulty,
+    description: CourseValidationRule.description,
+    categoryId: CourseValidationRule.categoryId,
   });
 
   return schema.parse(data);
@@ -35,27 +22,28 @@ export const createCourseValidator = (data: any) => {
 
 export const updateCourseBasicDetailsValidator = (data: any) => {
   const schema = z.object({
-    title: CourseTitleValidationRule,
-    price: CoursePriceValidationRule,
-    difficulty: CourseDifficultyValidationRule,
-    description: CourseDescriptionValidationRule,
-    categoryId: CourseCategoryIdValidationRule,
-    requirements: z.array(z.string()),
-    skillsCovered: z.array(z.string()),
+    title: CourseValidationRule.title,
+    price: CourseValidationRule.price,
+    difficulty: CourseValidationRule.difficulty,
+    description: CourseValidationRule.description,
+    categoryId: CourseValidationRule.categoryId,
+    requirements: CourseValidationRule.requirements,
+    skillsCovered: CourseValidationRule.skillsCovered,
   });
 
   return schema.parse(data);
 };
 
 export const getCoursesValidator = (data: any) => {
+  ``;
   const schema = z.object({
-    search: SearchValidationRule,
-    page: PageValidationRule,
-    difficulty: CourseDifficultyValidationRule.or(z.enum(["all"])),
-    category: z.string(),
-    price: CoursePriceFilterValidationRule,
-    size: PageRecordSizeValidationRule,
-    sort: CourseSortValidationRule,
+    search: PaginationValidationRule.search,
+    page: PaginationValidationRule.page,
+    difficulty: CourseFilterSortValidationRule.difficulty,
+    category: CourseFilterSortValidationRule.category,
+    price: CourseFilterSortValidationRule.price,
+    size: PaginationValidationRule.size,
+    sort: CourseFilterSortValidationRule.sort,
   });
 
   return schema.parse(data);
@@ -63,7 +51,7 @@ export const getCoursesValidator = (data: any) => {
 
 export const approveRejectCourseValidator = (data: any) => {
   const schema = z.object({
-    status: z.enum(["approved", "rejected"]),
+    status: CourseValidationRule.status,
   });
 
   return schema.parse(data);
@@ -71,8 +59,8 @@ export const approveRejectCourseValidator = (data: any) => {
 
 export const aiChatValidator = (data: any) => {
   const schema = z.object({
-    message: AiChatMessageValidationRule,
-    history: AiChatHistoryValidationRule,
+    message: AiChatValidationRule.message,
+    history: AiChatValidationRule.history,
   });
 
   return schema.parse(data);

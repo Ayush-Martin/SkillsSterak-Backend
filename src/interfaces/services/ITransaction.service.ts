@@ -107,7 +107,7 @@ export interface ITransactionService {
     transactionId: string
   ): Promise<ITransaction | null>;
 
-  failedTransaction(transactionId: string): Promise<ITransaction | null>;
+  handlePaymentFailure(transactionId: string): Promise<ITransaction | null>;
 
   updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
 

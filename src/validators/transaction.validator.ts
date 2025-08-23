@@ -1,23 +1,16 @@
 import z from "zod";
 import {
-  PageRecordSizeValidationRule,
-  PageValidationRule,
-  SearchValidationRule,
-} from "./rules/pagination.validationRule";
-import {
-  TransactionRevenueExportType,
-  TransactionRevenueFilterEndDateValidationRule,
-  TransactionRevenueFilterStartDateValidationRule,
-  TransactionRevenueFilterTypeValidationRule,
-} from "./rules/transaction.validationRule";
+  PaginationValidationRule,
+  TransactionFilterSortValidationRule,
+} from "../constants/validationRule";
 
 export const getAdminRevenueValidator = (data: any) => {
   const schema = z.object({
-    page: PageValidationRule,
-    size: PageRecordSizeValidationRule,
-    filterType: TransactionRevenueFilterTypeValidationRule,
-    startDate: TransactionRevenueFilterStartDateValidationRule,
-    endDate: TransactionRevenueFilterEndDateValidationRule,
+    page: PaginationValidationRule.page,
+    size: PaginationValidationRule.size,
+    filterType: TransactionFilterSortValidationRule.filterType,
+    startDate: TransactionFilterSortValidationRule.startDate,
+    endDate: TransactionFilterSortValidationRule.endDate,
   });
 
   return schema.parse(data);
@@ -25,10 +18,10 @@ export const getAdminRevenueValidator = (data: any) => {
 
 export const exportAdminRevenueValidator = (data: any) => {
   const schema = z.object({
-    filterType: TransactionRevenueFilterTypeValidationRule,
-    startDate: TransactionRevenueFilterStartDateValidationRule,
-    endDate: TransactionRevenueFilterEndDateValidationRule,
-    exportType: TransactionRevenueExportType,
+    filterType: TransactionFilterSortValidationRule.filterType,
+    startDate: TransactionFilterSortValidationRule.startDate,
+    endDate: TransactionFilterSortValidationRule.endDate,
+    exportType: TransactionFilterSortValidationRule.exportType,
   });
 
   return schema.parse(data);
@@ -39,24 +32,11 @@ export const exportTrainerRevenueValidator = exportAdminRevenueValidator;
 
 export const getTransactionValidator = (data: any) => {
   const schema = z.object({
-    page: PageValidationRule,
-    size: PageRecordSizeValidationRule,
-    search: SearchValidationRule,
-    status: z.enum([
-      "all",
-      "pending",
-      "completed",
-      "canceled",
-      "failed",
-      "on_process",
-    ]),
-    type: z.enum([
-      "all",
-      "course_purchase",
-      "commission",
-      "subscription",
-      "wallet_redeem",
-    ]),
+    page: PaginationValidationRule.page,
+    size: PaginationValidationRule.size,
+    search: PaginationValidationRule.search,
+    status: TransactionFilterSortValidationRule.status,
+    type: TransactionFilterSortValidationRule.type,
   });
 
   return schema.parse(data);

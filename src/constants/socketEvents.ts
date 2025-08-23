@@ -22,5 +22,6 @@ export enum SocketEvents {
   CHAT_LAST_MESSAGE = "chat:lastMessage",
 
   // LiveChat events
-  LIVE_CHAT_NEW_MESSAGE = "liveChat:newMessage",
+  LIVE_CHAT_MESSAGE_SEND = "liveChat:send",
+  LIVE_CHAT_MESSAGE_BROADCAST = "liveChat:broadcast",
 }

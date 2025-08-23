@@ -8,7 +8,6 @@ import {
   lessonController,
   liveSessionController,
   moduleController,
-  streamController,
   trainerController,
   transactionController,
   walletController,
@@ -82,10 +81,7 @@ router
   .put(liveSessionController.editLiveSession)
   .delete(liveSessionController.deleteLiveSession);
 
-router
-  .route("/courses/:courseId/live")
-  .post(upload.single("thumbnail"), streamController.startStream)
-  .get(streamController.getStreams);
+
 
 //students
 router.get("/students", trainerController.getStudentsWithEnrolledCourses);
@@ -96,12 +92,6 @@ router.route("/wallet").get(walletController.getWalletInfo);
 
 // router.route("/chats").get(chatController.getTrainerChats);
 
-//stream
-router
-  .route("/stream")
-  .post(upload.single("thumbnail"), streamController.startStream);
-
-router.route("/streams/:roomId").patch(streamController.endStream);
 
 router.get("/revenue", transactionController.getTrainerRevenue);
 router.get("/revenue/export", transactionController.exportTrainerRevenue);

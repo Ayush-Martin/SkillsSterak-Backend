@@ -2,7 +2,13 @@ import PdfPrinter from "pdfmake";
 import path from "path";
 
 /**
- * PdfPrinter instance configured with Roboto font family for PDF generation.
+ * Font configuration for PdfPrinter.
+ *
+ * Uses Roboto font family with separate files for:
+ * - normal
+ * - bold
+ * - italics
+ * - bolditalics
  */
 const fonts = {
   Roboto: {
@@ -14,7 +20,10 @@ const fonts = {
 };
 
 /**
- * Exported PdfPrinter instance for generating PDFs with the configured fonts.
+ * PdfPrinter instance for generating PDFs with the configured Roboto fonts.
+ *
+ * Can be used to create PDF documents in the application.
  */
 const printer = new PdfPrinter(fonts);
+
 export default printer;

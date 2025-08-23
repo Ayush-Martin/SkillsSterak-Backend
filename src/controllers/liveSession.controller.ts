@@ -134,6 +134,28 @@ class LiveSessionController {
       next(err);
     }
   }
+
+  public async joinLiveSession(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const { liveSessionId } = req.params;
+
+      const data = await this._liveSessionService.userJoinLiveSession(
+        liveSessionId,
+        userId
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(LiveSessionMessage.userJoinLiveSession));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default LiveSessionController;

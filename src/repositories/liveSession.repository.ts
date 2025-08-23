@@ -56,6 +56,26 @@ class LiveSessionRepository
       { status: "live" }
     );
   }
+
+  public async getLiveSessionUsers(
+    liveSessionId: string
+  ): Promise<string[] | null> {
+    const data = await redisClient.get(`liveSession:${liveSessionId}`);
+    if (!data) return null;
+    const users: string[] = JSON.parse(data);
+    return users;
+  }
+
+  public async addUserToLiveSession(
+    liveSessionId: string,
+    userId: string
+  ): Promise<void> {
+    const previous = (await this.getLiveSessionUsers(liveSessionId)) || [];
+    await redisClient.set(
+      `liveSession:${liveSessionId}`,
+      JSON.stringify([...previous, userId])
+    );
+  }
 }
 
 export default LiveSessionRepository;

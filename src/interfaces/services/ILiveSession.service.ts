@@ -19,4 +19,10 @@ export interface ILiveSessionService {
   ): Promise<{ liveSession: ILiveSession; token?: string } | null>;
   startRecording(roomId: string): Promise<void>;
   endLiveSession(roomId: string): Promise<void>;
+  userJoinLiveSession(liveSessionId: string, userId: string): Promise<void>;
+  liveChat(
+    liveSessionId: string,
+    userId: string,
+    message: string
+  ): Promise<void>;
 }

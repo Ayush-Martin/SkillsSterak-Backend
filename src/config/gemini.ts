@@ -5,23 +5,37 @@ import {
 } from "@google/generative-ai";
 import envConfig from "./env";
 
+/**
+ * Initialize Google Gemini AI client using the API key from environment variables.
+ */
 const googleAI = new GoogleGenerativeAI(envConfig.GEMINI_API_KEY);
 
-// Configuration for generation behavior
+/**
+ * Configuration for AI generation behavior.
+ *
+ * - `temperature`: Controls randomness; higher = more creative output.
+ * - `topP`: Nucleus sampling, controls diversity of generated tokens.
+ * - `topK`: Limits selection to top-K likely tokens per step.
+ * - `maxOutputTokens`: Maximum number of tokens in generated output.
+ */
 const geminiConfig: GenerationConfig = {
-  temperature: 0.9, // Controls randomness: higher = more creative
-  topP: 1, // Controls diversity via nucleus sampling
-  topK: 1, // Limits possible tokens to top-K likely options
-  maxOutputTokens: 4096, // Maximum number of tokens in the output
+  temperature: 0.9,
+  topP: 1,
+  topK: 1,
+  maxOutputTokens: 4096,
 };
 
-// Model parameters including model ID and generation config
+/**
+ * Model parameters combining Gemini model ID and generation configuration.
+ */
 const options: ModelParams = {
-  model: "gemini-1.5-flash", // Specify Gemini model variant
+  model: envConfig.GEMINI_MODEL, // Gemini model variant
   ...geminiConfig,
 };
 
-
+/**
+ * Obtain the generative model instance for AI text generation.
+ */
 const geminiModel = googleAI.getGenerativeModel(options);
 
 export default geminiModel;

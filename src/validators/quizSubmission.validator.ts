@@ -1,19 +1,10 @@
-import mongoose, { ObjectId } from "mongoose";
 import { z } from "zod";
+import { QuizSubmissionValidationRule } from "../constants/validationRule";
 
 export const submitQuizValidator = (data: any) => {
   const schema = z.object({
-    timeTaken: z.number(),
-    answers: z.array(
-      z.object({
-        questionId: z
-          .string()
-          .transform(
-            (val) => new mongoose.Types.ObjectId(val) as unknown as ObjectId
-          ),
-        answer: z.string(),
-      })
-    ),
+    timeTaken: QuizSubmissionValidationRule.timeTaken,
+    answers: QuizSubmissionValidationRule.answers,
   });
 
   return schema.parse(data);

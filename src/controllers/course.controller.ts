@@ -18,10 +18,6 @@ import { IChatService } from "../interfaces/services/IChat.service";
 import { CourseMessage, GeneralMessage } from "../constants/responseMessages";
 import errorCreator from "../utils/customError";
 
-/**
- * Handles course creation, updates, queries, and related notifications.
- * Delegates business logic to service layer and ensures all methods are bound for Express routing.
- */
 class CourseController {
   constructor(
     private _courseService: ICourseService,

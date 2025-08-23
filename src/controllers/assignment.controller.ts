@@ -79,6 +79,7 @@ class AssignmentController {
     }
   }
 
+  // Function to get all assignments for a course
   public async getAssignments(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
@@ -93,6 +94,7 @@ class AssignmentController {
     }
   }
 
+  // Function to get all assignments for a user where it shows their progress and submission status
   public async getUserAssignments(
     req: Request,
     res: Response,

@@ -11,4 +11,11 @@ export interface ILiveSessionRepository extends IBaseRepository<ILiveSession> {
   ): Promise<void>;
   endLiveSession(roomId: string): Promise<string>;
   startLiveSession(liveSessionId: string): Promise<void>;
+  addUserToLiveSession(
+    liveSessionId: string,
+    userId: string,
+  ): Promise<void>;
+  getLiveSessionUsers(
+    liveSessionId: string
+  ): Promise<string[] | null>;
 }

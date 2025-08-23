@@ -11,22 +11,14 @@ import {
   loginUserValidator,
   registerUserValidator,
   resetPasswordValidator,
-} from "../validators/auth.validator";
+} from "../validators/user.validator";
 import binder from "../utils/binder";
 import { IGoogleAuthService } from "../interfaces/services/IGoogleAuth.service";
 import { RefreshTokenCookieOptions } from "../config/cookie";
 import { REFRESH_TOKEN_COOKIE_NAME } from "../constants/general";
 import { AuthMessage, UserMessage } from "../constants/responseMessages";
 
-/**
- * Controller for user authentication and token management.
- * Handles registration, login, logout, Google OAuth, and password operations.
- */
 class AuthController {
-  /**
-   * Injects authentication, JWT, and Google services.
-   * Binds all methods to the class instance.
-   */
   constructor(
     public _authService: IAuthService,
     public _jwtService: IJWTService,
@@ -35,7 +27,7 @@ class AuthController {
     binder(this);
   }
 
-  /** Registers a new user. */
+  // First step of user registration , sends an OTP to the user's email and store user details
   public async register(
     req: Request,
     res: Response,
@@ -54,7 +46,7 @@ class AuthController {
     }
   }
 
-  /** Completes registration after email verification. */
+  // Completes registration after email verification. 
   public async completeRegister(
     req: Request,
     res: Response,
@@ -73,7 +65,6 @@ class AuthController {
     }
   }
 
-  /** Logs in a user and returns access/refresh tokens. */
   public async login(
     req: Request,
     res: Response,
@@ -101,7 +92,6 @@ class AuthController {
     }
   }
 
-  /** Logs out a user and clears the refresh token cookie. */
   public async logout(req: Request, res: Response, next: NextFunction) {
     try {
       res
@@ -113,7 +103,7 @@ class AuthController {
     }
   }
 
-  /** Handles Google OAuth login or registration. */
+  // Handles Google OAuth login or registration.
   public async googleAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
@@ -138,7 +128,7 @@ class AuthController {
     }
   }
 
-  /** Initiates password reset and clears refresh token. */
+  
   public async forgetPassword(
     req: Request,
     res: Response,
@@ -158,7 +148,6 @@ class AuthController {
     }
   }
 
-  /** Resets a user's password. */
   public async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { password, email } = resetPasswordValidator(req.body);
@@ -195,7 +184,7 @@ class AuthController {
     }
   }
 
-  /** Refreshes and returns new access/refresh tokens. */
+  // Refreshes and returns new access and refresh tokens.
   public async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.userId!;

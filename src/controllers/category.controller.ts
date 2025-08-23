@@ -10,20 +10,13 @@ import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { CategoryMessage, GeneralMessage } from "../constants/responseMessages";
 
-/**
- * Handles category CRUD operations and delegates business logic to the service layer.
- * All methods are bound to the instance for safe Express routing.
- */
+
 class CategoryController {
   constructor(private _categoryService: ICategoryService) {
-    // Ensures 'this' context is preserved for all methods
     binder(this);
   }
 
-  /**
-   * Validates and creates a new category.
-   * Returns the created category in the response.
-   */
+
   public async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryName } = addCategoryValidator(req.body);
@@ -38,9 +31,7 @@ class CategoryController {
     }
   }
 
-  /**
-   * Updates the name of an existing category after validation.
-   */
+
   public async editCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.params;
@@ -60,9 +51,6 @@ class CategoryController {
     }
   }
 
-  /**
-   * Toggles a category's listed/unlisted status (soft visibility control).
-   */
   public async listUnListCategory(
     req: Request,
     res: Response,
@@ -90,10 +78,6 @@ class CategoryController {
     }
   }
 
-  /**
-   * Retrieves all categories (no pagination or search).
-   * Useful for admin panels or dropdowns.
-   */
   public async getAllCategories(
     req: Request,
     res: Response,
@@ -110,9 +94,6 @@ class CategoryController {
     }
   }
 
-  /**
-   * Returns paginated and searchable categories for efficient frontend rendering.
-   */
   public async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, search, size } = paginatedGetDataValidator(req.query);

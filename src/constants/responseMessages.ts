@@ -216,6 +216,7 @@ export enum LiveSessionMessage {
   LiveSessionUpdated = "Live session updated",
   LiveSessionDeleted = "Live session deleted",
   LiveSessionStarted = "Live session started",
+  userJoinLiveSession = "User joined live session",
 }
 
 export enum DiscussionMessage {

@@ -1,17 +1,16 @@
-import { IMessageService } from "./../interfaces/services/IMessage.service";
 import { ISocketService } from "../interfaces/services/ISocket.service";
 import { Socket } from "socket.io";
 import { SocketEvents } from "../constants/socketEvents";
 import { INotificationService } from "../interfaces/services/INotification.service";
-import { IStreamService } from "../interfaces/services/IStream.service";
 import { IChatService } from "../interfaces/services/IChat.service";
 import { messageReactions } from "../types/messageTypes";
+import { ILiveSessionService } from "../interfaces/services/ILiveSession.service";
 
 class SocketService implements ISocketService {
   constructor(
     private _notificationService: INotificationService,
-    private _streamService: IStreamService,
-    private _chatService: IChatService
+    private _chatService: IChatService,
+    private _liveSessionService: ILiveSessionService
   ) {}
 
   public async socketConnectionHandler(
@@ -19,6 +18,8 @@ class SocketService implements ISocketService {
     userId: string
   ): Promise<void> {
     socket.emit("message", "connected to socket ()");
+
+    // Join the user to their private room
     socket.join(userId);
 
     socket.on(SocketEvents.NOTIFICATION_GET, async () => {
@@ -30,10 +31,15 @@ class SocketService implements ISocketService {
     });
 
     socket.on(
-      SocketEvents.LIVE_CHAT_NEW_MESSAGE,
-      async ({ roomId, message }: { roomId: string; message: string }) => {
-        console.log("live chat", roomId, message);
-        await this._streamService.liveChat(roomId, userId, message);
+      SocketEvents.LIVE_CHAT_MESSAGE_SEND,
+      async ({
+        liveSessionId,
+        message,
+      }: {
+        liveSessionId: string;
+        message: string;
+      }) => {
+        await this._liveSessionService.liveChat(liveSessionId, userId, message);
       }
     );
 

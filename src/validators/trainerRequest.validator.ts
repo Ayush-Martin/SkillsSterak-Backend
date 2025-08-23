@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { TrainerRequestStatusValidationRule } from "./rules/trainerRequest.validationRule";
+import { TrainerRequestValidationRule } from "../constants/validationRule";
 
 export const approveRejectRequestValidator = (data: any) => {
   const schema = z.object({
-    status: TrainerRequestStatusValidationRule,
-    rejectedReason: z.string().optional(),
+    status: TrainerRequestValidationRule.status,
+    rejectedReason: TrainerRequestValidationRule.rejectedReason,
   });
 
   return schema.parse(data);
