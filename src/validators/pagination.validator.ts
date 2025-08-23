@@ -1,14 +1,10 @@
 import z from "zod";
-import {
-  PageRecordSizeValidationRule,
-  PageValidationRule,
-  SearchValidationRule,
-} from "./rules/pagination.validationRule";
+import { PaginationValidationRule } from "../constants/validationRule";
 
 export const pageValidator = (data: any) => {
   const schema = z.object({
-    page: PageValidationRule,
-    size: PageRecordSizeValidationRule,
+    page: PaginationValidationRule.page,
+    size: PaginationValidationRule.size,
   });
 
   return schema.parse(data);
@@ -16,10 +12,11 @@ export const pageValidator = (data: any) => {
 
 export const paginatedGetDataValidator = (data: any) => {
   const schema = z.object({
-    page: PageValidationRule,
-    search: SearchValidationRule,
-    size: PageRecordSizeValidationRule,
+    page: PaginationValidationRule.page,
+    search: PaginationValidationRule.search,
+    size: PaginationValidationRule.size,
   });
 
   return schema.parse(data);
 };
+

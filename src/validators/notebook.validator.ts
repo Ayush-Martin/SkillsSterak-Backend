@@ -1,12 +1,9 @@
 import { z } from "zod";
-import {
-  NotebookNotesValidationRule,
-  NotebookTitleValidationRule,
-} from "./rules/notebook.validationRule";
+import { NotebookValidationRule } from "../constants/validationRule";
 
 export const addNoteBookValidator = (data: any) => {
   const schema = z.object({
-    title: NotebookTitleValidationRule,
+    title: NotebookValidationRule.title,
   });
 
   return schema.parse(data);
@@ -14,8 +11,8 @@ export const addNoteBookValidator = (data: any) => {
 
 export const updateNoteBookValidator = (data: any) => {
   const schema = z.object({
-    title: NotebookTitleValidationRule,
-    notes: NotebookNotesValidationRule,
+    title: NotebookValidationRule.title,
+    notes: NotebookValidationRule.notes,
   });
 
   return schema.parse(data);

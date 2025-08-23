@@ -1,41 +1,71 @@
 import { z } from "zod";
-import {
-  BioValidationRule,
-  CompanyValidationRule,
-  GithubValidationRule,
-  PlaceValidationRule,
-  PositionValidationRule,
-  UsernameValidationRule,
-  LinkedinValidationRule,
-  WebsiteValidationRule,
-} from "./rules/user.validationRule";
+import { UserValidationRule } from "../constants/validationRule";
+
+export const registerUserValidator = (user: any) => {
+  const schema = z.object({
+    username: UserValidationRule.Username,
+    email: UserValidationRule.Email,
+    password: UserValidationRule.Password,
+  });
+
+  return schema.parse(user);
+};
+
+export const completeRegisterValidator = (data: any) => {
+  const schema = z.object({
+    email: UserValidationRule.Email,
+  });
+
+  return schema.parse(data);
+};
+
+export const loginUserValidator = (data: any) => {
+  const schema = z.object({
+    email: UserValidationRule.Email,
+    password: UserValidationRule.Password,
+  });
+
+  return schema.parse(data);
+};
+
+export const forgetPasswordValidator = (data: any) => {
+  const schema = z.object({
+    email: UserValidationRule.Email,
+  });
+
+  return schema.parse(data);
+};
+
+export const resetPasswordValidator = (data: any) => {
+  const schema = z.object({
+    email: UserValidationRule.Email,
+    password: UserValidationRule.Password,
+  });
+
+  return schema.parse(data);
+};
+
+export const changePasswordValidator = (data: any) => {
+  const schema = z.object({
+    currentPassword: UserValidationRule.Password,
+    newPassword: UserValidationRule.Password,
+  });
+
+  return schema.parse(data);
+};
 
 export const updateProfileValidator = (user: any) => {
   const schema = z.object({
-    username: UsernameValidationRule,
-    position: PositionValidationRule,
-    location: PlaceValidationRule,
-    company: CompanyValidationRule,
-    bio: BioValidationRule,
-    education: z.string(),
-    skills: z.array(z.string()),
-    experiences: z.array(
-      z.object({
-        id: z.string(),
-        company: z.string(),
-        position: z.string(),
-        duration: z.string(),
-        description: z.string(),
-      })
-    ),
-    socialLinks: z.object({
-      github: z.string(),
-      linkedin: z.string(),
-      website: z.string(),
-      instagram: z.string(),
-      facebook: z.string(),
-      youtube: z.string(),
-    }),
+    id: z.string(),
+    username: UserValidationRule.Username,
+    position: UserValidationRule.Position,
+    location: UserValidationRule.Location,
+    company: UserValidationRule.Company,
+    bio: UserValidationRule.Bio,
+    education: UserValidationRule.Education,
+    skills: UserValidationRule.Skills,
+    experiences: UserValidationRule.Experience,
+    socialLinks: UserValidationRule.SocialLinks,
   });
 
   return schema.parse(user);

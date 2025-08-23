@@ -21,7 +21,6 @@ import TransactionModel from "./models/Transaction.model";
 import UserModel from "./models/User.model";
 import WalletModel from "./models/Wallet.model";
 import NotificationModel from "./models/Notification.model";
-import StreamModel from "./models/Stream.model";
 import ChatModel from "./models/Chat.model";
 import NoteBookModel from "./models/Notebook.model";
 import WishlistModel from "./models/Wishlist.model";
@@ -53,7 +52,6 @@ import TransactionRepository from "./repositories/transaction.repository";
 import UserRepository from "./repositories/user.repository";
 import WalletRepository from "./repositories/wallet.repository";
 import NotificationRepository from "./repositories/notification.repository";
-import StreamRepository from "./repositories/Stream.repository";
 import OTPRepository from "./repositories/otp.repository";
 import AiChatRepository from "./repositories/aiChat.repository";
 import ChatRepository from "./repositories/chat.repository";
@@ -89,7 +87,6 @@ import WalletService from "./services/wallet.service";
 import GoogleAuthService from "./services/googleAuth.service";
 import NotificationService from "./services/notification.service";
 import OTPService from "./services/OTP.service";
-import StreamService from "./services/stream.service";
 import AiChatService from "./services/aiChat.service";
 import ChatService from "./services/chat.service";
 import NotebookService from "./services/notebook.service";
@@ -121,7 +118,6 @@ import TransactionController from "./controllers/transaction.controller";
 import UserController from "./controllers/user.controller";
 import WalletController from "./controllers/wallet.controller";
 import OTPController from "./controllers/OTP.controller";
-import StreamController from "./controllers/stream.controller";
 import ChatController from "./controllers/chat.controller";
 import NotebookController from "./controllers/notebook.controller";
 import WebHookController from "./controllers/webhook.controller";
@@ -158,7 +154,6 @@ const transactionRepository = new TransactionRepository(TransactionModel);
 const userRepository = new UserRepository(UserModel);
 const walletRepository = new WalletRepository(WalletModel);
 const notificationRepository = new NotificationRepository(NotificationModel);
-const streamRepository = new StreamRepository(StreamModel);
 const otpRepository = new OTPRepository();
 const aiChatRepository = new AiChatRepository();
 const chatRepository = new ChatRepository(ChatModel);
@@ -238,10 +233,6 @@ export const notificationService = new NotificationService(
   trainerRepository,
   courseRepository
 );
-export const streamService = new StreamService(
-  streamRepository,
-  userRepository
-);
 export const aiChatService = new AiChatService(
   courseRepository,
   aiChatRepository
@@ -256,7 +247,8 @@ export const wishlistService = new WishlistService(wishlistRepository);
 export const assignmentService = new AssignmentService(assignmentRepository);
 export const liveSessionService = new LiveSessionService(
   liveSessionRepository,
-  courseRepository
+  courseRepository,
+  userRepository
 );
 export const discussionService = new DiscussionService(
   discussionRepository,
@@ -323,11 +315,9 @@ export const userController = new UserController(
   notificationService
 );
 export const walletController = new WalletController(walletService);
-export const streamController = new StreamController(streamService);
 export const chatController = new ChatController(chatService);
 export const notebookController = new NotebookController(notebookService);
 export const webhookController = new WebHookController(
-  streamService,
   enrolledCoursesService,
   chatService,
   subscriptionService,

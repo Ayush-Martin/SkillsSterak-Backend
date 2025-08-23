@@ -1,11 +1,12 @@
 import z from "zod";
+import { LiveSessionValidationRule } from "../constants/validationRule";
 
 export const ScheduleLiveSessionValidator = (data: any) => {
   const schema = z.object({
-    title: z.string(),
-    description: z.string(),
-    date: z.coerce.date(),
-    time: z.string(),
+    title: LiveSessionValidationRule.title,
+    description: LiveSessionValidationRule.description,
+    date: LiveSessionValidationRule.date,
+    time: LiveSessionValidationRule.time,
   });
 
   return schema.parse(data);

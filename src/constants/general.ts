@@ -12,3 +12,5 @@ export const SUBSCRIPTION_FEATURE_IDS = {
 
 export type ISubscriptionFeatureId =
   (typeof SUBSCRIPTION_FEATURE_IDS)[keyof typeof SUBSCRIPTION_FEATURE_IDS];
+
+export const RATE_LIMIT_MESSAGE = "Too many requests. Please try again later.";

@@ -1,8 +1,9 @@
 import z from "zod";
+import { TopicValidationRule } from "../constants/validationRule";
 
 export const addTopicValidator = (data: any) => {
   const schema = z.object({
-    topicName: z.string(),
+    topicName: TopicValidationRule.topicName,
   });
 
   return schema.parse(data);

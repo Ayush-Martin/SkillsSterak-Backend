@@ -8,7 +8,13 @@ export const redisClient = createClient({
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
 
 /**
- * Connects to the Redis database.
+ * Establishes a connection to the Redis server.
+ *
+ * Uses the configured `REDIS_URL` from environment variables.
+ * Logs a success message when connected.
+ * Logs an error if the connection attempt fails.
+ *
+ * @returns {Promise<void>} Resolves once the client is connected.
  */
 const connectToRedis = async (): Promise<void> => {
   try {

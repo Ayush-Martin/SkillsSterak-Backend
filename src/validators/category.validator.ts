@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { CategoryNameValidationRule } from "./rules/course.validationRule";
+import { CategoryValidationRule } from "../constants/validationRule";
 
 export const addCategoryValidator = (data: any) => {
   const schema = z.object({
-    categoryName: CategoryNameValidationRule,
+    categoryName: CategoryValidationRule.categoryName,
   });
 
   return schema.parse(data);

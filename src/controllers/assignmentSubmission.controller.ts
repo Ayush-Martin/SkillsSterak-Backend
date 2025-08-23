@@ -51,6 +51,7 @@ class AssignmentSubmissionController {
     }
   }
 
+  // Function to get all users assignment submissions list for trainer
   public async getAssignmentSubmissions(
     req: Request,
     res: Response,

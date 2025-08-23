@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { ReplyValidationRule } from "./rules/review.validationRule";
+import { DiscussionValidationRule } from "../constants/validationRule";
 
 export const addDiscussionValidator = (data: any) => {
   const schema = z.object({
-    refId: z.string(),
-    refType: z.enum(["lesson", "liveSession"]),
-    content: z.string(),
+    refId: DiscussionValidationRule.refId,
+    refType: DiscussionValidationRule.refType,
+    content: DiscussionValidationRule.content,
   });
 
   return schema.parse(data);
@@ -13,7 +13,7 @@ export const addDiscussionValidator = (data: any) => {
 
 export const addReplyValidator = (data: any) => {
   const schema = z.object({
-    content: ReplyValidationRule,
+    content: DiscussionValidationRule.reply.content,
   });
 
   return schema.parse(data);
@@ -21,8 +21,8 @@ export const addReplyValidator = (data: any) => {
 
 export const getDiscussionValidator = (data: any) => {
   const schema = z.object({
-    refId: z.string(),
-    refType: z.enum(["lesson", "liveSession"]),
+    refId: DiscussionValidationRule.refId,
+    refType: DiscussionValidationRule.refType,
   });
 
   return schema.parse(data);
@@ -30,7 +30,7 @@ export const getDiscussionValidator = (data: any) => {
 
 export const editDiscussionValidator = (data: any) => {
   const schema = z.object({
-    content: z.string(),
+    content: DiscussionValidationRule.content,
   });
 
   return schema.parse(data);

@@ -1,14 +1,10 @@
 import { z } from "zod";
-import {
-  ReplyValidationRule,
-  ReviewContentValidationRule,
-  ReviewRatingValidationRule,
-} from "./rules/review.validationRule";
+import { ReviewValidationRule } from "../constants/validationRule";
 
 export const addReviewValidator = (data: any) => {
   const schema = z.object({
-    content: ReviewContentValidationRule,
-    rating: ReviewRatingValidationRule,
+    content: ReviewValidationRule.content,
+    rating: ReviewValidationRule.rating,
   });
 
   return schema.parse(data);
@@ -16,7 +12,7 @@ export const addReviewValidator = (data: any) => {
 
 export const addReplyValidator = (data: any) => {
   const schema = z.object({
-    content: ReplyValidationRule,
+    content: ReviewValidationRule.reply.content,
   });
 
   return schema.parse(data);

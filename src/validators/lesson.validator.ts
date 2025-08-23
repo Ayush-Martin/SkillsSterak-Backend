@@ -1,16 +1,13 @@
 import { z } from "zod";
-import {
-  LessonDescriptionValidationRule,
-  LessonTitleValidationRule,
-  LessonTypeValidationRule,
-} from "./rules/course.validationRule";
+
+import { LessonValidationRule } from "../constants/validationRule";
 
 export const addLessonValidator = (data: any) => {
   const schema = z.object({
-    title: LessonTitleValidationRule,
-    description: LessonDescriptionValidationRule,
-    type: LessonTypeValidationRule,
-    duration: z.coerce.number(),
+    title: LessonValidationRule.title,
+    description: LessonValidationRule.description,
+    type: LessonValidationRule.type,
+    duration: LessonValidationRule.duration,
   });
 
   return schema.parse(data);
@@ -18,8 +15,8 @@ export const addLessonValidator = (data: any) => {
 
 export const updateLessonDetailsValidator = (data: any) => {
   const schema = z.object({
-    title: LessonTitleValidationRule,
-    description: LessonDescriptionValidationRule,
+    title: LessonValidationRule.title,
+    description: LessonValidationRule.description,
   });
 
   return schema.parse(data);

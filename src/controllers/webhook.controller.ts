@@ -1,5 +1,4 @@
 import e, { NextFunction, Request, Response } from "express";
-import { IStreamService } from "../interfaces/services/IStream.service";
 import binder from "../utils/binder";
 import { receiver } from "../config/liveKit";
 import stripe from "../config/stripe";
@@ -16,7 +15,6 @@ import { ILiveSessionService } from "../interfaces/services/ILiveSession.service
  */
 class WebHookController {
   constructor(
-    private streamService: IStreamService,
     private _enrolledCourseService: IEnrolledCoursesService,
     private _chatService: IChatService,
     private _subscriptionService: ISubscriptionService,

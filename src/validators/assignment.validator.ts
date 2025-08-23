@@ -1,10 +1,14 @@
 import z from "zod";
+import {
+  AssignmentSubmissionValidationRule,
+  AssignmentValidationRule,
+} from "../constants/validationRule";
 
 export const createAssignmentValidator = (data: any) => {
   const schema = z.object({
-    title: z.string(),
-    description: z.string(),
-    task: z.string(),
+    title: AssignmentValidationRule.Title,
+    description: AssignmentValidationRule.Description,
+    task: AssignmentValidationRule.Task,
   });
 
   return schema.parse(data);
@@ -12,8 +16,8 @@ export const createAssignmentValidator = (data: any) => {
 
 export const submitAssignmentValidator = (data: any) => {
   const schema = z.object({
-    type: z.enum(["text", "image", "pdf"]),
-    content: z.string().optional(),
+    type: AssignmentSubmissionValidationRule.type,
+    content: AssignmentSubmissionValidationRule.content.optional(),
   });
 
   return schema.parse(data);
@@ -21,7 +25,7 @@ export const submitAssignmentValidator = (data: any) => {
 
 export const changeAssignmentSubmissionStatusValidator = (data: any) => {
   const schema = z.object({
-    status: z.enum(["verified", "redo"]),
+    status: AssignmentSubmissionValidationRule.status,
   });
 
   return schema.parse(data);
