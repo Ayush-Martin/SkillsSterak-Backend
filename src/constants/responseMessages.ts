@@ -87,6 +87,7 @@ export enum CourseMessage {
   CourseUnlisted = "Course has been unlisted",
   CourseApproved = "Course has been approved",
   CourseRejected = "Course has been rejected",
+  CourseAlreadyEnrolled = "User is already enrolled in this course",
 }
 
 /**

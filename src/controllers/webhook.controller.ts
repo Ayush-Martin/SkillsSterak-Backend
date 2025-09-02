@@ -127,6 +127,10 @@ class WebHookController {
           break;
         }
       }
+
+      res.status(200).json({
+        message: "Webhook received successfully",
+      });
     } catch (err) {
       next(err);
     }

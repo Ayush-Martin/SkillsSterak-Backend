@@ -542,6 +542,7 @@ class TransactionRepository
                 amount: 1,
                 status: 1,
                 adminCommission: 1,
+                date: "$createdAt",
               },
             },
             {
@@ -660,6 +661,7 @@ class TransactionRepository
                 type: 1,
                 amount: 1,
                 payer: "$user.email",
+                date: "$createdAt",
               },
             },
           ],

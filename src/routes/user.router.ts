@@ -159,6 +159,14 @@ router.patch(
   "/transactions/:transactionId",
   transactionController.cancelCoursePurchase
 );
+router.patch(
+  "/transactions/:transactionId/retry",
+  transactionController.retryTransaction
+);
+router.patch(
+  "/transactions/failed/:sessionId",
+  transactionController.failedTransaction
+);
 
 //trainer request
 router
