@@ -1,3 +1,4 @@
+import { date } from "zod";
 import { ITransactionRepository } from "../interfaces/repositories/ITransaction.repository";
 import { ITransactionService } from "../interfaces/services/ITransaction.service";
 import {
@@ -200,7 +201,12 @@ class TransactionService implements ITransactionService {
       totalRevenue: number;
       commissionRevenue: number;
       subscriptionRevenue: number;
-      transactions: Array<{ payer: string; type: string; amount: string }>;
+      transactions: Array<{
+        payer: string;
+        type: string;
+        amount: string;
+        date: string;
+      }>;
     };
 
     if (exportType === "pdf") {
@@ -330,6 +336,7 @@ class TransactionService implements ITransactionService {
         amount: string;
         status: string;
         adminCommission: number;
+        date: string;
       }>;
     };
 
@@ -394,7 +401,6 @@ class TransactionService implements ITransactionService {
   public async handlePaymentFailure(
     transactionId: string
   ): Promise<ITransaction | null> {
-    console.log("Handling payment failure for transaction:", transactionId);
     return await this._transactionRepository.changePaymentStatus(
       transactionId,
       "failed"

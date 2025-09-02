@@ -10,7 +10,12 @@ export const generateAdminRevenueExcel = async (
   totalRevenue: number,
   commissionRevenue: number,
   subscriptionRevenue: number,
-  transactions: Array<{ payer: string; type: string; amount: string }>,
+  transactions: Array<{
+    payer: string;
+    type: string;
+    amount: string;
+    date: string;
+  }>,
   fromDate?: Date,
   toDate?: Date
 ): Promise<ExcelJS.Buffer> => {
@@ -33,7 +38,7 @@ export const generateAdminRevenueExcel = async (
   sheet.addRow([]);
 
   // Add header row for transaction details
-  const headerRow = sheet.addRow(["Payer", "Type", "Amount"]);
+  const headerRow = sheet.addRow(["Date", "Payer", "Type", "Amount"]);
   headerRow.eachCell((cell) => {
     cell.font = { bold: true };
     cell.fill = {
@@ -51,7 +56,7 @@ export const generateAdminRevenueExcel = async (
 
   // Add each transaction as a row
   transactions.forEach((tx) => {
-    sheet.addRow([tx.payer, tx.type, tx.amount]);
+    sheet.addRow([tx.date, tx.payer, tx.type, tx.amount]);
   });
 
   // Adjust column widths for readability
@@ -80,6 +85,7 @@ export const generateTrainerRevenueExcel = async (
     amount: string;
     status: string;
     adminCommission: number;
+    date: string;
   }>,
   fromDate?: Date,
   toDate?: Date
@@ -104,6 +110,7 @@ export const generateTrainerRevenueExcel = async (
 
   // Add header row for transaction details
   const headerRow = sheet.addRow([
+    "Date",
     "Payer",
     "Amount",
     "Course",
@@ -128,6 +135,7 @@ export const generateTrainerRevenueExcel = async (
   // Add each transaction as a row
   transactions.forEach((tx) => {
     sheet.addRow([
+      tx.date,
       tx.payer,
       tx.amount,
       tx.course,

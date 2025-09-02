@@ -80,8 +80,6 @@ class TransactionController {
         status
       );
 
-      console.log(data);
-
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, data));
@@ -109,8 +107,6 @@ class TransactionController {
         startDate,
         endDate
       );
-
-      console.log(data);
 
       res
         .status(StatusCodes.OK)
@@ -169,14 +165,12 @@ class TransactionController {
         exportType
       );
 
-      console.log(exportType, exportData);
-
       if (exportType === "pdf") {
         const pdf = exportData as PDFKit.PDFDocument;
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader(
           "Content-Disposition",
-          "attachment; filename=admin-revenue-report.pdf"
+          "attachment; filename=revenue-report.pdf"
         );
         res.status(StatusCodes.OK);
         pdf.pipe(res);
@@ -189,7 +183,7 @@ class TransactionController {
         );
         res.setHeader(
           "Content-Disposition",
-          "attachment; filename=admin-revenue-report.xlsx"
+          "attachment; filename=revenue-report.xlsx"
         );
         res.send(excel);
       }
@@ -224,7 +218,7 @@ class TransactionController {
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader(
           "Content-Disposition",
-          "attachment; filename=admin-revenue-report.pdf"
+          "attachment; filename=revenue-report.pdf"
         );
         res.status(StatusCodes.OK);
         pdf.pipe(res);
@@ -237,7 +231,7 @@ class TransactionController {
         );
         res.setHeader(
           "Content-Disposition",
-          "attachment; filename=admin-revenue-report.xlsx"
+          "attachment; filename=revenue-report.xlsx"
         );
         res.send(excel);
       }

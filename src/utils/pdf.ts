@@ -11,7 +11,12 @@ export const generateAdminRevenuePdf = (
   totalRevenue: number,
   commissionRevenue: number,
   subscriptionRevenue: number,
-  transactions: Array<{ payer: string; type: string; amount: string }>,
+  transactions: Array<{
+    payer: string;
+    type: string;
+    amount: string;
+    date: string;
+  }>,
   fromDate?: Date,
   toDate?: Date
 ): PDFKit.PDFDocument => {
@@ -89,17 +94,24 @@ export const generateAdminRevenuePdf = (
   const tableBody = [
     [
       { text: "S.No", style: "tableHeader" },
+      { text: "Date", style: "tableHeader" },
       { text: "Payer", style: "tableHeader" },
       { text: "Type", style: "tableHeader" },
       { text: "Amount", style: "tableHeader" },
     ],
-    ...transactions.map((tx, i) => [`${i + 1}`, tx.payer, tx.type, tx.amount]),
+    ...transactions.map((tx, i) => [
+      `${i + 1}`,
+      new Date(tx.date).toLocaleDateString(),
+      tx.payer,
+      tx.type,
+      tx.amount,
+    ]),
   ];
 
   content.push({
     table: {
       headerRows: 1,
-      widths: ["auto", "*", "*", "auto"],
+      widths: ["auto", "auto", "*", "*", "auto"],
       body: tableBody,
     },
     layout: "lightHorizontalLines",
@@ -169,6 +181,7 @@ export const generateTrainerRevenuePdf = (
     amount: string;
     status: string;
     adminCommission: number;
+    date: string;
   }>,
   fromDate?: Date,
   toDate?: Date
@@ -247,6 +260,7 @@ export const generateTrainerRevenuePdf = (
   const tableBody = [
     [
       { text: "S.No", style: "tableHeader" },
+      { text: "Date", style: "tableHeader" },
       { text: "Payer", style: "tableHeader" },
       { text: "Amount", style: "tableHeader" },
       { text: "Course", style: "tableHeader" },
@@ -255,6 +269,7 @@ export const generateTrainerRevenuePdf = (
     ],
     ...transactions.map((tx, i) => [
       `${i + 1}`,
+      new Date(tx.date).toLocaleDateString(),
       tx.payer,
       tx.amount,
       tx.course,
@@ -266,7 +281,7 @@ export const generateTrainerRevenuePdf = (
   content.push({
     table: {
       headerRows: 1,
-      widths: ["auto", "*", "*", "*", "auto", "auto"],
+      widths: ["auto", "auto", "*", "*", "*", "auto", "auto"],
       body: tableBody,
     },
     layout: "lightHorizontalLines",
