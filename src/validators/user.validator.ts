@@ -56,7 +56,6 @@ export const changePasswordValidator = (data: any) => {
 
 export const updateProfileValidator = (user: any) => {
   const schema = z.object({
-    id: z.string(),
     username: UserValidationRule.Username,
     position: UserValidationRule.Position,
     location: UserValidationRule.Location,

@@ -124,7 +124,7 @@ export const UserValidationRule = {
         .string()
         .min(2, getMinLengthMessage("Duration", 2))
         .max(100, getMaxLengthMessage("Duration", 100)),
-      description: z.string().min(2).max(1000),
+      description: z.string().max(1000).optional(),
     })
   ),
   SocialLinks: z.object({
@@ -304,8 +304,8 @@ export const QuestionValidationRule = {
       z.object({
         choice: z
           .string()
-          .min(2, getMinLengthMessage("choice", 2))
-          .max(100, getMaxLengthMessage("choice", 100)),
+          .min(1, getMinLengthMessage("choice", 1))
+          .max(300, getMaxLengthMessage("choice", 300)),
         id: z.string(),
       })
     )

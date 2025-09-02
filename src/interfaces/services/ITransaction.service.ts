@@ -112,4 +112,8 @@ export interface ITransactionService {
   updateOnProcessPurchaseTransactions(): Promise<Array<ITransaction>>;
 
   createTransaction(transaction: Partial<ITransaction>): Promise<ITransaction>;
+
+  handleFailedTransaction(sessionId: string): Promise<void>;
+
+  retryPayment(transactionId: string): Promise<string | undefined>;
 }

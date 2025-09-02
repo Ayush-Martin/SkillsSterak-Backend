@@ -867,6 +867,7 @@ class TransactionRepository
 
     return transactions;
   }
+
 }
 
 export default TransactionRepository;

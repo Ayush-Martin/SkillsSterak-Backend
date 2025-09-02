@@ -302,6 +302,42 @@ class TransactionController {
       next(err);
     }
   }
+
+  public async failedTransaction(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { sessionId } = req.params;
+
+      await this._transactionService.handleFailedTransaction(sessionId);
+
+      res.status(StatusCodes.OK).json(successResponse("Purchase failed"));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async retryTransaction(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { transactionId } = req.params;
+
+      const sessionId = await this._transactionService.retryPayment(
+        transactionId
+      );
+
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse("Payment retried", sessionId));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default TransactionController;

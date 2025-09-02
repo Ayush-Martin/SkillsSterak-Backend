@@ -16,6 +16,7 @@ import {
   generateTrainerRevenueExcel,
 } from "../utils/excel";
 import { IWalletRepository } from "../interfaces/repositories/IWallet.repository";
+import stripe from "../config/stripe";
 
 class TransactionService implements ITransactionService {
   constructor(
@@ -410,6 +411,38 @@ class TransactionService implements ITransactionService {
     transaction: Partial<ITransaction>
   ): Promise<ITransaction> {
     return await this._transactionRepository.create(transaction);
+  }
+
+  public async handleFailedTransaction(sessionId: string): Promise<void> {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (!session) return;
+
+    const { transactionId } = session.metadata!;
+
+    await this._transactionRepository.changePaymentStatus(
+      transactionId,
+      "failed"
+    );
+
+    await this._transactionRepository.updateById(transactionId, {
+      stripeSessionId: sessionId,
+    });
+  }
+
+  public async retryPayment(
+    transactionId: string
+  ): Promise<string | undefined> {
+    const transaction = await this._transactionRepository.findById(
+      transactionId
+    );
+
+    await this._transactionRepository.changePaymentStatus(
+      transactionId,
+      "on_process"
+    );
+
+    return transaction?.stripeSessionId;
   }
 }
 

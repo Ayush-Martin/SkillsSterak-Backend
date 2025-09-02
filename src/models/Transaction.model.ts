@@ -24,6 +24,7 @@ export interface ITransaction extends Document {
   courseId?: ObjectId;
   subscriptionPlanId?: ObjectId;
   cancelTime?: Date;
+  stripeSessionId?: string;
 }
 
 const TransactionSchema = new Schema<ITransaction>(
@@ -70,6 +71,10 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     cancelTime: {
       type: Date,
+      required: false,
+    },
+    stripeSessionId: {
+      type: String,
       required: false,
     },
   },

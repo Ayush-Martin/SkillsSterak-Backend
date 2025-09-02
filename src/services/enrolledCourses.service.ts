@@ -35,14 +35,21 @@ class EnrolledCourses implements IEnrolledCoursesService {
   ): Promise<string | null> {
     const course = await this._courseRepository.findById(courseId);
     const user = await this._userRepository.findById(userId);
-    const courseDuration =
-      await this._lessonsRepository.getCourseLessonsDuration(courseId);
-
-    const cancelTime = new Date();
-    cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);
 
     if (!course)
       return errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
+
+    const alreadyEnrolled = await this._enrolledCoursesRepository.checkEnrolled(
+      userId,
+      courseId
+    );
+
+    if (alreadyEnrolled) {
+      return errorCreator(
+        CourseMessage.CourseAlreadyEnrolled,
+        StatusCodes.BAD_REQUEST
+      );
+    }
 
     //If course is free
     if (course.price === 0 || String(course.trainerId) == String(userId)) {
@@ -63,6 +70,12 @@ class EnrolledCourses implements IEnrolledCoursesService {
       const userWalletInfo = await this._walletRepository.getUserWalletInfo(
         userId
       );
+
+      const courseDuration =
+        await this._lessonsRepository.getCourseLessonsDuration(courseId);
+
+      const cancelTime = new Date();
+      cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);
 
       if (!userWalletInfo || userWalletInfo.balance < course.price) {
         return errorCreator(
@@ -111,7 +124,6 @@ class EnrolledCourses implements IEnrolledCoursesService {
       courseId: getObjectId(courseId),
       method,
       adminCommission,
-      cancelTime,
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -132,7 +144,9 @@ class EnrolledCourses implements IEnrolledCoursesService {
       ],
       mode: "payment",
       success_url: envConfig.FRONTEND_DOMAIN + "/payment/success",
-      cancel_url: envConfig.FRONTEND_DOMAIN + "/payment/failure",
+      cancel_url:
+        envConfig.FRONTEND_DOMAIN +
+        "/payment/failure?session_id={CHECKOUT_SESSION_ID}",
       metadata: {
         userId,
         courseId,
@@ -152,6 +166,12 @@ class EnrolledCourses implements IEnrolledCoursesService {
     const course = await this._courseRepository.findById(courseId);
     if (!course) return errorCreator("Course not found", StatusCodes.NOT_FOUND);
 
+    const courseDuration =
+      await this._lessonsRepository.getCourseLessonsDuration(courseId);
+
+    const cancelTime = new Date();
+    cancelTime.setSeconds(cancelTime.getSeconds() + courseDuration / 2);
+
     await this._enrolledCoursesRepository.create({
       userId: getObjectId(userId),
       courseId: getObjectId(courseId),
@@ -162,10 +182,10 @@ class EnrolledCourses implements IEnrolledCoursesService {
       course?.price
     );
 
-    await this._transactionRepository.changePaymentStatus(
-      transactionId,
-      "on_process"
-    );
+    await this._transactionRepository.updateById(transactionId, {
+      cancelTime,
+      status: "on_process",
+    });
 
     return { userId, courseId };
   }
