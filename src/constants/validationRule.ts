@@ -28,13 +28,20 @@ const getMaxValueMessage = (field: string, val: number) => {
 
 const getArrayValidation = (field: string, type: "string" | "number") => {
   return z
-    .string()
+    .union([z.string(), z.array(type === "string" ? z.string() : z.number())])
     .transform((val) => {
-      try {
-        return JSON.parse(val);
-      } catch (error) {
-        throw new Error("Invalid JSON string");
+      if (typeof val === "string") {
+        try {
+          const parsed = JSON.parse(val);
+          if (!Array.isArray(parsed)) {
+            throw new Error(`${field} must be an array`);
+          }
+          return parsed;
+        } catch {
+          throw new Error("Invalid JSON string");
+        }
       }
+      return val;
     })
     .refine(
       (val) => Array.isArray(val) && val.every((v) => typeof v === type),
