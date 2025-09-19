@@ -8,7 +8,7 @@ import {
   updateCourseBasicDetailsValidator,
 } from "../validators/course.validator";
 import { StatusCodes } from "../constants/statusCodes";
-import { successResponse } from "../utils/responseCreators";
+import { errorResponse, successResponse } from "../utils/responseCreators";
 import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { getObjectId } from "../utils/objectId";
@@ -80,7 +80,16 @@ class CourseController {
       res
         .status(StatusCodes.OK)
         .json(successResponse(GeneralMessage.DataReturned, result));
-    } catch (err) {
+    } catch (err: any) {
+      if (err.response?.status === StatusCodes.RATE_LIMIT) {
+        console.error("Gemini rate limit error:", err);
+        return res
+          .status(StatusCodes.RATE_LIMIT)
+          .json(
+            errorResponse("AI service limit reached. Please try again later.")
+          );
+      }
+
       next(err);
     }
   }
