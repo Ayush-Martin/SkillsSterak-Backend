@@ -36,16 +36,21 @@ class EnrolledCoursesRepository
                 from: "lessons",
                 let: { courseId: "$_id" },
                 pipeline: [
-                  {
-                    $match: {
-                      $expr: { $eq: ["$courseId", "$$courseId"] },
-                    },
-                  },
-                  {
-                    $count: "lessonCount",
-                  },
+                  { $match: { $expr: { $eq: ["$courseId", "$$courseId"] } } },
+                  { $count: "lessonCount" },
                 ],
                 as: "lessonStats",
+              },
+            },
+            {
+              $lookup: {
+                from: "assignments",
+                let: { courseId: "$_id" },
+                pipeline: [
+                  { $match: { $expr: { $eq: ["$courseId", "$$courseId"] } } },
+                  { $count: "assignmentCount" },
+                ],
+                as: "assignmentStats",
               },
             },
             {
@@ -53,6 +58,12 @@ class EnrolledCoursesRepository
                 lessonCount: {
                   $ifNull: [
                     { $arrayElemAt: ["$lessonStats.lessonCount", 0] },
+                    0,
+                  ],
+                },
+                assignmentCount: {
+                  $ifNull: [
+                    { $arrayElemAt: ["$assignmentStats.assignmentCount", 0] },
                     0,
                   ],
                 },
@@ -65,21 +76,31 @@ class EnrolledCoursesRepository
                 thumbnail: 1,
                 category: 1,
                 lessonCount: 1,
+                assignmentCount: 1,
               },
             },
           ],
           as: "course",
         },
       },
-      {
-        $unwind: "$course",
-      },
+      { $unwind: "$course" },
       {
         $addFields: {
           completedLessonsCount: {
-            $size: {
-              $ifNull: ["$completedLessons", []],
-            },
+            $size: { $ifNull: ["$completedLessons", []] },
+          },
+          completedAssignmentsCount: {
+            $size: { $ifNull: ["$completedAssignments", []] },
+          },
+        },
+      },
+      {
+        $addFields: {
+          totalItems: {
+            $add: ["$course.lessonCount", "$course.assignmentCount"],
+          },
+          totalCompleted: {
+            $add: ["$completedLessonsCount", "$completedAssignmentsCount"],
           },
         },
       },
@@ -87,13 +108,11 @@ class EnrolledCoursesRepository
         $addFields: {
           completedPercentage: {
             $cond: [
-              { $eq: ["$course.lessonCount", 0] },
+              { $eq: ["$totalItems", 0] },
               0,
               {
                 $multiply: [
-                  {
-                    $divide: ["$completedLessonsCount", "$course.lessonCount"],
-                  },
+                  { $divide: ["$totalCompleted", "$totalItems"] },
                   100,
                 ],
               },
@@ -106,18 +125,17 @@ class EnrolledCoursesRepository
           updatedAt: 0,
           __v: 0,
           completedLessons: 0,
+          completedAssignments: 0,
           completedLessonsCount: 0,
+          completedAssignmentsCount: 0,
           "course.lessonCount": 0,
+          "course.assignmentCount": 0,
           courseId: 0,
           userId: 0,
         },
       },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: limit,
-      },
+      { $skip: skip },
+      { $limit: limit },
     ]);
   }
 
@@ -353,7 +371,7 @@ class EnrolledCoursesRepository
                       pipeline: [
                         {
                           $group: {
-                            _id: 0,
+                            _id: null,
                             noOfLessons: { $sum: 1 },
                           },
                         },
@@ -363,8 +381,68 @@ class EnrolledCoursesRepository
                   },
                   { $unwind: "$lessons" },
                   {
+                    $lookup: {
+                      from: "assignments",
+                      localField: "_id",
+                      foreignField: "courseId",
+                      pipeline: [
+                        {
+                          $group: {
+                            _id: null,
+                            noOfAssignments: {
+                              $sum: 1,
+                            },
+                          },
+                        },
+                      ],
+                      as: "assignments",
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: "$assignments",
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "assignmentsubmissions",
+                      localField: "_id",
+                      foreignField: "courseId",
+                      pipeline: [
+                        {
+                          $match: {
+                            status: "verified",
+                          },
+                        },
+                        {
+                          $group: {
+                            _id: null,
+                            noOfAssignmentSubmissions: { $sum: 1 },
+                          },
+                        },
+                      ],
+                      as: "assignmentSubmissions",
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: "$assignmentSubmissions",
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  {
                     $project: {
                       noOfLessons: "$lessons.noOfLessons",
+                      noOfAssignments: {
+                        $ifNull: ["$assignments.noOfAssignments", 0],
+                      },
+                      noOfAssignmentSubmissions: {
+                        $ifNull: [
+                          "$assignmentSubmissions.noOfAssignmentSubmissions",
+                          0,
+                        ],
+                      },
                     },
                   },
                 ],
@@ -375,7 +453,22 @@ class EnrolledCoursesRepository
             {
               $match: {
                 $expr: {
-                  $eq: [{ $size: "$completedLessons" }, "$course.noOfLessons"],
+                  $and: [
+                    {
+                      $eq: [
+                        {
+                          $size: "$completedLessons",
+                        },
+                        "$course.noOfLessons",
+                      ],
+                    },
+                    {
+                      $eq: [
+                        "$course.noOfAssignments",
+                        "$course.noOfAssignmentSubmissions",
+                      ],
+                    },
+                  ],
                 },
               },
             },
@@ -392,13 +485,17 @@ class EnrolledCoursesRepository
         $project: {
           enrolledCourses: {
             $ifNull: [
-              { $arrayElemAt: ["$enrolledCourses.enrolledCourses", 0] },
+              {
+                $arrayElemAt: ["$enrolledCourses.enrolledCourses", 0],
+              },
               0,
             ],
           },
           coursesCompleted: {
             $ifNull: [
-              { $arrayElemAt: ["$coursesCompleted.coursesCompleted", 0] },
+              {
+                $arrayElemAt: ["$coursesCompleted.coursesCompleted", 0],
+              },
               0,
             ],
           },
