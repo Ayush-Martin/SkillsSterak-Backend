@@ -69,4 +69,10 @@ export interface IEnrolledCoursesRepository
     userId: string,
     courseId: string
   ): Promise<IEnrolledCourses | null>;
+
+  getUserEnrolledCourseByTimePeriodForTrainer(
+    startDate: Date,
+    endDate: Date,
+    trainerId: string
+  ): Promise<Array<IEnrolledCourses>>;
 }

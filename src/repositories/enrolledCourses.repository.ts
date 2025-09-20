@@ -609,6 +609,38 @@ class EnrolledCoursesRepository
     console.log(data);
     return data[0];
   }
+
+  public async getUserEnrolledCourseByTimePeriod(
+    startDate: Date,
+    endDate: Date,
+    trainerId: string
+  ): Promise<Array<IEnrolledCourses>> {
+    return await this.EnrolledCourses.aggregate([
+      {
+        $match: {
+          $and: [
+            { createdAt: { $gte: startDate } },
+            { createdAt: { $lte: endDate } },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          as: "course",
+          pipeline: [
+            {
+              $match: {
+                trainerId: new mongoose.Types.ObjectId(trainerId),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  }
 }
 
 export default EnrolledCoursesRepository;

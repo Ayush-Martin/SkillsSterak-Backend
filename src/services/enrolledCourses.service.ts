@@ -39,6 +39,25 @@ class EnrolledCourses implements IEnrolledCoursesService {
     if (!course)
       return errorCreator(CourseMessage.CourseNotFound, StatusCodes.NOT_FOUND);
 
+    const startDate = new Date();
+    const endDate = new Date();
+    startDate.setDate(1);
+    endDate.setMonth(endDate.getMonth() + 1);
+    endDate.setDate(0);
+
+    console.log(startDate, endDate);
+
+    const userEnrolledCourses =
+      await this._enrolledCoursesRepository.getUserEnrolledCourseByTimePeriodForTrainer(
+        startDate,
+        endDate,
+        String(course.trainerId)
+      );
+
+    if (userEnrolledCourses.length > 1) {
+      errorCreator("can enroll only 3 course of a trainer in a month");
+    }
+
     const alreadyEnrolled = await this._enrolledCoursesRepository.checkEnrolled(
       userId,
       courseId
