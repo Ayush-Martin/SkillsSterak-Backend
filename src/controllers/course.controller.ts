@@ -83,11 +83,13 @@ class CourseController {
     } catch (err: any) {
       if (err.response?.status === StatusCodes.RATE_LIMIT) {
         console.error("Gemini rate limit error:", err);
-        return res
+        res
           .status(StatusCodes.RATE_LIMIT)
           .json(
             errorResponse("AI service limit reached. Please try again later.")
           );
+
+        return;
       }
 
       next(err);
