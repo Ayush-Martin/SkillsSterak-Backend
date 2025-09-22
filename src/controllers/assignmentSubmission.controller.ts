@@ -3,6 +3,7 @@ import { IAssignmentSubmissionService } from "../interfaces/services/IAssignment
 import binder from "../utils/binder";
 import {
   changeAssignmentSubmissionStatusValidator,
+  getAssignmentSubmissionsValidator,
   submitAssignmentValidator,
 } from "../validators/assignment.validator";
 import { StatusCodes } from "../constants/statusCodes";
@@ -31,7 +32,7 @@ class AssignmentSubmissionController {
     try {
       const userId = req.userId!;
       const file = req.file;
-      const { assignmentId ,courseId} = req.params;
+      const { assignmentId, courseId } = req.params;
       const { type, content } = submitAssignmentValidator(req.body);
 
       const data = await this._assignmentSubmissionService.submitAssignment(
@@ -59,10 +60,14 @@ class AssignmentSubmissionController {
   ) {
     try {
       const userId = req.userId!;
-      const { page, size } = pageValidator(req.query);
+      const { page, size, search, courseId, status } =
+        getAssignmentSubmissionsValidator(req.query);
       const data =
         await this._assignmentSubmissionService.getTrainerAssignmentSubmissions(
           userId,
+          courseId,
+          status,
+          search,
           page,
           size
         );

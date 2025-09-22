@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { IAssignmentSubmissionRepository } from "../interfaces/repositories/IAssignmentSubmission.repository";
 import { IAssignmentSubmissionService } from "../interfaces/services/IAssignmentSubmission.service";
 import { IAssignmentSubmission } from "../models/AssignmentSubmission.model";
@@ -29,6 +30,9 @@ class AssignmentSubmissionService implements IAssignmentSubmissionService {
 
   public async getTrainerAssignmentSubmissions(
     trainerId: string,
+    courseId: string | "all",
+    status: "completed" | "verified" | "redo" | "all",
+    search: string,
     page: number,
     size: number
   ): Promise<{
@@ -37,17 +41,33 @@ class AssignmentSubmissionService implements IAssignmentSubmissionService {
     totalPages: number;
   }> {
     const skip = (page - 1) * size;
+    const filter: Record<string, any> = {};
+    const searchRegex = new RegExp(search, "i");
+
+    if (courseId !== "all") {
+      filter["assignment.course._id"] = new mongoose.Types.ObjectId(courseId);
+    }
+
+    if (status !== "all") {
+      filter["status"] = status;
+    }
+
+    console.log(filter);
 
     const submissions =
       await this._AssignmentSubmissionRepository.getTrainerAssignmentSubmissions(
         trainerId,
+        searchRegex,
+        filter,
         skip,
         size
       );
 
     const totalSubmissions =
       await this._AssignmentSubmissionRepository.getTrainerAssignmentSubmissionsCount(
-        trainerId
+        trainerId,
+        searchRegex,
+        filter
       );
     const totalPages = Math.ceil(totalSubmissions / size);
 

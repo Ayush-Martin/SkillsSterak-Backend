@@ -12,6 +12,9 @@ export interface IAssignmentSubmissionService {
 
   getTrainerAssignmentSubmissions(
     trainerId: string,
+    courseId: string | "all",
+    status: "completed" | "verified" | "redo",
+    search: string,
     page: number,
     size: number
   ): Promise<{

@@ -27,6 +27,7 @@ router
   .post(upload.single("image"), courseController.createCourse);
 
 router.get("/courses/count", courseController.getTrainerCoursesCount);
+router.get("/courses/list", courseController.getTrainerCoursesList);
 router.get("/courses/top5", courseController.getTrainerTop5Courses);
 
 router
@@ -81,8 +82,6 @@ router
   .put(liveSessionController.editLiveSession)
   .delete(liveSessionController.deleteLiveSession);
 
-
-
 //students
 router.get("/students", trainerController.getStudentsWithEnrolledCourses);
 router.get("/students/count", trainerController.getStudentsCount);
@@ -91,7 +90,6 @@ router.get("/students/count", trainerController.getStudentsCount);
 router.route("/wallet").get(walletController.getWalletInfo);
 
 // router.route("/chats").get(chatController.getTrainerChats);
-
 
 router.get("/revenue", transactionController.getTrainerRevenue);
 router.get("/revenue/export", transactionController.exportTrainerRevenue);

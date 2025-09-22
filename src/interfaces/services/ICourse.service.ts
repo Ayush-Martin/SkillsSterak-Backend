@@ -117,4 +117,6 @@ export interface ICourseService {
   getAdminCourse(courseId: string): Promise<ICourse | null>;
 
   getCourseCertificateDetails(courseId: string): Promise<ICourse | null>;
+
+  getTrainerCoursesList(trainerId: string): Promise<Array<ICourse>>;
 }
