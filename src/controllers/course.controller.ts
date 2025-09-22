@@ -437,6 +437,22 @@ class CourseController {
       next(err);
     }
   }
+
+  public async getTrainerCoursesList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.userId!;
+      const data = await this._courseService.getTrainerCoursesList(userId);
+      res
+        .status(StatusCodes.OK)
+        .json(successResponse(GeneralMessage.DataReturned, data));
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default CourseController;

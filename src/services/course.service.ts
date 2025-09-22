@@ -240,6 +240,12 @@ class CourseService implements ICourseService {
   ): Promise<ICourse | null> {
     return await this._courseRepository.getCourseCertificateInfo(courseId);
   }
+
+  public async getTrainerCoursesList(
+    trainerId: string
+  ): Promise<Array<ICourse>> {
+    return await this._courseRepository.getTrainerCoursesList(trainerId);
+  }
 }
 
 export default CourseService;

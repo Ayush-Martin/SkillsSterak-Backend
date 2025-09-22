@@ -13,6 +13,8 @@ class AssignmentSubmissionRepository
 
   public async getTrainerAssignmentSubmissions(
     trainerId: string,
+    search: RegExp,
+    filter: Record<string, any>,
     skip: number,
     limit: number
   ): Promise<IAssignmentSubmission[]> {
@@ -60,6 +62,8 @@ class AssignmentSubmissionRepository
       {
         $match: {
           "assignment.course.trainerId": new mongoose.Types.ObjectId(trainerId),
+          "assignment.title": search,
+          ...filter,
         },
       },
       {
@@ -103,7 +107,9 @@ class AssignmentSubmissionRepository
   }
 
   public async getTrainerAssignmentSubmissionsCount(
-    trainerId: string
+    trainerId: string,
+    search: RegExp,
+    filter: Record<string, any>
   ): Promise<number> {
     const result = await this._AssignmentSubmission.aggregate([
       {
@@ -133,6 +139,8 @@ class AssignmentSubmissionRepository
             {
               $project: {
                 course: 1,
+                title: 1,
+                status: 1,
               },
             },
           ],
@@ -145,6 +153,8 @@ class AssignmentSubmissionRepository
       {
         $match: {
           "assignment.course.trainerId": new mongoose.Types.ObjectId(trainerId),
+          "assignment.title": search,
+          ...filter,
         },
       },
       {

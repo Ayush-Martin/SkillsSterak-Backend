@@ -104,4 +104,6 @@ export interface ICourseRepository extends BaseRepository<ICourse> {
   getAdminCourse(courseId: string): Promise<ICourse | null>;
 
   getCourseCertificateInfo(courseId: string): Promise<ICourse | null>;
+
+  getTrainerCoursesList(trainerId: string): Promise<Array<ICourse>>;
 }

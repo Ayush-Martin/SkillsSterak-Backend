@@ -670,6 +670,12 @@ class CourseRepository
       .findOne({ _id: courseId }, { title: 1, trainerId: 1 })
       .populate("trainerId", "username");
   }
+
+  public async getTrainerCoursesList(
+    trainerId: string
+  ): Promise<Array<ICourse>> {
+    return await this._Course.find({ trainerId }, { title: 1 });
+  }
 }
 
 export default CourseRepository;
