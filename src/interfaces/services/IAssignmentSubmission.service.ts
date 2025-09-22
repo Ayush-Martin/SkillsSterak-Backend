@@ -13,7 +13,7 @@ export interface IAssignmentSubmissionService {
   getTrainerAssignmentSubmissions(
     trainerId: string,
     courseId: string | "all",
-    status: "completed" | "verified" | "redo",
+    status: "completed" | "verified" | "redo" | "all",
     search: string,
     page: number,
     size: number
