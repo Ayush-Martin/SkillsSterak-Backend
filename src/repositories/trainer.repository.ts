@@ -302,12 +302,8 @@ class TrainerRepository
     return await this._User.aggregate([
       {
         $match: {
-          _id: {
-            $ne: new mongoose.Types.ObjectId(trainerId),
-          },
-          role: {
-            $ne: "admin",
-          },
+          _id: { $ne: new mongoose.Types.ObjectId(trainerId) },
+          role: { $ne: "admin" },
           email: search,
         },
       },
@@ -316,12 +312,14 @@ class TrainerRepository
           from: "enrolledcourses",
           localField: "_id",
           foreignField: "userId",
+          let: { userId: "$_id" },
           pipeline: [
             {
               $lookup: {
                 from: "courses",
                 localField: "courseId",
                 foreignField: "_id",
+                let: { userId: "$$userId" },
                 pipeline: [
                   {
                     $match: {
@@ -329,9 +327,72 @@ class TrainerRepository
                     },
                   },
                   {
+                    $lookup: {
+                      from: "lessons",
+                      localField: "_id",
+                      foreignField: "courseId",
+                      pipeline: [{ $count: "noOfLessons" }],
+                      as: "noOfLessons",
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: "$noOfLessons",
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "assignments",
+                      localField: "_id",
+                      foreignField: "courseId",
+                      pipeline: [{ $count: "noOfAssignments" }],
+                      as: "noOfAssignments",
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: "$noOfAssignments",
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "assignmentsubmissions",
+                      let: { courseId: "$_id", userId: "$$userId" },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: {
+                              $and: [
+                                { $eq: ["$courseId", "$$courseId"] },
+                                { $eq: ["$userId", "$$userId"] },
+                              ],
+                            },
+                          },
+                        },
+                        { $count: "noOfSubmissions" },
+                      ],
+                      as: "noOfSubmissions",
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: "$noOfSubmissions",
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  {
                     $project: {
                       title: 1,
                       thumbnail: 1,
+                      noOfLessons: { $ifNull: ["$noOfLessons.noOfLessons", 0] },
+                      noOfAssignments: {
+                        $ifNull: ["$noOfAssignments.noOfAssignments", 0],
+                      },
+                      noOfSubmissions: {
+                        $ifNull: ["$noOfSubmissions.noOfSubmissions", 0],
+                      },
                     },
                   },
                 ],
@@ -340,34 +401,69 @@ class TrainerRepository
             },
             { $unwind: "$course" },
             {
+              $addFields: {
+                totalItems: {
+                  $add: ["$course.noOfLessons", "$course.noOfAssignments"],
+                },
+                totalCompleted: {
+                  $add: [
+                    { $size: { $ifNull: ["$completedLessons", []] } },
+                    "$course.noOfSubmissions",
+                  ],
+                },
+              },
+            },
+            {
+              $addFields: {
+                completedPercentage: {
+                  $cond: [
+                    { $eq: ["$totalItems", 0] },
+                    0,
+                    {
+                      $multiply: [
+                        { $divide: ["$totalCompleted", "$totalItems"] },
+                        100,
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            {
               $project: {
-                course: 1,
                 _id: 0,
+                title: "$course.title",
+                thumbnail: "$course.thumbnail",
+                completedPercentage: 1,
               },
             },
           ],
           as: "enrolledCourses",
         },
       },
-      {
-        $unwind: "$enrolledCourses",
-      },
+      { $unwind: "$enrolledCourses" },
       {
         $group: {
           _id: "$_id",
-          enrolledCourses: {
-            $push: "$enrolledCourses.course",
-          },
+          enrolledCourses: { $push: "$enrolledCourses" },
           username: { $first: "$username" },
           email: { $first: "$email" },
         },
       },
+      // compute overall completion per student
       {
-        $skip: skip,
+        $addFields: {
+          overallCompletion: {
+            $cond: [
+              { $gt: [{ $size: "$enrolledCourses" }, 0] },
+              { $avg: "$enrolledCourses.completedPercentage" },
+              0,
+            ],
+          },
+        },
       },
-      {
-        $limit: limit,
-      },
+      { $skip: skip },
+      { $limit: limit },
     ]);
   }
 }
