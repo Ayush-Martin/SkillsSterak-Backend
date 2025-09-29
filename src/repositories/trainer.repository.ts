@@ -299,7 +299,7 @@ class TrainerRepository
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
-    return await this.User.aggregate([
+    return await this._User.aggregate([
       {
         $match: {
           _id: { $ne: new mongoose.Types.ObjectId(trainerId) },
