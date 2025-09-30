@@ -6,6 +6,7 @@ import binder from "../utils/binder";
 import { paginatedGetDataValidator } from "../validators/pagination.validator";
 import { GeneralMessage } from "../constants/responseMessages";
 import { IUserService } from "../interfaces/services/IUser.service";
+import { getTrainerStudentsWithEnrolledCoursesValidator } from "../validators/trainer.validator";
 
 /**
  * Handles trainer and student operations, including trainer listing and student analytics.
@@ -62,11 +63,12 @@ class TrainerController {
   ) {
     try {
       const trainerId = req.userId!;
-      const { page, search, size } = paginatedGetDataValidator(req.query);
+      const { page, search, size ,courseId} = getTrainerStudentsWithEnrolledCoursesValidator(req.query);
 
       const data = await this._trainerService.getStudentsWithEnrolledCourses(
         trainerId,
         search,
+        courseId,
         page,
         size
       );

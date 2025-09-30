@@ -20,7 +20,8 @@ class TrainerRepository
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
-    return await this._User.find({ email: search, role: "trainer" })
+    return await this._User
+      .find({ email: search, role: "trainer" })
       .skip(skip)
       .limit(limit);
   }
@@ -195,7 +196,8 @@ class TrainerRepository
 
   public async getTotalStudents(
     trainerId: string,
-    search: RegExp
+    search: RegExp,
+    filter: Record<string, any>
   ): Promise<number> {
     const result = await this._User.aggregate([
       {
@@ -234,6 +236,7 @@ class TrainerRepository
       {
         $match: {
           "enrolledCourses.course": { $exists: true },
+          ...filter,
         },
       },
       {
@@ -296,6 +299,7 @@ class TrainerRepository
   public async getStudentsWithEnrolledCourses(
     trainerId: string,
     search: RegExp,
+    filter: Record<string, any>,
     skip: number,
     limit: number
   ): Promise<Array<IUser>> {
@@ -363,6 +367,7 @@ class TrainerRepository
                       pipeline: [
                         {
                           $match: {
+                            status: "verified",
                             $expr: {
                               $and: [
                                 { $eq: ["$courseId", "$$courseId"] },
@@ -432,6 +437,7 @@ class TrainerRepository
             {
               $project: {
                 _id: 0,
+                courseId: 1,
                 title: "$course.title",
                 thumbnail: "$course.thumbnail",
                 completedPercentage: 1,
@@ -448,6 +454,11 @@ class TrainerRepository
           enrolledCourses: { $push: "$enrolledCourses" },
           username: { $first: "$username" },
           email: { $first: "$email" },
+        },
+      },
+      {
+        $match: {
+          ...filter,
         },
       },
       // compute overall completion per student

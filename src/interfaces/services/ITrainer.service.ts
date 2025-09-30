@@ -29,6 +29,7 @@ export interface ITrainerService {
   getStudentsWithEnrolledCourses(
     trainerId: string,
     search: string,
+    courseId: "all" | string,
     page: number,
     size: number
   ): Promise<{
