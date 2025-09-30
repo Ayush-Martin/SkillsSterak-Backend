@@ -113,7 +113,8 @@ class TrainerService implements ITrainerService {
   public async getStudentsCount(trainerId: string): Promise<number> {
     return await this._trainerRepository.getTotalStudents(
       trainerId,
-      new RegExp("")
+      new RegExp(""),
+      {}
     );
   }
 }
