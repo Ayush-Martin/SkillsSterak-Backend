@@ -41,6 +41,7 @@ export interface ITrainerRepository extends BaseRepository<IUser> {
   getStudentsWithEnrolledCourses(
     trainerId: string,
     search: RegExp,
+    filter: Record<string, any>,
     skip: number,
     limit: number
   ): Promise<Array<IUser>>;
@@ -55,7 +56,7 @@ export interface ITrainerRepository extends BaseRepository<IUser> {
    * Returns the total number of students for a trainer, with optional search.
    * Enables trainer analytics and dashboard summaries.
    */
-  getTotalStudents(trainerId: string, search: RegExp): Promise<number>;
+  getTotalStudents(trainerId: string, search: RegExp,filter: Record<string, any>): Promise<number>;
 
   /**
    * Retrieves a trainer's user profile by their ID.

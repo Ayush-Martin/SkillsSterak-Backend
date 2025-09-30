@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { StatusCodes } from "../constants/statusCodes";
 import { ITrainerRepository } from "../interfaces/repositories/ITrainer.repository";
 import { ITrainerRequestRepository } from "../interfaces/repositories/ITrainerRequest.repository";
@@ -70,6 +71,7 @@ class TrainerService implements ITrainerService {
   public async getStudentsWithEnrolledCourses(
     trainerId: string,
     search: string,
+    courseId: "all" | string,
     page: number,
     size: number
   ): Promise<{
@@ -77,18 +79,28 @@ class TrainerService implements ITrainerService {
     currentPage: number;
     totalPages: number;
   }> {
+    let filter: Record<string, any> = {};
     const searchRegex = new RegExp(search, "i");
     const skip = (page - 1) * size;
+
+    if (courseId !== "all") {
+      filter["enrolledCourses.courseId"] = new mongoose.Types.ObjectId(
+        courseId
+      );
+    }
+
     const students =
       await this._trainerRepository.getStudentsWithEnrolledCourses(
         trainerId,
         searchRegex,
+        filter,
         skip,
         size
       );
     const totalStudents = await this._trainerRepository.getTotalStudents(
       trainerId,
-      searchRegex
+      searchRegex,
+      filter
     );
     const totalPages = Math.ceil(totalStudents / size);
     return {
@@ -101,11 +113,10 @@ class TrainerService implements ITrainerService {
   public async getStudentsCount(trainerId: string): Promise<number> {
     return await this._trainerRepository.getTotalStudents(
       trainerId,
-      new RegExp("")
+      new RegExp(""),
+      {}
     );
   }
-
-  
 }
 
 export default TrainerService;
