@@ -109,8 +109,8 @@ class LiveSessionService implements ILiveSessionService {
     const folderName = `recordings/${roomId}`;
     const playlistName = `${roomId}.m3u8`;
     const livePlaylistName = `${roomId}-live.m3u8`;
-    const recordedSrc = `${envConfig.AWS_BUCKET_URL}/${folderName}/${roomId}.m3u8`;
-    const liveSrc = `${envConfig.AWS_BUCKET_URL}/${folderName}/${roomId}-live.m3u8`;
+    const recordedSrc = `${envConfig.GCP_BUCKET_URL}/${folderName}/${roomId}.m3u8`;
+    const liveSrc = `${envConfig.GCP_BUCKET_URL}/${folderName}/${roomId}-live.m3u8`;
 
     const outputs = {
       segments: new SegmentedFileOutput({
