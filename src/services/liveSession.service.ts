@@ -14,6 +14,9 @@ import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { io } from "..";
 import { SocketEvents } from "../constants/socketEvents";
 
+const encoded = envConfig.GCP_CREDENTIALS_BASE64;
+const credentialsString = Buffer.from(encoded, "base64").toString("utf-8");
+
 class LiveSessionService implements ILiveSessionService {
   constructor(
     private _liveSessionRepository: ILiveSessionRepository,
@@ -116,14 +119,10 @@ class LiveSessionService implements ILiveSessionService {
         livePlaylistName: livePlaylistName,
         segmentDuration: 2,
         output: {
-          case: "s3",
+          case: "gcp",
           value: {
-            accessKey: envConfig.AWS_ACCESS_KEY_ID,
-            secret: envConfig.AWS_SECRET_ACCESS_KEY,
-            bucket: envConfig.AWS_BUCKET_NAME,
-            endpoint: envConfig.AWS_ENDPOINT,
-            region: envConfig.AWS_REGION,
-            forcePathStyle: true,
+            credentials: credentialsString,
+            bucket: envConfig.GCP_STORAGE_BUCKET,
           },
         },
       }),
