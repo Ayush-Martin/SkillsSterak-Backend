@@ -74,6 +74,7 @@ const envConfig = {
 
   //GCP
   GCP_CREDENTIALS_BASE64: process.env.GCP_CREDENTIALS_BASE64!,
+  GCP_BUCKET_URL: process.env.GCP_BUCKET_URL!,
   GCP_STORAGE_BUCKET: process.env.GCP_STORAGE_BUCKET!,
 };
 
