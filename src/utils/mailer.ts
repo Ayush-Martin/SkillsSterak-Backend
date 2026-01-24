@@ -40,81 +40,66 @@ const httpGenerator = (subject: string, text: string) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${envConfig.APP_NAME} Email</title>
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <style>
       body {
         margin: 0;
         padding: 0;
         font-family: Arial, sans-serif;
-        background-color: #5e6f85;
-        color: #a604f2;
-        text-align: center;
+        background-color: #f4f7f9; /* Lighter background for the "canvas" */
+        color: #333333; /* Darker text for better legibility */
       }
       .email-container {
         max-width: 600px;
         margin: 20px auto;
-        background: #0a0d17;
+        background: #ffffff; /* White background for the card */
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e0e0e0;
         overflow: hidden;
       }
       .header {
-        background: #763af5;
-        color: #fff;
+        background: #763af5; /* Keeping your primary purple */
+        color: #ffffff;
+        padding: 30px;
         text-align: center;
-        padding: 20px;
-      }
-      .header h1 {
-        margin: 0;
-        font-size: 24px;
       }
       .body {
-        padding: 20px;
+        padding: 40px;
+        text-align: center;
         line-height: 1.6;
+        color: #2d3436;
       }
-      .body h2 {
-        color: #f2a104;
+      /* Highlight the OTP/Text specifically */
+      .otp-text {
+        font-size: 32px;
+        font-weight: bold;
+        letter-spacing: 5px;
+        color: #763af5; 
+        margin: 20px 0;
       }
       .footer {
-        background: #2f3542;
-        text-align: center;
-        padding: 10px;
-        font-size: 14px;
-        color: #777;
-      }
-      @media (max-width: 600px) {
-        .email-container {
-          width: 100%;
-        }
-        .body {
-          padding: 15px;
-        }
+        background: #f8f9fa;
+        padding: 20px;
+        font-size: 12px;
+        color: #636e72;
       }
     </style>
   </head>
   <body>
     <div class="email-container">
-      <!-- Header -->
       <div class="header">
         <h1>${envConfig.APP_NAME}</h1>
       </div>
-
-      <!-- Body -->
       <div class="body">
-        <h2>${subject},</h2>
-        <p>${text}</p>
+        <h2 style="color: #2d3436;">${subject}</h2>
+        <div class="otp-text">${text}</div>
+        <p>If you did not request this, please ignore this email.</p>
       </div>
-
-      <!-- Footer -->
       <div class="footer">
-        <p>
-          &copy; ${new Date().getFullYear()} ${
-    envConfig.APP_NAME
-  }. All rights reserved.
-        </p>
+        <p>&copy; ${new Date().getFullYear()} ${envConfig.APP_NAME}. All rights reserved.</p>
       </div>
     </div>
   </body>
-</html>
-`;
+</html>`;
 };
